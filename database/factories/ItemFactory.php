@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use App\Models\Category;
 use App\Models\Item;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -53,9 +54,10 @@ class ItemFactory extends Factory
 
         $types = ['lost', 'found'];
 
-        $statuses = ['pending', 'claimed', 'returned'];
+        $statuses = ['active', 'claimed', 'returned'];
 
         return [
+            'user_id' => User::inRandomOrder()->first()->id,
             'category_id' => Category::inRandomOrder()->first()->id,
             'name' => fake()->randomElement($itemNames),
             'description' => fake()->sentence(10),
@@ -67,3 +69,4 @@ class ItemFactory extends Factory
         ];
     }
 }
+

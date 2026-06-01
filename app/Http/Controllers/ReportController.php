@@ -66,10 +66,10 @@ class ReportController extends Controller
                 'description' => $validated['description'],
                 'image' => $imagePath,
                 'type' => 'Found',
-                'status' => 'available',
+                'status' => 'active',
                 'location' => $validated['location_current'],
                 'date_reported' => now(),
-                'user_id' => Auth::id() ?? null
+                'user_id' => Auth::id() ?? 1
             ]);
 
             return redirect()->route('home')->with('success', 'Found item reported successfully! Thank you for helping.');
@@ -132,10 +132,10 @@ class ReportController extends Controller
                 'description' => $validated['description'],
                 'image' => $imagePath,
                 'type' => 'Lost',
-                'status' => 'missing',
+                'status' => 'active',
                 'location' => $validated['location_lost'],
                 'date_reported' => now(),
-                'user_id' => Auth::id() ?? null
+                'user_id' => Auth::id() ?? 1
             ]);
 
             return redirect()->route('home')->with('success', 'Lost item reported successfully! We hope it gets found.');

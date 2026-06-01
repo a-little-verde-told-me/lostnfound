@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('claim', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
-            $table->foreignId('found_report_id')->constrained('found_report')->onDelete('cascade');
+            $table->foreignId('item_id')->constrained('item')->onDelete('cascade');
             $table->text('proof_description');
-            $table->string('status')->default('pending'); // e.g., pending, approved, rejected
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->string('contact_email');
             $table->string('contact_number');
             $table->string('image')->nullable();

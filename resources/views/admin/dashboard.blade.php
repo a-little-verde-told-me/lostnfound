@@ -11,172 +11,404 @@
             box-sizing: border-box;
         }
         body {
-            background-color: #f5f5f5;
+            background-color: #f0f4f8;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
-        .navbar {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 16px 32px;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
+            height: 100vh;
         }
-        .navbar-logo {
+        .sidebar {
+            width: 210px;
+            background-color: #2563eb;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            padding: 24px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0 20px;
+            margin-bottom: 32px;
+        }
+        .sidebar-avatar {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 24px;
-            font-weight: 900;
-            color: #1f2937;
+            font-weight: bold;
         }
-        .navbar-logo-highlight {
-            color: #2563eb;
-        }
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 24px;
-        }
-        .user-info {
+        .sidebar-title {
             font-size: 14px;
-            color: #6b7280;
+            font-weight: 600;
         }
-        .user-name {
-            color: #1f2937;
-            font-weight: 500;
+        .sidebar-section {
+            padding: 16px 0;
+        }
+        .sidebar-section-title {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            padding: 0 20px;
+            margin-bottom: 12px;
+            color: rgba(255, 255, 255, 0.7);
+        }
+        .sidebar-link {
+            padding: 12px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.2s;
+            cursor: pointer;
+            display: block;
+        }
+        .sidebar-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .sidebar-link.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-left: 4px solid white;
+            padding-left: 16px;
+        }
+        .sidebar-spacer {
+            flex: 1;
+        }
+        .sidebar-logout {
+            padding: 0 20px;
         }
         .logout-button {
-            padding: 8px 16px;
-            background-color: #ef4444;
+            width: 100%;
+            padding: 12px 16px;
+            background-color: rgba(0, 0, 0, 0.2);
             color: white;
             border: none;
             border-radius: 6px;
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             transition: background-color 0.2s;
         }
         .logout-button:hover {
-            background-color: #dc2626;
+            background-color: rgba(0, 0, 0, 0.3);
         }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 32px 16px;
-        }
-        .welcome-message {
-            background: white;
-            border-radius: 8px;
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
             padding: 32px;
-            margin-bottom: 24px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
-        .welcome-message h1 {
-            font-size: 28px;
+        .dashboard-title {
+            font-size: 32px;
+            font-weight: bold;
             color: #1f2937;
-            margin-bottom: 12px;
+            margin-bottom: 32px;
         }
-        .welcome-message p {
-            color: #6b7280;
-            font-size: 16px;
-        }
-        .admin-badge {
-            display: inline-block;
-            background-color: #fef3c7;
-            color: #92400e;
-            padding: 4px 12px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 12px;
-        }
-        .dashboard-grid {
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 32px;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        .stat-label {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
             gap: 24px;
             margin-bottom: 24px;
         }
-        .dashboard-card {
+        .content-card {
             background: white;
-            border-radius: 8px;
+            border-radius: 12px;
             padding: 24px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
         .card-title {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 600;
             color: #1f2937;
-            margin-bottom: 16px;
         }
-        .card-content {
-            color: #6b7280;
+        .view-all-link {
+            color: #2563eb;
+            text-decoration: none;
             font-size: 14px;
-            line-height: 1.6;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .view-all-link:hover {
+            color: #1d4ed8;
+        }
+        .claim-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .claim-item:last-child {
+            border-bottom: none;
+        }
+        .claim-info {
+            flex: 1;
+        }
+        .claim-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+        .claim-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .claim-status {
+            font-size: 12px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 4px;
+        }
+        .status-active {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+        .status-approved {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+        .status-rejected {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+        .activity-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+        }
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        .activity-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: #e5e7eb;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .activity-content {
+            flex: 1;
+        }
+        .activity-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 2px;
+        }
+        .activity-meta {
+            font-size: 12px;
+            color: #6b7280;
+        }
+        .activity-time {
+            font-size: 12px;
+            color: #9ca3af;
+        }
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+        .primary-button {
+            padding: 12px 24px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .primary-button:hover {
+            background-color: #1d4ed8;
+        }
+        .secondary-button {
+            padding: 12px 24px;
+            background-color: white;
+            color: #1f2937;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .secondary-button:hover {
+            background-color: #f9fafb;
         }
     </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <div class="navbar">
-        <div class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></div>
-        <div class="navbar-right">
-            <div class="user-info">
-                Welcome, <span class="user-name">{{ Auth::user()->name }}</span> <span class="admin-badge">ADMIN</span>
-            </div>
-            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-avatar">A</div>
+            <div class="sidebar-title">Admin Panel</div>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">OVERVIEW</div>
+            <a href="#" class="sidebar-link active">Admin Dashboard</a>
+        </div>
+
+        <div class="sidebar-section">
+            <div class="sidebar-section-title">MANAGEMENT</div>
+            <a href="#" class="sidebar-link">Manage Claims</a>
+            <a href="#" class="sidebar-link">Manage Submissions</a>
+            <a href="{{ route('admin.items') }}" class="sidebar-link">Manage All Items</a>
+            <a href="{{ route('admin.categories') }}" class="sidebar-link">Manage Category</a>
+            <a href="{{ route('admin.users') }}" class="sidebar-link">Manage Users</a>
+            <a href="#" class="sidebar-link">Reports</a>
+        </div>
+
+        <div class="sidebar-spacer"></div>
+
+        <div class="sidebar-logout">
+            <form action="{{ route('logout') }}" method="POST" style="display: block;">
                 @csrf
                 <button type="submit" class="logout-button">Logout</button>
             </form>
         </div>
     </div>
 
-    <!-- Main Container -->
-    <div class="container">
-        <div class="welcome-message">
-            <h1>Welcome to Findit Admin Dashboard!</h1>
-            <p>You are successfully logged in as administrator. This is your admin dashboard where you can manage the Lost and Found system.</p>
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1 class="dashboard-title">Admin dashboard</h1>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">1</div>
+                <div class="stat-label">Lost Report</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">3</div>
+                <div class="stat-label">Found Report</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">2</div>
+                <div class="stat-label">Active</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">10</div>
+                <div class="stat-label">Resolved</div>
+            </div>
         </div>
 
-        <div class="dashboard-grid">
-            <div class="dashboard-card">
-                <div class="card-title">📊 System Overview</div>
-                <div class="card-content">
-                    Manage all lost and found items, user reports, and claims in one place.
+        <!-- Content Grid -->
+        <div class="content-grid">
+            <!-- Recent Claims -->
+            <div class="content-card">
+                <div class="card-header">
+                    <div class="card-title">Recent claims to review</div>
+                    <a href="#" class="view-all-link">View all</a>
+                </div>
+
+                <div class="claim-item">
+                    <div class="claim-info">
+                        <div class="claim-name">Wireless earphone</div>
+                        <div class="claim-meta">by Yasmien De Guzman - May 29</div>
+                    </div>
+                    <div class="claim-status status-active">Active</div>
+                </div>
+
+                <div class="claim-item">
+                    <div class="claim-info">
+                        <div class="claim-name">School ID card</div>
+                        <div class="claim-meta">by Jasmine Santos - May 27</div>
+                    </div>
+                    <div class="claim-status status-active">Active</div>
+                </div>
+
+                <div class="claim-item">
+                    <div class="claim-info">
+                        <div class="claim-name">Android phone</div>
+                        <div class="claim-meta">by Ian Derilo - May 24</div>
+                    </div>
+                    <div class="claim-status status-approved">Approved</div>
+                </div>
+
+                <div class="claim-item">
+                    <div class="claim-info">
+                        <div class="claim-name">Blue backpack</div>
+                        <div class="claim-meta">by Ana Reyes - May 23</div>
+                    </div>
+                    <div class="claim-status status-rejected">Rejected</div>
                 </div>
             </div>
 
-            <div class="dashboard-card">
-                <div class="card-title">👥 User Management</div>
-                <div class="card-content">
-                    View and manage all user accounts, roles, and permissions in the system.
-                </div>
-            </div>
+            <!-- Recent Activity -->
+            <div class="content-card">
+                <div class="card-title" style="margin-bottom: 20px;">Recent activity</div>
 
-            <div class="dashboard-card">
-                <div class="card-title">🔍 Item Management</div>
-                <div class="card-content">
-                    Review lost and found items, verify reports, and manage item categories.
+                <div class="activity-item">
+                    <div class="activity-avatar"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">Found: Wireless earphones</div>
+                        <div class="activity-meta">Reported by Maria R. — Library</div>
+                    </div>
+                    <div class="activity-time">2h ago</div>
                 </div>
-            </div>
 
-            <div class="dashboard-card">
-                <div class="card-title">📋 Claims Management</div>
-                <div class="card-content">
-                    Review and approve/reject claims made by users on found items.
+                <div class="activity-item">
+                    <div class="activity-avatar"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">Lost: Black backpack</div>
+                        <div class="activity-meta">by Jasmine Santos - May 27</div>
+                    </div>
+                    <div class="activity-time">4h ago</div>
                 </div>
-            </div>
 
-            <div class="dashboard-card">
-                <div class="card-title">📈 Analytics</div>
-                <div class="card-content">
-                    View statistics and insights about lost/found items and system usage.
+                <div class="activity-item">
+                    <div class="activity-avatar"></div>
+                    <div class="activity-content">
+                        <div class="activity-title">Android phone</div>
+                        <div class="activity-meta">Reported by Juan D. — Bldg A</div>
+                    </div>
+                    <div class="activity-time">2h ago</div>
                 </div>
             </div>
+        </div>
 
-            <div class="dashboard-card">
-                <div class="card-title">⚙️ Settings</div>
-                <div class="card-content">
-                    Configure system settings, categories, and other administrative options.
-                </div>
-            </div>
+        <!-- Action Buttons -->
+        <div class="button-group">
+            <button class="primary-button">Review Active Claims (5)</button>
+            <button class="secondary-button">Generate Report</button>
         </div>
     </div>
 </body>

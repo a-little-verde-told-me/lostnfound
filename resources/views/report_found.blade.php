@@ -585,7 +585,7 @@
 
                 <!-- Buttons -->
                 <div class="button-group">
-                    <button type="submit" class="btn btn-primary">Submit found item</button>
+                    <button type="submit" class="btn btn-primary">Report found item</button>
                     <a href="{{ route('home') }}" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>

@@ -570,7 +570,7 @@
 
                 <!-- Buttons -->
                 <div class="button-group">
-                    <button type="submit" class="btn btn-primary">Submit lost item</button>
+                    <button type="submit" class="btn btn-primary">Report lost item</button>
                     <a href="{{ route('home') }}" class="btn btn-secondary">Cancel</a>
                 </div>
             </form>

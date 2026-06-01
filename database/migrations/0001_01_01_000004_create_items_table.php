@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('item', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained('category')->onDelete('cascade');
+            $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
             $table->string('name');
             $table->text('description')->nullable();
             $table->string('image')->nullable();
             $table->string('type');
-            $table->string('status')->default('pending'); // e.g., pending, claimed, returned
+            $table->enum('status', ['active', 'claimed', 'returned'])->default('active');
             $table->string('location');
             $table->timestamp('date_reported');
             $table->timestamps();

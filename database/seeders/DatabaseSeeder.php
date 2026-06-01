@@ -7,6 +7,7 @@ use App\Models\Item;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -33,13 +34,30 @@ class DatabaseSeeder extends Seeder
             Category::firstOrCreate(['name' => $category]);
         }
 
-        // Create test user
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Create admin user
+        User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin User',
+                'phone_number' => '+1-800-ADMIN-01',
+                'password' => Hash::make('admin123'),
+                'role' => 'admin',
+            ]
+        );
 
-        // Create 100 items using the factory
-        Item::factory(100)->create();
+        User::firstOrCreate(
+            ['email' => 'user@example.com'],
+            [
+                'name' => 'User',
+                'phone_number' => '+1-800-USER-01',
+                'password' => Hash::make('user123'),
+                'role' => 'user',
+            ]
+        );
+        // // Create 20 regular users
+        // User::factory(20)->create();
+
+        // // Create 100 items using the factory
+        // Item::factory(100)->create();
     }
 }

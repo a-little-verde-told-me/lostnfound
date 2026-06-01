@@ -12,6 +12,7 @@ class Item extends Model
     protected $table = 'item';
 
     protected $fillable = [
+        'user_id',
         'category_id',
         'name',
         'description',
@@ -25,6 +26,14 @@ class Item extends Model
     protected $casts = [
         'date_reported' => 'datetime',
     ];
+
+    /**
+     * Get the user that posted this item.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     /**
      * Get the category that owns the item.
