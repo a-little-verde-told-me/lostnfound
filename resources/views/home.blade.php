@@ -439,9 +439,9 @@
             <ul class="navbar-nav">
                 <li><a href="{{ route('home') }}">Home</a></li>
                 <li><a href="{{ route('home') }}#browse">Browse</a></li>
-                <li><a href="#">Report Found</a></li>
-                <li><a href="#">Report Lost</a></li>
-                <li><a href="#">My Claims</a></li>
+                <li><a href="{{ route('report.found') }}">Report Found</a></li>
+                <li><a href="{{ route('report.lost') }}">Report Lost</a></li>
+                <li><a href="{{ route('claims.index') }}">My Claims</a></li>
             </ul>
             <div class="navbar-right">
                 <div class="user-menu">
@@ -474,8 +474,8 @@
                 <p>Find your lost items or report what you've found.</p>
                 <div class="hero-buttons">
                     @if (Auth::check())
-                        <button class="btn btn-primary">Report Lost Item</button>
-                        <button class="btn btn-dark">Report Found Item</button>
+                        <a href="{{ route('report.lost') }}" class="btn btn-primary">Report Lost Item</a>
+                        <a href="{{ route('report.found') }}" class="btn btn-dark">Report Found Item</a>
                     @else
                         <a href="{{ route('login') }}" class="btn btn-primary">Report Lost Item</a>
                         <a href="{{ route('login') }}" class="btn btn-dark">Report Found Item</a>
@@ -503,7 +503,7 @@
                             <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
                                 <span style="color: #9ca3af; font-size: 14px;">{{ $item->name }}</span>
                             </div>
-                            <span class="item-badge {{ $item->type === 'found' ? 'badge-found' : 'badge-lost' }}">{{ ucfirst($item->type) }}</span>
+                            <span class="item-badge {{ strtolower($item->type) === 'found' ? 'badge-found' : 'badge-lost' }}">{{ ucfirst($item->type) }}</span>
                         </div>
                         <div class="item-info">
                             <div class="item-name">{{ $item->name }}</div>

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\ClaimsController;
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +30,19 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Admin Authentication Routes
 Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login.post');
+
+// Report Routes
+Route::get('/report/found', [ReportController::class, 'showReportFound'])->name('report.found');
+Route::post('/report/found', [ReportController::class, 'storeFoundItem'])->name('report.found.store');
+Route::get('/report/lost', [ReportController::class, 'showReportLost'])->name('report.lost');
+Route::post('/report/lost', [ReportController::class, 'storeLostItem'])->name('report.lost.store');
+
+// Claims Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/my-claims', [ClaimsController::class, 'myClaiams'])->name('claims.index');
+    Route::get('/claim/create/{itemId}', [ClaimsController::class, 'create'])->name('claim.create');
+    Route::post('/claim/store', [ClaimsController::class, 'store'])->name('claim.store');
+});
 
 // Protected Admin Routes
 Route::middleware(['auth', IsAdmin::class])->group(function () {
