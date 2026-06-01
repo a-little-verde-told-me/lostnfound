@@ -44,6 +44,26 @@ Route::middleware('auth')->group(function () {
     Route::post('/claim/store', [ClaimsController::class, 'store'])->name('claim.store');
 });
 
+// Search API Route
+Route::get('/api/search', function (Illuminate\Http\Request $request) {
+    $query = $request->input('q', '');
+    
+    if (strlen($query) < 1) {
+        return response()->json([]);
+    }
+    
+    $items = \App\Models\Item::where('name', 'LIKE', "%{$query}%")
+        ->orWhere('location', 'LIKE', "%{$query}%")
+        ->orWhereHas('category', function ($q) use ($query) {
+            $q->where('name', 'LIKE', "%{$query}%");
+        })
+        ->latest('date_reported')
+        ->limit(50)
+        ->get();
+    
+    return response()->json($items);
+})->name('search');
+
 // Protected Admin Routes
 Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/dashboard', function () {

@@ -491,12 +491,12 @@
             <h2 class="section-title">Browse Items</h2>
             
             <div class="search-filter-row">
-                <input type="text" class="search-box" placeholder="Search for lost item by names, locations, or category...">
+                <input type="text" id="searchInput" class="search-box" placeholder="Search for lost item by names, locations, or category...">
                 <button class="filter-button">Filter</button>
                 <button class="sort-button">Sort: Latest</button>
             </div>
 
-            <div class="items-grid">
+            <div class="items-grid" id="itemsContainer">
                 @forelse($items as $item)
                     <div class="item-card">
                         <div class="item-image">
@@ -541,5 +541,66 @@
             @endif
         </div>
     </div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const itemsContainer = document.getElementById('itemsContainer');
+        const allItems = @json($items->items());
+        let searchTimeout;
+
+        function renderItems(items) {
+            if (items.length === 0) {
+                itemsContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: #6b7280;"><p style="font-size: 16px;">No items found</p></div>';
+                return;
+            }
+
+            itemsContainer.innerHTML = items.map(item => `
+                <div class="item-card">
+                    <div class="item-image">
+                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #9ca3af; font-size: 14px;">${item.name}</span>
+                        </div>
+                        <span class="item-badge ${item.type.toLowerCase() === 'found' ? 'badge-found' : 'badge-lost'}">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</span>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-name">${item.name}</div>
+                        <div class="item-location">${item.location}</div>
+                        <div class="item-date">${new Date(item.date_reported).toLocaleDateString('en-US')}</div>
+                        <div class="item-actions">
+                            ${item.type === 'found' ? '<button class="btn-small btn-claim">Claim Item</button>' : '<button class="btn-small btn-claim">Found Item</button>'}
+                            <button class="btn-small btn-details">Details</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function handleSearch(query) {
+            if (query.trim().length === 0) {
+                renderItems(allItems);
+                return;
+            }
+
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                fetch(`/api/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        renderItems(data);
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                        renderItems(allItems);
+                    });
+            }, 300);
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            handleSearch(e.target.value);
+        });
+
+        // Initial render
+        renderItems(allItems);
+    </script>
 </body>
 </html>
