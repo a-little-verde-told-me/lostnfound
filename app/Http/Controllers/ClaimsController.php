@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Claim;
+use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +19,7 @@ class ClaimsController extends Controller
         }
 
         $claims = Claim::where('user_id', Auth::id())
-            ->with('foundReport')
+            ->with(['item', 'foundReport'])
             ->orderBy('date_claimed', 'desc')
             ->get();
 
@@ -34,7 +35,7 @@ class ClaimsController extends Controller
             return redirect()->route('login');
         }
 
-        $item = \App\Models\Item::findOrFail($itemId);
+        $item = Item::findOrFail($itemId);
 
         return view('claim_create', ['item' => $item]);
     }
@@ -49,26 +50,24 @@ class ClaimsController extends Controller
         }
 
         $validated = $request->validate([
-            'found_report_id' => 'required|exists:item,id',
+            'item_id' => 'required|exists:item,id',
             'proof_description' => 'required|string|max:1000',
-            'contact_email' => 'required|email',
-            'contact_number' => 'required|string|max:20'
+            'phone_number' => 'required|string|max:20',
+            'additional_details' => 'nullable|string|max:500'
         ], [
-            'found_report_id.required' => 'Found report is required',
-            'found_report_id.exists' => 'Selected item does not exist',
+            'item_id.required' => 'Item is required',
+            'item_id.exists' => 'Selected item does not exist',
             'proof_description.required' => 'Proof description is required',
-            'contact_email.required' => 'Contact email is required',
-            'contact_email.email' => 'Please enter a valid email',
-            'contact_number.required' => 'Contact number is required'
+            'phone_number.required' => 'Phone number is required'
         ]);
 
         try {
             $claim = Claim::create([
                 'user_id' => Auth::id(),
-                'found_report_id' => $validated['found_report_id'],
+                'item_id' => $validated['item_id'],
                 'proof_description' => $validated['proof_description'],
-                'contact_email' => $validated['contact_email'],
-                'contact_number' => $validated['contact_number'],
+                'phone_number' => $validated['phone_number'],
+                'additional_details' => $validated['additional_details'] ?? null,
                 'status' => 'pending',
                 'date_claimed' => now()
             ]);

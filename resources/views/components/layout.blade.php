@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? 'Findit' }} - Findit</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
     <style>
         body {
             background-color: #f5f5f5;
@@ -95,9 +96,11 @@
                 
                 <!-- User avatar and logout -->
                 <div style="display: flex; gap: 12px; align-items: center; margin-left: 20px; border-left: 1px solid #e5e7eb; padding-left: 20px;">
-                    <div class="user-avatar">
-                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                    </div>
+                    <a href="{{ route('profile') }}" style="text-decoration: none;">
+                        <div class="user-avatar" style="cursor: pointer; transition: background 0.2s;">
+                            {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                        </div>
+                    </a>
                     <form method="POST" action="{{ route('logout') }}" style="display: inline;">
                         @csrf
                         <button type="submit" class="navbar-link navbar-logout" style="background: none; border: none; cursor: pointer; padding: 0;">Logout</button>

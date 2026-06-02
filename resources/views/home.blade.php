@@ -295,11 +295,15 @@
             cursor: pointer;
             transition: all 0.2s;
             min-width: 80px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
 
         .btn-claim {
             background-color: #2563eb;
             color: white;
+            text-decoration: none;
         }
 
         .btn-claim:hover {
@@ -310,6 +314,7 @@
             background-color: white;
             color: #2563eb;
             border: 1px solid #2563eb;
+            text-decoration: none;
         }
 
         .btn-details:hover {
@@ -387,6 +392,13 @@
             justify-content: center;
             font-weight: 600;
             color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .user-avatar:hover {
+            background-color: #2563eb;
+            color: white;
         }
 
         /* Filter Panel Styles */
@@ -673,7 +685,7 @@
             </ul>
             <div class="navbar-right">
                 <div class="user-menu">
-                    <div class="user-avatar">{{ substr(Auth::user()->name, 0, 1) }}</div>
+                    <a href="{{ route('profile') }}" class="user-avatar" title="View Profile">{{ substr(Auth::user()->name, 0, 1) }}</a>
                 </div>
                 <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                     @csrf
@@ -840,12 +852,12 @@
                             <div class="item-location">{{ $item->location }}</div>
                             <div class="item-date">{{ $item->date_reported->format('m/d/Y') }}</div>
                             <div class="item-actions">
-                                @if($item->type === 'found')
-                                    <button class="btn-small btn-claim">Claim Item</button>
+                                @if(strtolower($item->type) === 'found')
+                                    <a href="{{ Auth::check() ? route('claim.create', $item->id) : route('login') }}" class="btn-small btn-claim">Claim Item</a>
                                 @else
-                                    <button class="btn-small btn-claim">Found Item</button>
+                                    <a href="{{ Auth::check() ? route('claim.create', $item->id) : route('login') }}" class="btn-small btn-claim">Found Item</a>
                                 @endif
-                                <button class="btn-small btn-details">Details</button>
+                                <button class="btn-small btn-details" onclick="viewItemDetails({{ $item->id }})">Details</button>
                             </div>
                         </div>
                     </div>
@@ -889,6 +901,14 @@
         const allItems = @json($items->items());
         let currentSort = 'latest';
         let searchTimeout;
+
+        // Function to view item details
+        function viewItemDetails(itemId) {
+            // For now, you can implement this to show item details
+            // This could be a modal, a new page, or redirect to a details page
+            console.log('Viewing item details for:', itemId);
+            // Future implementation: Open a modal or navigate to details page
+        }
 
         // Filter Panel Toggle
         filterToggle.addEventListener('click', (e) => {
@@ -1004,8 +1024,11 @@
                         <div class="item-location">${item.location}</div>
                         <div class="item-date">${new Date(item.date_reported).toLocaleDateString('en-US')}</div>
                         <div class="item-actions">
-                            ${item.type === 'found' ? '<button class="btn-small btn-claim">Claim Item</button>' : '<button class="btn-small btn-claim">Found Item</button>'}
-                            <button class="btn-small btn-details">Details</button>
+                            ${item.type.toLowerCase() === 'found' 
+                                ? `<a href="/claim/create/${item.id}" class="btn-small btn-claim">Claim Item</a>` 
+                                : `<a href="/claim/create/${item.id}" class="btn-small btn-claim">Found Item</a>`
+                            }
+                            <button class="btn-small btn-details" onclick="viewItemDetails(${item.id})">Details</button>
                         </div>
                     </div>
                 </div>

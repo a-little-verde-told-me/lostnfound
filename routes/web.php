@@ -6,9 +6,12 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ClaimsController;
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
-    $items = \App\Models\Item::latest('date_reported')->paginate(12);
+    $items = \App\Models\Item::where('status', 'active')
+        ->latest('date_reported')
+        ->paginate(12);
     return view('home', ['items' => $items]);
 })->name('home');
 
@@ -45,6 +48,37 @@ Route::middleware('auth')->group(function () {
     Route::post('/claim/store', [ClaimsController::class, 'store'])->name('claim.store');
 });
 
+// My Reports Route
+Route::middleware('auth')->group(function () {
+    Route::get('/my-reports', function () {
+        $reports = Auth::user()->items()->latest('date_reported')->get();
+        return view('my_reports', ['reports' => $reports]);
+    })->name('reports.index');
+});
+
+// Profile Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', function () {
+        return view('user_profile', ['user' => Auth::user()]);
+    })->name('profile');
+    
+    Route::put('/profile/update', function (Illuminate\Http\Request $request) {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'phone_number' => 'nullable|string|max:20',
+        ]);
+
+        $user = Auth::user();
+        $user->update($validated);
+        
+        return redirect()->route('profile')->with('success', 'Profile updated successfully!');
+    })->name('profile.update');
+    
+    Route::get('/profile/edit', function () {
+        return view('edit_profile');
+    })->name('profile.edit');
+});
+
 // Search API Route
 Route::get('/api/search', function (Illuminate\Http\Request $request) {
     $query = $request->input('q', '');
@@ -53,10 +87,13 @@ Route::get('/api/search', function (Illuminate\Http\Request $request) {
         return response()->json([]);
     }
     
-    $items = \App\Models\Item::where('name', 'LIKE', "%{$query}%")
-        ->orWhere('location', 'LIKE', "%{$query}%")
-        ->orWhereHas('category', function ($q) use ($query) {
-            $q->where('name', 'LIKE', "%{$query}%");
+    $items = \App\Models\Item::where('status', 'active')
+        ->where(function($q) use ($query) {
+            $q->where('name', 'LIKE', "%{$query}%")
+              ->orWhere('location', 'LIKE', "%{$query}%")
+              ->orWhereHas('category', function ($subQ) use ($query) {
+                  $subQ->where('name', 'LIKE', "%{$query}%");
+              });
         })
         ->latest('date_reported')
         ->limit(50)
@@ -67,9 +104,9 @@ Route::get('/api/search', function (Illuminate\Http\Request $request) {
 
 // Filter API Route
 Route::get('/api/filter', function (Illuminate\Http\Request $request) {
-    $query = \App\Models\Item::query();
+    $query = \App\Models\Item::where('status', 'active');
     
-    // Filter by status
+    // Filter by status (type: found or lost)
     $status = $request->input('status', '');
     if ($status && $status !== 'all') {
         $statuses = explode(',', $status);

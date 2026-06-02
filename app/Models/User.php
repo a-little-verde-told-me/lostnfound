@@ -35,4 +35,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get all items (reports) submitted by this user.
+     */
+    public function items()
+    {
+        return $this->hasMany(Item::class);
+    }
 }
