@@ -20,6 +20,7 @@ class Item extends Model
         'type',
         'status',
         'location',
+        'surrender_location',
         'date_reported'
     ];
 
@@ -41,5 +42,13 @@ class Item extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the claims for this item.
+     */
+    public function claims()
+    {
+        return $this->hasMany(Claim::class);
     }
 }

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim an Item - Findit</title>
+    <title>Return an Item - Findit</title>
     <style>
         * {
             margin: 0;
@@ -241,14 +241,6 @@
             display: none;
         }
 
-        .upload-display {
-            pointer-events: none;
-        }
-
-        .upload-display.hidden {
-            display: none;
-        }
-
         /* Form Actions */
         .form-actions {
             display: flex;
@@ -346,7 +338,7 @@
 
     <!-- Main Content -->
     <div class="container">
-        <h1 class="page-title">Claim Item</h1>
+        <h1 class="page-title">Return an Item</h1>
 
         <!-- Item Details Card -->
         <div class="card">
@@ -363,74 +355,38 @@
             </div>
 
             <div class="item-detail-row">
-                <div class="item-detail-label">Found at:</div>
+                <div class="item-detail-label">Lost at:</div>
                 <div class="item-detail-value">{{ $item->location }}</div>
             </div>
 
             <div class="item-detail-row">
-                <div class="item-detail-label">Surrender location:</div>
-                <div class="item-detail-value">{{ $item->surrender_location ?? 'Guard post, main entrance' }}</div>
-            </div>
-
-            <div class="item-detail-row">
-                <div class="item-detail-label">Date found:</div>
+                <div class="item-detail-label">Date lost:</div>
                 <div class="item-detail-value">{{ $item->date_reported->format('m/d/Y') }}</div>
             </div>
         </div>
 
-        @if (session('error') || $errors->any())
-    <div style="background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 20px;">
-        <strong style="display: block; font-size: 15px; margin-bottom: 6px;">Submission Failed:</strong>
-        <ul style="margin: 0; padding-left: 20px; font-size: 14px;">
-            @if(session('error'))
-                <li>{{ session('error') }}</li>
-            @endif
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
-
-        <!-- Claim Item Form Card -->
+        <!-- Return Item Form Card -->
         <div class="card">
-            <div class="card-title">Claim Item Form</div>
+            <div class="card-title">Return Item Form</div>
             
-            <div class="form-hint">Important: Please provide detailed proof of ownership. Your claim will be reviewed by our administrators. False claims may result in account suspension.</div>
+            <div class="form-hint">Important: Please provide proof of found item. This will be reviewed by our administrators. False report may result in account suspension.</div>
 
-            <form action="{{ route('claim.store') }}" method="POST" enctype="multipart/form-data" id="claimForm">
+            <form action="{{ route('return.store') }}" method="POST" enctype="multipart/form-data" id="returnForm">
                 @csrf
                 <input type="hidden" name="item_id" value="{{ $item->id }}">
-
-                <div class="form-group">
-                    <label for="proof_description" class="form-label">
-                        Proof of ownership description <span class="required">*</span>
-                    </label>
-                    <textarea 
-                        id="proof_description" 
-                        name="proof_description" 
-                        class="form-input @error('proof_description') error @enderror" 
-                        placeholder="Describe what makes this item yours (e.g., unique identifiers, contents, serial numbers, purchase details, etc.)"
-                        rows="4"
-                        style="resize: vertical; font-family: inherit;"
-                        required
-                    >{{ old('proof_description') }}</textarea>
-                    @error('proof_description')
-                        <span style="color: #ef4444; font-size: 12px;">{{ $message }}</span>
-                    @enderror
-                </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="contact_email" class="form-label">
-                            Email <span class="required">*</span>
+                            Contact Email <span class="required">*</span>
                         </label>
                         <input 
                             type="email" 
                             id="contact_email" 
                             name="contact_email" 
                             class="form-input @error('contact_email') error @enderror" 
-                            value="{{ Auth::user()->email }}"
+                            placeholder="your.email@example.com"
+                            value="{{ old('contact_email', Auth::user()->email ?? '') }}"
                             required
                         >
                         @error('contact_email')
@@ -439,18 +395,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="phone_number" class="form-label">
-                            Phone Number <span class="required">*</span>
+                        <label for="contact_number" class="form-label">
+                            Contact Phone <span class="required">*</span>
                         </label>
                         <input 
-                            type="text" 
-                            id="phone_number" 
-                            name="phone_number" 
-                            class="form-input @error('phone_number') error @enderror" 
-                            value="{{ Auth::user()->phone_number ?? '' }}"
+                            type="tel" 
+                            id="contact_number" 
+                            name="contact_number" 
+                            class="form-input @error('contact_number') error @enderror" 
+                            placeholder="0900-000-0000"
+                            value="{{ old('contact_number', Auth::user()->phone_number ?? '') }}"
                             required
                         >
-                        @error('phone_number')
+                        @error('contact_number')
                             <span style="color: #ef4444; font-size: 12px;">{{ $message }}</span>
                         @enderror
                     </div>
@@ -458,14 +415,12 @@
 
                 <div class="form-group">
                     <label for="proof_upload" class="form-label">
-                        Upload proof of ownership <span class="required">*</span>
+                        Upload proof of found item <span class="required">*</span>
                     </label>
-                    <div class="form-hint">Upload photos, receipts, or any documents that prove you own this item</div>
+                    <div class="form-hint">Upload photos, receipts, or any documents that prove you found this item</div>
                     <div class="upload-area" id="uploadArea">
-                        <div id="uploadDisplay" class="upload-display">
-                            <div class="upload-icon">📷</div>
-                            <div class="upload-text">Upload a photo of the owned item</div>
-                        </div>
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">Upload a photo of the found item</div>
                         <input 
                             type="file" 
                             id="proof_upload" 
@@ -480,20 +435,20 @@
                     @enderror
                 </div>
 
-                <!-- <div class="form-group">
+                <div class="form-group">
                     <label for="additional_details" class="form-label">Additional Details</label>
                     <textarea 
                         id="additional_details" 
                         name="additional_details" 
                         class="form-input @error('additional_details') error @enderror" 
-                        placeholder="Any additional information about the item or how you lost it..."
+                        placeholder="Any additional details about the item or where you found it..."
                         rows="4"
                         style="resize: vertical; font-family: inherit;"
                     >{{ old('additional_details') }}</textarea>
                     @error('additional_details')
                         <span style="color: #ef4444; font-size: 12px;">{{ $message }}</span>
                     @enderror
-                </div> -->
+                </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-submit">Submit</button>
@@ -506,7 +461,6 @@
     <script>
         // File upload drag and drop
         const uploadArea = document.getElementById('uploadArea');
-        const uploadDisplay = document.getElementById('uploadDisplay');
         const uploadInput = document.getElementById('proof_upload');
 
         uploadArea.addEventListener('click', () => {
@@ -526,6 +480,8 @@
             e.preventDefault();
             uploadArea.classList.remove('active');
             uploadInput.files = e.dataTransfer.files;
+            
+            // Update the display with file name
             updateFileDisplay();
         });
 
@@ -535,7 +491,14 @@
 
         function updateFileDisplay() {
             if (uploadInput.files.length > 0) {
-                uploadDisplay.innerHTML = `
+                // Find or create the display element
+                let fileDisplay = uploadArea.querySelector('.file-display');
+                if (!fileDisplay) {
+                    fileDisplay = document.createElement('div');
+                    fileDisplay.className = 'file-display';
+                    uploadArea.appendChild(fileDisplay);
+                }
+                fileDisplay.innerHTML = `
                     <div class="upload-icon">✓</div>
                     <div class="upload-text">${uploadInput.files[0].name}</div>
                 `;

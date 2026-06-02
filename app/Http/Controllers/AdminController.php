@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Item;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\Claim;
+use App\Models\ReturnItem;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -183,5 +185,133 @@ class AdminController extends Controller
         $category->delete();
 
         return redirect()->route('admin.categories')->with('success', 'Category deleted successfully');
+    }
+
+    /**
+     * Show manage claims page
+     */
+    public function manageClaims(): View
+    {
+        $claims = Claim::with(['item', 'user'])
+            ->latest('date_claimed')
+            ->get();
+
+        $allClaimsCount = $claims->count();
+        $pendingCount = $claims->where('status', 'pending')->count();
+        $approvedCount = $claims->where('status', 'approved')->count();
+        $rejectedCount = $claims->where('status', 'rejected')->count();
+
+        return view('admin.manage_claims', [
+            'claims' => $claims,
+            'allClaimsCount' => $allClaimsCount,
+            'pendingCount' => $pendingCount,
+            'approvedCount' => $approvedCount,
+            'rejectedCount' => $rejectedCount
+        ]);
+    }
+
+    /**
+     * Get claim details via API
+     */
+    public function getClaimDetails(Claim $id)
+    {
+        $claim = Claim::with(['item', 'user'])->find($id->id);
+        
+        if (!$claim) {
+            return response()->json(['error' => 'Claim not found'], 404);
+        }
+
+        return response()->json($claim);
+    }
+
+    /**
+     * Update claim status via API
+     */
+    public function updateClaimStatus(Request $request, Claim $id)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,approved,rejected'
+        ]);
+
+        $claim = Claim::find($id->id);
+        
+        if (!$claim) {
+            return response()->json(['error' => 'Claim not found'], 404);
+        }
+
+        $claim->update(['status' => $validated['status']]);
+
+        // Update item status based on claim status
+        if ($validated['status'] === 'approved') {
+            // Mark item as claimed when claim is approved
+            Item::where('id', $claim->item_id)->update(['status' => 'claimed']);
+        } elseif ($validated['status'] === 'rejected') {
+            // Restore item to active when claim is rejected
+            Item::where('id', $claim->item_id)->update(['status' => 'active']);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Claim status updated successfully']);
+    }
+
+    /**
+     * Show manage returns page
+     */
+    public function manageReturns(): View
+    {
+        $returns = ReturnItem::with(['item.category', 'user'])
+            ->latest('created_at')
+            ->get();
+
+        // Count returns by status
+        $allReturnsCount = $returns->count();
+        $pendingCount = $returns->where('status', 'pending')->count();
+        $approvedCount = $returns->where('status', 'approved')->count();
+        $rejectedCount = $returns->where('status', 'rejected')->count();
+
+        return view('admin.manage_returns', [
+            'returns' => $returns,
+            'allReturnsCount' => $allReturnsCount,
+            'pendingCount' => $pendingCount,
+            'approvedCount' => $approvedCount,
+            'rejectedCount' => $rejectedCount
+        ]);
+    }
+
+    /**
+     * Update return status via API
+     */
+    public function updateReturnStatus(Request $request, ReturnItem $id)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:pending,approved,rejected'
+        ]);
+
+        $return = ReturnItem::find($id->id);
+        
+        if (!$return) {
+            return response()->json(['error' => 'Return not found'], 404);
+        }
+
+        $return->update(['status' => $validated['status']]);
+
+        return response()->json(['success' => true, 'message' => 'Return status updated successfully']);
+    }
+
+    /**
+     * Get return details via API
+     */
+    public function getReturnDetails(ReturnItem $return)
+    {
+        $return = $return->load(['item.category', 'user']);
+        return response()->json($return);
+    }
+
+    /**
+     * Show reports page
+     */
+    public function reports(): View
+    {
+        // Placeholder for reports
+        return view('admin.reports', []);
     }
 }

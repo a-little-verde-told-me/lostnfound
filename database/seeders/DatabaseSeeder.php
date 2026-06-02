@@ -23,11 +23,13 @@ class DatabaseSeeder extends Seeder
             'Electronics',
             'Accessories',
             'Clothing',
-            'Bags & Wallets',
+            'Bags',
+            'Wallets',
             'Jewelry',
-            'Sports & Recreation',
-            'Books & Documents',
+            'Books',
+            'Documents',
             'Personal Items',
+            'Others'
         ];
 
         foreach ($categories as $category) {
@@ -49,15 +51,28 @@ class DatabaseSeeder extends Seeder
             ['email' => 'user@example.com'],
             [
                 'name' => 'User',
-                'phone_number' => '+1-800-USER-01',
+                'phone_number' => '0943 745 6745',
                 'password' => Hash::make('user123'),
                 'role' => 'user',
             ]
         );
-        // // Create 20 regular users
-        // User::factory(20)->create();
 
-        // // Create 100 items using the factory
-        // Item::factory(100)->create();
+        User::firstOrCreate(
+            ['email' => 'verde@example.com'],
+            [
+                'name' => 'Verde',
+                'phone_number' => '0912 345 6789',
+                'password' => Hash::make('verde123'),
+                'role' => 'user',
+            ]
+        );
+        
+        // Create test items for the existing users
+        // $users = User::all();
+        // foreach ($users as $user) {
+        //     if ($user->role !== 'admin') {
+        //         Item::factory(3)->create(['user_id' => $user->id, 'status' => 'active']);
+        //     }
+        // }
     }
 }

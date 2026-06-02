@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title ?? 'Findit' }} - Findit</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css">
@@ -92,7 +93,7 @@
                 <!-- Logged-in user navigation -->
                 <x-nav-link href="{{ route('report.found') }}">Report Found</x-nav-link>
                 <x-nav-link href="{{ route('report.lost') }}">Report Lost</x-nav-link>
-                <x-nav-link href="{{ route('claims.index') }}">My Claims</x-nav-link>
+                <x-nav-link href="{{ route('history.index') }}">My History</x-nav-link>
                 
                 <!-- User avatar and logout -->
                 <div style="display: flex; gap: 12px; align-items: center; margin-left: 20px; border-left: 1px solid #e5e7eb; padding-left: 20px;">

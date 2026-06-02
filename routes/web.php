@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     $items = \App\Models\Item::where('status', 'active')
+        ->with('user')
+        ->whereDoesntHave('claims', function($query) {
+            $query->where('status', 'approved');
+        })
         ->latest('date_reported')
         ->paginate(12);
     return view('home', ['items' => $items]);
@@ -36,23 +40,81 @@ Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('adm
 Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login.post');
 
 // Report Routes
-Route::get('/report/found', [ReportController::class, 'showReportFound'])->name('report.found');
-Route::post('/report/found', [ReportController::class, 'storeFoundItem'])->name('report.found.store');
-Route::get('/report/lost', [ReportController::class, 'showReportLost'])->name('report.lost');
-Route::post('/report/lost', [ReportController::class, 'storeLostItem'])->name('report.lost.store');
+Route::middleware('auth')->group(function () {
+    Route::get('/report/found', [ReportController::class, 'showReportFound'])->name('report.found');
+    Route::post('/report/found', [ReportController::class, 'storeFoundItem'])->name('report.found.store');
+    Route::get('/report/lost', [ReportController::class, 'showReportLost'])->name('report.lost');
+    Route::post('/report/lost', [ReportController::class, 'storeLostItem'])->name('report.lost.store');
+});
+
+// Report Edit/Update/Delete Routes
+Route::middleware('auth')->group(function () {
+    Route::put('/reports/{id}', [ReportController::class, 'update'])->name('reports.update');
+    Route::delete('/reports/{id}', [ReportController::class, 'destroy'])->name('reports.destroy');
+});
 
 // Claims Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/my-claims', [ClaimsController::class, 'myClaiams'])->name('claims.index');
+    Route::get('/my-claims', [ClaimsController::class, 'myClaims'])->name('claims.index');
+    Route::get('/my-history', [ClaimsController::class, 'myHistory'])->name('history.index');
     Route::get('/claim/create/{itemId}', [ClaimsController::class, 'create'])->name('claim.create');
     Route::post('/claim/store', [ClaimsController::class, 'store'])->name('claim.store');
+    Route::get('/claim-item/{itemId}', [ClaimsController::class, 'show'])->name('claim.show');
+    Route::get('/claim/{claimId}/edit', [ClaimsController::class, 'edit'])->name('claim.edit');
+    Route::put('/claim/{claimId}', [ClaimsController::class, 'update'])->name('claim.update');
+    Route::get('/return/{returnId}/edit', [ClaimsController::class, 'editReturn'])->name('return.edit');
+    Route::put('/return/{returnId}', [ClaimsController::class, 'updateReturn'])->name('return.update');
+});
+
+// Item Views Routes
+Route::middleware('auth')->group(function () {
+    Route::get('/return-item/{itemId}', function ($itemId) {
+        $item = \App\Models\Item::findOrFail($itemId);
+        return view('return_item', ['item' => $item]);
+    })->name('return.item');
+    
+    Route::post('/return-item/store', function (\Illuminate\Http\Request $request) {
+        $validated = $request->validate([
+            'item_id' => 'required|exists:item,id',
+            'contact_email' => 'required|email',
+            'contact_phone' => 'required|string|max:20',
+            'proof_upload' => 'required|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:5120',
+            'additional_details' => 'nullable|string|max:1000'
+        ]);
+
+        // Store the file
+        $filePath = null;
+        if ($request->hasFile('proof_upload')) {
+            $file = $request->file('proof_upload');
+            $filePath = $file->store('returns', 'public');
+        }
+
+        // Create a return record
+        \Illuminate\Support\Facades\DB::table('return')->insert([
+            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+            'item_id' => $validated['item_id'],
+            'contact_email' => $validated['contact_email'],
+            'contact_number' => $validated['contact_phone'],
+            'image' => $filePath,
+            'created_at' => now(),
+            'updated_at' => now()
+        ]);
+
+        return redirect()->route('home')->with('success', 'Return item submission completed! Our administrators will review your submission.');
+    })->name('return.store');
+    
+    Route::get('/claim-item-view/{itemId}', function ($itemId) {
+        $item = \App\Models\Item::findOrFail($itemId);
+        return view('claim_item', ['item' => $item]);
+    })->name('claim.item');
 });
 
 // My Reports Route
 Route::middleware('auth')->group(function () {
     Route::get('/my-reports', function () {
         $reports = Auth::user()->items()->latest('date_reported')->get();
-        return view('my_reports', ['reports' => $reports]);
+        $categories = \App\Models\Category::all();
+        return view('my_reports', ['reports' => $reports, 'categories' => $categories]);
     })->name('reports.index');
 });
 
@@ -65,6 +127,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/profile/update', function (Illuminate\Http\Request $request) {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:user,email,' . Auth::id(),
             'phone_number' => 'nullable|string|max:20',
         ]);
 
@@ -154,4 +217,21 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::post('/admin/categories', [AdminController::class, 'storeCategory'])->name('admin.categories.store');
     Route::put('/admin/categories/{category}', [AdminController::class, 'updateCategory'])->name('admin.categories.update');
     Route::delete('/admin/categories/{category}', [AdminController::class, 'deleteCategory'])->name('admin.categories.delete');
+    
+    // Claims Management Routes
+    Route::get('/admin/claims', [AdminController::class, 'manageClaims'])->name('admin.claims');
+    Route::get('/admin/returns', [AdminController::class, 'manageReturns'])->name('admin.returns');
+    Route::get('/admin/reports', [AdminController::class, 'reports'])->name('admin.reports');
+});
+
+// API Routes for Admin Claims
+Route::middleware(['auth', IsAdmin::class])->group(function () {
+    Route::get('/api/claims/{id}', [AdminController::class, 'getClaimDetails'])->name('api.claims.show');
+    Route::patch('/api/claims/{id}/status', [AdminController::class, 'updateClaimStatus'])->name('api.claims.updateStatus');
+});
+
+// API Routes for Admin Returns
+Route::middleware(['auth', IsAdmin::class])->group(function () {
+    Route::get('/api/returns/{return}', [AdminController::class, 'getReturnDetails'])->name('api.returns.show');
+    Route::patch('/api/returns/{id}/status', [AdminController::class, 'updateReturnStatus'])->name('api.returns.updateStatus');
 });

@@ -19,7 +19,6 @@ class Claim extends Model
         'status',
         'contact_email',
         'contact_number',
-        'phone_number',
         'additional_details',
         'image',
         'date_claimed',

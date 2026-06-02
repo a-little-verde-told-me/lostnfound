@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Findit - Find Your Lost Items</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -319,6 +320,19 @@
 
         .btn-details:hover {
             background-color: #eff6ff;
+        }
+
+        .btn-claim:disabled,
+        .btn-claim.disabled {
+            background-color: #d1d5db;
+            color: #9ca3af;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        .btn-claim:disabled:hover,
+        .btn-claim.disabled:hover {
+            background-color: #d1d5db;
         }
 
         .pagination {
@@ -667,6 +681,173 @@
                 width: 100%;
             }
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .modal-content {
+            background-color: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-in-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #1f2937;
+        }
+
+        .modal-image {
+            width: 100%;
+            height: 300px;
+            background-color: #f3f4f6;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .modal-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .modal-image.no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+        }
+
+        .modal-section {
+            margin-bottom: 24px;
+        }
+
+        .modal-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: #6b7280;
+        }
+
+        .detail-value {
+            color: #1f2937;
+            text-align: right;
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .icon-text {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon-text i {
+            color: #2563eb;
+            width: 20px;
+            text-align: center;
+        }
+
+        .reporter-info {
+            background-color: #f3f4f6;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 24px;
+        }
+
+        .reporter-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 4px;
+        }
+
+        .reporter-email {
+            font-size: 14px;
+            color: #6b7280;
+        }
     </style>
 </head>
 <body>
@@ -681,7 +862,7 @@
                 <li><a href="{{ route('home') }}#browse">Browse</a></li>
                 <li><a href="{{ route('report.found') }}">Report Found</a></li>
                 <li><a href="{{ route('report.lost') }}">Report Lost</a></li>
-                <li><a href="{{ route('claims.index') }}">My Claims</a></li>
+                <li><a href="{{ route('history.index') }}">My History</a></li>
             </ul>
             <div class="navbar-right">
                 <div class="user-menu">
@@ -842,20 +1023,41 @@
                 @forelse($items as $item)
                     <div class="item-card">
                         <div class="item-image">
-                            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
-                                <span style="color: #9ca3af; font-size: 14px;">{{ $item->name }}</span>
-                            </div>
-                                <span class="item-badge {{ strtolower($item->type) === 'found' ? 'badge-found' : 'badge-lost' }}">{{ ucfirst($item->type) }}</span>
+                            @if($item->image)
+                                <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" />
+                            @else
+                                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
+                                    <span style="color: #9ca3af; font-size: 14px;">No image</span>
+                                </div>
+                            @endif
+                            <span class="item-badge {{ strtolower($item->type) === 'found' ? 'badge-found' : 'badge-lost' }}">{{ ucfirst($item->type) }}</span>
                         </div>
                         <div class="item-info">
                             <div class="item-name">{{ $item->name }}</div>
-                            <div class="item-location">{{ $item->location }}</div>
-                            <div class="item-date">{{ $item->date_reported->format('m/d/Y') }}</div>
+                            <div class="item-location">
+                                <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
+                                {{ $item->location }}
+                            </div>
+                            <div class="item-date">
+                                <i class="fas fa-calendar" style="color: #2563eb;"></i>
+                                {{ $item->date_reported->format('m/d/Y') }}
+                            </div>
                             <div class="item-actions">
+                                @php
+                                    $isOwnReport = Auth::check() && Auth::id() === $item->user_id;
+                                @endphp
                                 @if(strtolower($item->type) === 'found')
-                                    <a href="{{ Auth::check() ? route('claim.create', $item->id) : route('login') }}" class="btn-small btn-claim">Claim Item</a>
+                                    @if($isOwnReport)
+                                        <button class="btn-small btn-claim disabled" disabled title="You cannot claim your own report">Claim Item</button>
+                                    @else
+                                        <a href="{{ Auth::check() ? route('claim.item', $item->id) : route('login') }}" class="btn-small btn-claim">Claim Item</a>
+                                    @endif
                                 @else
-                                    <a href="{{ Auth::check() ? route('claim.create', $item->id) : route('login') }}" class="btn-small btn-claim">Found Item</a>
+                                    @if($isOwnReport)
+                                        <button class="btn-small btn-claim disabled" disabled title="You cannot return your own report">Return Item</button>
+                                    @else
+                                        <a href="{{ Auth::check() ? route('return.item', $item->id) : route('login') }}" class="btn-small btn-claim">Return Item</a>
+                                    @endif
                                 @endif
                                 <button class="btn-small btn-details" onclick="viewItemDetails({{ $item->id }})">Details</button>
                             </div>
@@ -882,6 +1084,19 @@
                 </div>
             @endif
         </div>
+
+        <!-- Details Modal -->
+        <div id="detailsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Item Details</h2>
+                    <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
+                </div>
+                <div id="modalBody">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -898,17 +1113,94 @@
         const sortRadios = document.querySelectorAll('input[name="sort"]');
         const resetButton = document.getElementById('resetButton');
         
-        const allItems = @json($items->items());
+        window.currentUserId = @json(Auth::id() ?? null);
+        window.allItems = @json($items->items());
         let currentSort = 'latest';
         let searchTimeout;
 
         // Function to view item details
         function viewItemDetails(itemId) {
-            // For now, you can implement this to show item details
-            // This could be a modal, a new page, or redirect to a details page
-            console.log('Viewing item details for:', itemId);
-            // Future implementation: Open a modal or navigate to details page
+            // Fetch item details from the items data
+            const item = allItems.find(item => item.id === itemId);
+            
+            if (item) {
+                const modal = document.getElementById('detailsModal');
+                const modalBody = document.getElementById('modalBody');
+                
+                const imageUrl = item.image ? `{{ asset('storage') }}/${item.image}` : null;
+                
+                let reporterHtml = '';
+                if (item.user) {
+                    reporterHtml = `
+                        <div class="modal-section">
+                            <div class="modal-section-title">Reported by</div>
+                            <div class="reporter-info">
+                                <div class="reporter-name">
+                                    <i class="fas fa-user" style="margin-right: 8px;"></i>${item.user.name}
+                                </div>
+                                <div class="reporter-email">
+                                    <i class="fas fa-envelope" style="margin-right: 8px;"></i>${item.user.email}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                modalBody.innerHTML = `
+                    <div class="modal-image ${!imageUrl ? 'no-image' : ''}">
+                        ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" />` : '<span>No image available</span>'}
+                    </div>
+                    
+                    <div class="modal-section">
+                        <div class="modal-section-title">Item Information</div>
+                        <div class="detail-row">
+                            <div class="detail-label">Name:</div>
+                            <div class="detail-value"><strong>${item.name}</strong></div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Type:</div>
+                            <div class="detail-value">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Description:</div>
+                            <div class="detail-value">${item.description || 'No description'}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Location:</div>
+                            <div class="detail-value">
+                                <div class="icon-text">
+                                    ${item.location}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Date Reported:</div>
+                            <div class="detail-value">
+                                <div class="icon-text">
+                                    ${new Date(item.date_reported).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${reporterHtml}
+                `;
+                
+                modal.classList.add('active');
+            }
         }
+
+        function closeDetailsModal() {
+            const modal = document.getElementById('detailsModal');
+            modal.classList.remove('active');
+        }
+
+        // Close modal when clicking outside
+        document.getElementById('detailsModal').addEventListener('click', function(event) {
+            if (event.target === this) {
+                closeDetailsModal();
+            }
+        });
 
         // Filter Panel Toggle
         filterToggle.addEventListener('click', (e) => {
@@ -1014,19 +1306,32 @@
             itemsContainer.innerHTML = sortedItems.map(item => `
                 <div class="item-card">
                     <div class="item-image">
-                        <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
-                            <span style="color: #9ca3af; font-size: 14px;">${item.name}</span>
-                        </div>
+                        ${item.image 
+                            ? `<img src="/storage/${item.image}" alt="${item.name}" />` 
+                            : `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
+                                <span style="color: #9ca3af; font-size: 14px;">No image</span>
+                              </div>`
+                        }
                         <span class="item-badge ${item.type.toLowerCase() === 'found' ? 'badge-found' : 'badge-lost'}">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</span>
                     </div>
                     <div class="item-info">
                         <div class="item-name">${item.name}</div>
-                        <div class="item-location">${item.location}</div>
-                        <div class="item-date">${new Date(item.date_reported).toLocaleDateString('en-US')}</div>
+                        <div class="item-location">
+                            <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
+                            ${item.location}
+                        </div>
+                        <div class="item-date">
+                            <i class="fas fa-calendar" style="color: #2563eb;"></i>
+                            ${new Date(item.date_reported).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                        </div>
                         <div class="item-actions">
                             ${item.type.toLowerCase() === 'found' 
-                                ? `<a href="/claim/create/${item.id}" class="btn-small btn-claim">Claim Item</a>` 
-                                : `<a href="/claim/create/${item.id}" class="btn-small btn-claim">Found Item</a>`
+                                ? (window.currentUserId && item.user_id === window.currentUserId 
+                                    ? `<button class="btn-small btn-claim disabled" disabled title="You cannot claim your own report">Claim Item</button>` 
+                                    : `<a href="/claim-item-view/${item.id}" class="btn-small btn-claim">Claim Item</a>`)
+                                : (window.currentUserId && item.user_id === window.currentUserId 
+                                    ? `<button class="btn-small btn-claim disabled" disabled title="You cannot return your own report">Return Item</button>` 
+                                    : `<a href="/return-item/${item.id}" class="btn-small btn-claim">Return Item</a>`)
                             }
                             <button class="btn-small btn-details" onclick="viewItemDetails(${item.id})">Details</button>
                         </div>

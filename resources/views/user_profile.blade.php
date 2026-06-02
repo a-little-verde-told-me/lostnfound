@@ -255,7 +255,7 @@
                 {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
             </div>
             <div class="profile-name">{{ Auth::user()->name }}</div>
-            <div class="profile-role">{{ Auth::user()->role ?? 'User' }}</div>
+            <!-- <div class="profile-role">{{ Auth::user()->role ?? 'User' }}</div> -->
         </div>
 
         <!-- Personal Information Section -->
@@ -283,13 +283,6 @@
                 <span class="profile-value">{{ Auth::user()->email }}</span>
             </div>
 
-            <div class="profile-item">
-                <span class="profile-label">
-                    <i class="fa fa-shield"></i> Role
-                </span>
-                <span class="profile-value">{{ Auth::user()->role ?? 'User' }}</span>
-            </div>
-
         </div>
 
         <!-- History Section -->
@@ -307,10 +300,10 @@
             
             <div class="profile-item">
                 <span class="profile-label">
-                    <i class="fa fa-search"></i> My Claims
+                    <i class="fa fa-history"></i> My History
                 </span>
                 <span class="profile-value">
-                    <a href="{{ route('claims.index') }}" style="color: #2563eb; text-decoration: none;">View Claims</a>
+                    <a href="{{ route('history.index') }}" style="color: #2563eb; text-decoration: none;">View History</a>
                 </span>
             </div>
         </div>
@@ -345,17 +338,11 @@
                     <input type="tel" name="phone_number" class="form-input" value="{{ Auth::user()->phone_number ?? '' }}" placeholder="Enter your phone number">
                 </div>
 
-                <!-- Email Field (Read-only) -->
                 <div class="form-group">
                     <label class="form-label"><i class="fa fa-envelope"></i> Email</label>
-                    <input type="email" class="form-input" value="{{ Auth::user()->email }}" disabled>
+                    <input type="email" name="email" class="form-input" value="{{ Auth::user()->email }}" required>
                 </div>
 
-                <!-- Role Field (Read-only) -->
-                <div class="form-group">
-                    <label class="form-label"><i class="fa fa-shield"></i> Role</label>
-                    <input type="text" class="form-input" value="{{ Auth::user()->role ?? 'User' }}" disabled>
-                </div>
 
                 <!-- Modal Actions -->
                 <div class="modal-actions">

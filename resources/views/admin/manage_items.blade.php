@@ -121,7 +121,7 @@
         }
         .search-box input {
             width: 100%;
-            padding: 12px 16px 12px 40px;
+            padding: 12px 16px 12px 16px;
             border: 1px solid #d1d5db;
             border-radius: 6px;
             font-size: 14px;
@@ -356,9 +356,8 @@
         <!-- Controls -->
         <div class="controls-container">
             <div class="search-box">
-                <span class="search-icon">🔍</span>
                 <form method="GET" action="{{ route('admin.items') }}" style="display: flex; flex: 1;">
-                    <input type="text" name="search" placeholder="Search claims" value="{{ request('search') }}">
+                    <input type="text" name="search" placeholder="Search items" value="{{ request('search') }}">
                 </form>
             </div>
             <div class="sort-dropdown">

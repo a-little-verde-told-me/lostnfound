@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
             $table->foreignId('item_id')->constrained('item')->onDelete('cascade');
-            $table->string('email');
-            $table->string('phone_number');
+            $table->string('contact_email');
+            $table->string('contact_number');
             $table->string('image')->nullable();
+            $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
+            $table->text('additional_details')->nullable();
             $table->timestamps();
         });
     }

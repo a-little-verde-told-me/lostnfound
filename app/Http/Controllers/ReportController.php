@@ -67,7 +67,8 @@ class ReportController extends Controller
                 'image' => $imagePath,
                 'type' => 'Found',
                 'status' => 'active',
-                'location' => $validated['location_current'],
+                'location' => $validated['location_found'],
+                'surrender_location' => $validated['location_current'],
                 'date_reported' => now(),
                 'user_id' => Auth::id() ?? 1
             ]);
@@ -141,6 +142,71 @@ class ReportController extends Controller
             return redirect()->route('home')->with('success', 'Lost item reported successfully! We hope it gets found.');
         } catch (\Exception $e) {
             return back()->withInput()->with('error', 'Error while reporting the item. Please try again.');
+        }
+    }
+
+    /**
+     * Update a report
+     */
+    public function update(Request $request, $id)
+    {
+        $report = Item::findOrFail($id);
+
+        // Authorize - only the owner can edit
+        if ($report->user_id !== Auth::id()) {
+            return redirect()->route('reports.index')->with('error', 'Unauthorized action.');
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'category_id' => 'required|exists:category,id',
+            'location' => 'required|string|max:255',
+            'surrender_location' => 'nullable|string|max:255',
+            'description' => 'required|string|max:1000',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ]);
+
+        try {
+            // Handle image upload if provided
+            if ($request->hasFile('photo')) {
+                // Delete old image if exists
+                if ($report->image && Storage::disk('public')->exists($report->image)) {
+                    Storage::disk('public')->delete($report->image);
+                }
+                $validated['image'] = $request->file('photo')->storePublicly('items', 'public');
+            }
+
+            $report->update($validated);
+
+            return redirect()->route('reports.index')->with('success', 'Report updated successfully!');
+        } catch (\Exception $e) {
+            return back()->withInput()->with('error', 'Error while updating the report. Please try again.');
+        }
+    }
+
+    /**
+     * Delete a report
+     */
+    public function destroy($id)
+    {
+        $report = Item::findOrFail($id);
+
+        // Authorize - only the owner can delete
+        if ($report->user_id !== Auth::id()) {
+            return redirect()->route('reports.index')->with('error', 'Unauthorized action.');
+        }
+
+        try {
+            // Delete image if exists
+            if ($report->image && Storage::disk('public')->exists($report->image)) {
+                Storage::disk('public')->delete($report->image);
+            }
+
+            $report->delete();
+
+            return redirect()->route('reports.index')->with('success', 'Report deleted successfully!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error while deleting the report. Please try again.');
         }
     }
 }
