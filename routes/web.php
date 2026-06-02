@@ -65,6 +65,40 @@ Route::get('/api/search', function (Illuminate\Http\Request $request) {
     return response()->json($items);
 })->name('search');
 
+// Filter API Route
+Route::get('/api/filter', function (Illuminate\Http\Request $request) {
+    $query = \App\Models\Item::query();
+    
+    // Filter by status
+    $status = $request->input('status', '');
+    if ($status && $status !== 'all') {
+        $statuses = explode(',', $status);
+        $query->whereIn('type', array_map('trim', $statuses));
+    }
+    
+    // Filter by category
+    $category = $request->input('category', '');
+    if ($category) {
+        $categories = explode(',', $category);
+        $query->whereHas('category', function ($q) use ($categories) {
+            $q->whereIn('name', array_map(function($cat) {
+                return ucfirst(trim($cat));
+            }, $categories));
+        });
+    }
+    
+    // Filter by location
+    $location = $request->input('location', '');
+    if ($location) {
+        $locations = explode(',', $location);
+        $query->whereIn('location', array_map('trim', $locations));
+    }
+    
+    $items = $query->latest('date_reported')->limit(50)->get();
+    
+    return response()->json($items);
+})->name('filter');
+
 // Protected Admin Routes
 Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/dashboard', function () {

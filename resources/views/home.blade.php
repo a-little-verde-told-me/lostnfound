@@ -178,7 +178,8 @@
         }
 
         .filter-button,
-        .sort-button {
+        .sort-button,
+        .reset-button {
             padding: 12px 16px;
             border: 1px solid #e5e7eb;
             border-radius: 6px;
@@ -190,7 +191,8 @@
         }
 
         .filter-button:hover,
-        .sort-button:hover {
+        .sort-button:hover,
+        .reset-button:hover {
             border-color: #2563eb;
             color: #2563eb;
         }
@@ -387,6 +389,228 @@
             color: #6b7280;
         }
 
+        /* Filter Panel Styles */
+        .filter-panel {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 8px;
+            min-width: 320px;
+            max-height: 600px;
+            overflow-y: auto;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 100;
+        }
+
+        .filter-panel.active {
+            display: block;
+            animation: slideDown 0.2s ease-in-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .filter-header {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .filter-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+
+        .filter-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.2s;
+        }
+
+        .filter-close:hover {
+            color: #1f2937;
+        }
+
+        .filter-section {
+            padding: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .filter-section h4 {
+            font-size: 12px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .filter-option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .filter-option:last-child {
+            margin-bottom: 0;
+        }
+
+        .filter-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .filter-option label {
+            font-size: 14px;
+            color: #4b5563;
+            cursor: pointer;
+            flex: 1;
+            margin: 0;
+        }
+
+        .filter-actions {
+            padding: 16px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+            background: white;
+            position: sticky;
+            bottom: 0;
+        }
+
+        .filter-actions button {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-apply-filter {
+            background-color: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .btn-apply-filter:hover {
+            background-color: #1d4ed8;
+        }
+
+        .btn-clear-filter {
+            background-color: white;
+            color: #1f2937;
+        }
+
+        .btn-clear-filter:hover {
+            background-color: #f3f4f6;
+        }
+
+        .filter-button-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        /* Sort Panel Styles */
+        .sort-panel {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 8px;
+            min-width: 240px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: none;
+            z-index: 100;
+        }
+
+        .sort-panel.active {
+            display: block;
+            animation: slideDown 0.2s ease-in-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sort-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .sort-option:hover {
+            background-color: #f3f4f6;
+        }
+
+        .sort-option:first-child {
+            border-radius: 8px 8px 0 0;
+        }
+
+        .sort-option:last-child {
+            border-radius: 0 0 8px 8px;
+        }
+
+        .sort-option input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #2563eb;
+        }
+
+        .sort-option label {
+            font-size: 14px;
+            color: #4b5563;
+            cursor: pointer;
+            flex: 1;
+            margin: 0;
+        }
+
+        .sort-button-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
         @media (max-width: 768px) {
             .navbar {
                 flex-wrap: wrap;
@@ -424,6 +648,10 @@
             }
 
             .search-box {
+                width: 100%;
+            }
+
+            .filter-content {
                 width: 100%;
             }
         }
@@ -492,8 +720,110 @@
             
             <div class="search-filter-row">
                 <input type="text" id="searchInput" class="search-box" placeholder="Search for lost item by names, locations, or category...">
-                <button class="filter-button">Filter</button>
-                <button class="sort-button">Sort: Latest</button>
+                <div class="filter-button-wrapper">
+                    <button class="filter-button" id="filterToggle">Filter</button>
+                    <!-- Filter Panel -->
+                    <div class="filter-panel" id="filterPanel">
+                        <div class="filter-header">
+                            <h3>Filter</h3>
+                            <button class="filter-close" id="filterClose">&times;</button>
+                        </div>
+
+                        <form id="filterForm">
+                            <!-- Status Filter -->
+                            <div class="filter-section">
+                                <h4>Status</h4>
+                                <div class="filter-option">
+                                    <input type="checkbox" id="status_all" name="status" value="all" checked>
+                                    <label for="status_all">All</label>
+                                </div>
+                                <div class="filter-option">
+                                    <input type="checkbox" id="status_found" name="status" value="found">
+                                    <label for="status_found">Found</label>
+                                </div>
+                                <div class="filter-option">
+                                    <input type="checkbox" id="status_lost" name="status" value="lost">
+                                    <label for="status_lost">Lost</label>
+                                </div>
+                            </div>
+
+                            <!-- Category Filter -->
+                            <div class="filter-section">
+                                <h4>Category</h4>
+                                @php
+                                    $categories = [
+                                        'Electronics' => 'Electronics',
+                                        'Bags' => 'Bags',
+                                        'Wallets' => 'Wallets',
+                                        'Keys' => 'Keys',
+                                        'IDs' => 'IDs'
+                                    ];
+                                @endphp
+                                @foreach($categories as $key => $value)
+                                    <div class="filter-option">
+                                        <input type="checkbox" id="category_{{ strtolower($key) }}" name="category" value="{{ strtolower($key) }}">
+                                        <label for="category_{{ strtolower($key) }}">{{ $value }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <!-- Location Filter -->
+                            <div class="filter-section">
+                                <h4>Location</h4>
+                                @php
+                                    $locations = [
+                                        'IT Room' => 'IT Room',
+                                        'TechVoc Building' => 'TechVoc Building',
+                                        'Convention Hall' => 'Convention Hall'
+                                    ];
+                                @endphp
+                                @foreach($locations as $key => $value)
+                                    <div class="filter-option">
+                                        <input type="checkbox" id="location_{{ strtolower(str_replace(' ', '_', $key)) }}" name="location" value="{{ $key }}">
+                                        <label for="location_{{ strtolower(str_replace(' ', '_', $key)) }}">{{ $value }}</label>
+                                    </div>
+                                @endforeach
+                            </div>
+
+                            <!-- Filter Actions -->
+                            <div class="filter-actions">
+                                <button type="button" class="btn-apply-filter" id="applyFilter">Apply Filter</button>
+                                <button type="button" class="btn-clear-filter" id="clearFilter">Clear Filter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="sort-button-wrapper">
+                    <button class="sort-button" id="sortToggle">Sort: Latest</button>
+                    <!-- Sort Panel -->
+                    <div class="sort-panel" id="sortPanel">
+                        <div class="sort-option">
+                            <input type="radio" id="sort_latest" name="sort" value="latest" checked>
+                            <label for="sort_latest">Latest</label>
+                        </div>
+                        <div class="sort-option">
+                            <input type="radio" id="sort_oldest" name="sort" value="oldest">
+                            <label for="sort_oldest">Oldest</label>
+                        </div>
+                        <div class="sort-option">
+                            <input type="radio" id="sort_name_az" name="sort" value="name_az">
+                            <label for="sort_name_az">Name A-Z</label>
+                        </div>
+                        <div class="sort-option">
+                            <input type="radio" id="sort_name_za" name="sort" value="name_za">
+                            <label for="sort_name_za">Name Z-A</label>
+                        </div>
+                        <div class="sort-option">
+                            <input type="radio" id="sort_found_first" name="sort" value="found_first">
+                            <label for="sort_found_first">Found First</label>
+                        </div>
+                        <div class="sort-option">
+                            <input type="radio" id="sort_lost_first" name="sort" value="lost_first">
+                            <label for="sort_lost_first">Lost First</label>
+                        </div>
+                    </div>
+                </div>
+                <button class="reset-button" id="resetButton">Reset</button>
             </div>
 
             <div class="items-grid" id="itemsContainer">
@@ -503,7 +833,7 @@
                             <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
                                 <span style="color: #9ca3af; font-size: 14px;">{{ $item->name }}</span>
                             </div>
-                            <span class="item-badge {{ strtolower($item->type) === 'found' ? 'badge-found' : 'badge-lost' }}">{{ ucfirst($item->type) }}</span>
+                                <span class="item-badge {{ strtolower($item->type) === 'found' ? 'badge-found' : 'badge-lost' }}">{{ ucfirst($item->type) }}</span>
                         </div>
                         <div class="item-info">
                             <div class="item-name">{{ $item->name }}</div>
@@ -545,16 +875,123 @@
     <script>
         const searchInput = document.getElementById('searchInput');
         const itemsContainer = document.getElementById('itemsContainer');
+        const filterToggle = document.getElementById('filterToggle');
+        const filterClose = document.getElementById('filterClose');
+        const filterPanel = document.getElementById('filterPanel');
+        const filterForm = document.getElementById('filterForm');
+        const applyFilter = document.getElementById('applyFilter');
+        const clearFilter = document.getElementById('clearFilter');
+        const sortToggle = document.getElementById('sortToggle');
+        const sortPanel = document.getElementById('sortPanel');
+        const sortRadios = document.querySelectorAll('input[name="sort"]');
+        const resetButton = document.getElementById('resetButton');
+        
         const allItems = @json($items->items());
+        let currentSort = 'latest';
         let searchTimeout;
 
+        // Filter Panel Toggle
+        filterToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            filterPanel.classList.toggle('active');
+            sortPanel.classList.remove('active');
+        });
+
+        filterClose.addEventListener('click', (e) => {
+            e.preventDefault();
+            filterPanel.classList.remove('active');
+        });
+
+        // Close filter panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.filter-button-wrapper')) {
+                filterPanel.classList.remove('active');
+            }
+        });
+
+        // Sort Panel Toggle
+        sortToggle.addEventListener('click', (e) => {
+            e.stopPropagation();
+            sortPanel.classList.toggle('active');
+            filterPanel.classList.remove('active');
+        });
+
+        // Close sort panel when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.sort-button-wrapper')) {
+                sortPanel.classList.remove('active');
+            }
+        });
+
+        // Status "All" checkbox logic
+        const statusCheckboxes = document.querySelectorAll('input[name="status"]');
+        const statusAll = document.getElementById('status_all');
+        const statusFound = document.getElementById('status_found');
+        const statusLost = document.getElementById('status_lost');
+
+        statusAll.addEventListener('change', () => {
+            if (statusAll.checked) {
+                statusFound.checked = false;
+                statusLost.checked = false;
+            }
+        });
+
+        statusFound.addEventListener('change', () => {
+            if (statusFound.checked) {
+                statusAll.checked = false;
+            }
+        });
+
+        statusLost.addEventListener('change', () => {
+            if (statusLost.checked) {
+                statusAll.checked = false;
+            }
+        });
+
+        function sortItems(items, sortType) {
+            const sorted = [...items];
+            
+            switch(sortType) {
+                case 'latest':
+                    sorted.sort((a, b) => new Date(b.date_reported) - new Date(a.date_reported));
+                    break;
+                case 'oldest':
+                    sorted.sort((a, b) => new Date(a.date_reported) - new Date(b.date_reported));
+                    break;
+                case 'name_az':
+                    sorted.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'name_za':
+                    sorted.sort((a, b) => b.name.localeCompare(a.name));
+                    break;
+                case 'found_first':
+                    sorted.sort((a, b) => {
+                        if (a.type.toLowerCase() === 'found' && b.type.toLowerCase() !== 'found') return -1;
+                        if (a.type.toLowerCase() !== 'found' && b.type.toLowerCase() === 'found') return 1;
+                        return new Date(b.date_reported) - new Date(a.date_reported);
+                    });
+                    break;
+                case 'lost_first':
+                    sorted.sort((a, b) => {
+                        if (a.type.toLowerCase() === 'lost' && b.type.toLowerCase() !== 'lost') return -1;
+                        if (a.type.toLowerCase() !== 'lost' && b.type.toLowerCase() === 'lost') return 1;
+                        return new Date(b.date_reported) - new Date(a.date_reported);
+                    });
+                    break;
+            }
+            
+            return sorted;
+        }
+
         function renderItems(items) {
-            if (items.length === 0) {
+            const sortedItems = sortItems(items, currentSort);
+            
+            if (sortedItems.length === 0) {
                 itemsContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: #6b7280;"><p style="font-size: 16px;">No items found</p></div>';
                 return;
             }
 
-            itemsContainer.innerHTML = items.map(item => `
+            itemsContainer.innerHTML = sortedItems.map(item => `
                 <div class="item-card">
                     <div class="item-image">
                         <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
@@ -594,6 +1031,118 @@
                     });
             }, 300);
         }
+
+        // Sort Radio Button Handler
+        sortRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                
+                // Update button text
+                const sortLabels = {
+                    'latest': 'Sort: Latest',
+                    'oldest': 'Sort: Oldest',
+                    'name_az': 'Sort: Name A-Z',
+                    'name_za': 'Sort: Name Z-A',
+                    'found_first': 'Sort: Found First',
+                    'lost_first': 'Sort: Lost First'
+                };
+                
+                sortToggle.textContent = sortLabels[currentSort];
+                sortPanel.classList.remove('active');
+                renderItems(allItems);
+            });
+        });
+
+        // Apply Filter
+        applyFilter.addEventListener('click', () => {
+            const statuses = [];
+            const categories = [];
+            const locations = [];
+
+            // Get selected statuses
+            if (statusAll.checked) {
+                statuses.push('all');
+            } else {
+                if (statusFound.checked) statuses.push('found');
+                if (statusLost.checked) statuses.push('lost');
+            }
+
+            // Get selected categories
+            document.querySelectorAll('input[name="category"]:checked').forEach(checkbox => {
+                categories.push(checkbox.value);
+            });
+
+            // Get selected locations
+            document.querySelectorAll('input[name="location"]:checked').forEach(checkbox => {
+                locations.push(checkbox.value);
+            });
+
+            // Build query parameters
+            const params = new URLSearchParams();
+            if (statuses.length > 0) params.append('status', statuses.join(','));
+            if (categories.length > 0) params.append('category', categories.join(','));
+            if (locations.length > 0) params.append('location', locations.join(','));
+
+            // Fetch filtered items
+            fetch(`/api/filter?${params.toString()}`)
+                .then(response => response.json())
+                .then(data => {
+                    renderItems(data);
+                    filterPanel.classList.remove('active');
+                })
+                .catch(error => {
+                    console.error('Filter error:', error);
+                });
+        });
+
+        // Clear Filter
+        clearFilter.addEventListener('click', () => {
+            statusAll.checked = true;
+            statusFound.checked = false;
+            statusLost.checked = false;
+            
+            document.querySelectorAll('input[name="category"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            document.querySelectorAll('input[name="location"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+
+            renderItems(allItems);
+            filterPanel.classList.remove('active');
+        });
+
+        // Reset Button
+        resetButton.addEventListener('click', () => {
+            // Clear search input
+            searchInput.value = '';
+            
+            // Reset all filters
+            statusAll.checked = true;
+            statusFound.checked = false;
+            statusLost.checked = false;
+            
+            document.querySelectorAll('input[name="category"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            document.querySelectorAll('input[name="location"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            // Reset sort to latest
+            currentSort = 'latest';
+            document.getElementById('sort_latest').checked = true;
+            sortToggle.textContent = 'Sort: Latest';
+            
+            // Close any open panels
+            filterPanel.classList.remove('active');
+            sortPanel.classList.remove('active');
+            
+            // Render all items with default sort
+            renderItems(allItems);
+        });
 
         searchInput.addEventListener('input', (e) => {
             handleSearch(e.target.value);
