@@ -79,7 +79,7 @@
         }
 
         .navbar-right {
-            display: flex;
+            display: none;
             gap: 1rem;
             align-items: center;
             flex: 0 0 auto;
@@ -89,6 +89,7 @@
 
         @media (min-width: 768px) {
             .navbar-right {
+                display: flex;
                 border-left: 1px solid #e5e7eb;
                 padding-left: 2rem;
                 gap: 1.5rem;
@@ -323,6 +324,17 @@
                     <x-nav-link href="/about">About</x-nav-link>
                     <x-nav-link href="/contact">Contact</x-nav-link>
                 </div>
+            </div>
+
+            <!-- Right: User Avatar and Logout -->
+            <div class="navbar-right">
+                <a href="{{ route('profile') }}" class="user-avatar">
+                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                </a>
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="navbar-logout">Logout</button>
+                </form>
             </div>
         @else
             <!-- Left: Hamburger Menu Button (Mobile) + Logo (Desktop) -->

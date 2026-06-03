@@ -53,9 +53,15 @@
         }
 
         .navbar-right {
-            display: flex;
+            display: none;
             align-items: center;
             gap: 16px;
+        }
+
+        @media (min-width: 768px) {
+            .navbar-right {
+                display: flex;
+            }
         }
 
         .nav-link-logout {
