@@ -1,58 +1,80 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# FindIt - Lost and Found Management System
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+---
 
-## About Laravel
+## Project Description
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Findit is a community-driven platform dedicated to helping people find lost items and report discovered belongings. Our mission is to reunite lost possessions with their rightful owners through efficient categorization and community collaboration. Whether you've lost something valuable or found an item that needs to be returned to its owner, Findit makes the process simple and straightforward. Our platform connects people in your community, making it easier to solve the problem of lost and found items.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Developers
 
-## Learning Laravel
+| Name                      |
+|---------------------------|
+| De Guzman, Yasmien G.     |
+| Derilo, Ian Gabriel S.    |
+| Santos, Jasmine L.        |
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+---
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## How the System Works
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+There are two types of users in the system -- a regular user and an admin.
 
-## Agentic Development
+### For Regular Users:
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+1. You create an account and log in
+2. If you lost something, click Report Lost Item and fill out the form -- item name, category, description, location, date, and a photo
+3. If you found something, click Report Found Item and do the same
+4. You can browse all active listings and use the search bar to filter by category or keyword
+5. If you find something that looks like yours, you hit File a Claim and describe why it belongs to you
+6. You can track your reports and claims from your dashboard
+
+### For Admin:
+
+1. Admin logs in and lands on the admin dashboard
+2. They can see all submitted reports and pending claims
+3. They review each claim and either approve or reject it
+4. If approved, the item status changes to Claimed
+5. Admin can also manage users, categories, and export reports via PDF, XLSX, CSV or JSON file.
+
+## Installation & Setup Instructions
+
+Follow these steps to run the project on your local machine.
+
+### Step 1 - Clone the repository
 
 ```bash
-composer require laravel/boost --dev
+git clone https://github.com/your-username/findit-lost-and-found.git
+cd findit-lost-and-found
+Step 2 - Install dependencies
+composer install
+Step 3 - Set up your environment file
+cp .env.example .env
+php artisan key:generate
+Then open .env and update your database credentials:
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=your_port
+DB_DATABASE=lostnfound
+DB_USERNAME=root
+DB_PASSWORD=your_password
+Step 4 - Create the database
+Open your MySQL client (phpMyAdmin or terminal) and create a database named:
+lostnfound 
+Step 5 - Run migrations and seeders
+php artisan migrate
+php artisan db:seed
+This will create all the tables and add sample data including a default admin account.
+Default admin credentials:
+Email:    admin@example.com
+Password: admin123
+Step 6 - Run the development server
+php artisan serve
+Click Ctrl + click the link to directly go to your browser or Open your browser and go to:
+http://127.0.0.1:8000
 
-php artisan boost:install
-```
-
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
-
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Hosting
+The live version of this project is deployed here:
+https://findit-app.up.railway.app
