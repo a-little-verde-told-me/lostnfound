@@ -14,8 +14,8 @@ class ReturnItem extends Model
     protected $fillable = [
         'user_id',
         'item_id',
-        'email',
-        'phone_number',
+        'contact_email',
+        'contact_number',
         'image',
         'additional_details',
         'status'

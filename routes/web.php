@@ -243,3 +243,28 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/api/reports/users-stats', [AdminController::class, 'getUsersStats'])->name('api.reports.users-stats');
     Route::get('/api/reports/{reportType}/export', [AdminController::class, 'exportReport'])->name('api.reports.export');
 });
+
+// REST API Routes for Items (CRUD)
+Route::middleware('auth')->group(function () {
+    Route::post('/api/items', [ItemController::class, 'store'])->name('api.items.store');
+    Route::get('/api/items', [ItemController::class, 'index'])->name('api.items.index');
+    Route::get('/api/items/{item}', [ItemController::class, 'show'])->name('api.items.show');
+    Route::put('/api/items/{item}', [ItemController::class, 'update'])->name('api.items.update');
+    Route::delete('/api/items/{item}', [ItemController::class, 'destroy'])->name('api.items.destroy');
+});
+
+// REST API Routes for Claims (CRUD)
+Route::middleware('auth')->group(function () {
+    Route::post('/api/claims', [ClaimController::class, 'store'])->name('api.claims.store');
+    Route::get('/api/claims', [ClaimController::class, 'index'])->name('api.claims.index');
+    Route::put('/api/claims/{claim}', [ClaimController::class, 'update'])->name('api.claims.update');
+    Route::delete('/api/claims/{claim}', [ClaimController::class, 'destroy'])->name('api.claims.destroy');
+});
+
+// REST API Routes for Returns (CRUD)
+Route::middleware('auth')->group(function () {
+    Route::post('/api/returns', [ReturnItemController::class, 'store'])->name('api.returns.store');
+    Route::get('/api/returns', [ReturnItemController::class, 'index'])->name('api.returns.index');
+    Route::put('/api/returns/{return}', [ReturnItemController::class, 'update'])->name('api.returns.update');
+    Route::delete('/api/returns/{return}', [ReturnItemController::class, 'destroy'])->name('api.returns.destroy');
+});
