@@ -753,14 +753,16 @@
                 </div>
 
                 <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Found Location</div>
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">${report.type === 'Lost' ? 'Last Seen Location' : 'Found Location'}</div>
                     <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.location}</div>
                 </div>
 
+                ${report.type === 'Found' ? `
                 <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Surrender Location</div>
                     <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.surrender_location || 'Not specified'}</div>
                 </div>
+                ` : ''}
 
                 <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Description</div>
