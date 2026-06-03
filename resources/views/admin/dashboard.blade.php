@@ -8,7 +8,7 @@
 }
 .stats-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     gap: 24px;
     margin-bottom: 32px;
 }
@@ -18,7 +18,13 @@
     padding: 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     text-align: center;
+    transition: all 0.3s ease;
 }
+
+.stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 .stat-number {
     font-size: 48px;
     font-weight: bold;
@@ -28,13 +34,21 @@
 .stat-label {
     font-size: 14px;
     color: #6b7280;
+    font-weight: 500;
 }
 .content-grid {
     display: grid;
-    grid-template-columns: 1.5fr 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 24px;
     margin-bottom: 24px;
 }
+
+@@media (max-width: 1024px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .content-card {
     background: white;
     border-radius: 12px;
@@ -46,6 +60,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
 }
 .card-title {
     font-size: 16px;
@@ -58,6 +74,7 @@
     font-size: 14px;
     cursor: pointer;
     transition: color 0.2s;
+    font-weight: 600;
 }
 .view-all-link:hover {
     color: #1d4ed8;
@@ -68,7 +85,13 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.2s;
 }
+
+.claim-item:hover {
+    background-color: #f9fafb;
+}
+
 .claim-item:last-child {
     border-bottom: none;
 }
@@ -86,12 +109,14 @@
     color: #6b7280;
 }
 .claim-status {
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
     padding: 4px 12px;
     border-radius: 4px;
+    text-transform: uppercase;
+    white-space: nowrap;
 }
-.status-active {
+.status-pending {
     background-color: #fef3c7;
     color: #92400e;
 }
@@ -108,14 +133,20 @@
     border-bottom: 1px solid #e5e7eb;
     display: flex;
     gap: 12px;
+    transition: background-color 0.2s;
 }
+
+.activity-item:hover {
+    background-color: #f9fafb;
+}
+
 .activity-item:last-child {
     border-bottom: none;
 }
 .activity-avatar {
     width: 40px;
     height: 40px;
-    background-color: #e5e7eb;
+    background-color: #dbeafe;
     border-radius: 50%;
     flex-shrink: 0;
 }
@@ -133,62 +164,38 @@
     color: #6b7280;
 }
 .activity-time {
-    font-size: 12px;
+    font-size: 11px;
+    color: #9ca3af;
+    white-space: nowrap;
+}
+.empty-state {
+    text-align: center;
+    padding: 24px;
     color: #9ca3af;
 }
-.button-group {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-top: 24px;
-}
-.primary-button {
-    padding: 12px 24px;
-    background-color: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.primary-button:hover {
-    background-color: #1d4ed8;
-}
-.secondary-button {
-    padding: 12px 24px;
-    background-color: white;
-    color: #1f2937;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-.secondary-button:hover {
-    background-color: #f9fafb;
-}
 </style>
-    <h1 class="dashboard-title">Admin dashboard</h1>
+    <h1 class="dashboard-title">Admin Dashboard</h1>
 
     <!-- Stats Grid -->
     <div class="stats-grid">
         <div class="stat-card">
-            <div class="stat-number">1</div>
-            <div class="stat-label">Lost Report</div>
+            <div class="stat-number">{{ $activeFoundReports }}</div>
+            <div class="stat-label">Active Found Reports</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">3</div>
-            <div class="stat-label">Found Report</div>
+            <div class="stat-number">{{ $activeLostReports }}</div>
+            <div class="stat-label">Active Lost Reports</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">2</div>
-            <div class="stat-label">Active</div>
+            <div class="stat-number">{{ $claimPending }}</div>
+            <div class="stat-label">Claim Pending</div>
         </div>
         <div class="stat-card">
-            <div class="stat-number">10</div>
+            <div class="stat-number">{{ $returnPending }}</div>
+            <div class="stat-label">Return Pending</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ $resolved }}</div>
             <div class="stat-label">Resolved</div>
         </div>
     </div>
@@ -199,78 +206,69 @@
         <div class="content-card">
             <div class="card-header">
                 <div class="card-title">Recent claims to review</div>
-                <a href="#" class="view-all-link">View all</a>
+                <a href="{{ route('admin.claims') }}?status=pending" class="view-all-link">View all</a>
             </div>
 
-            <div class="claim-item">
-                <div class="claim-info">
-                    <div class="claim-name">Wireless earphone</div>
-                    <div class="claim-meta">by Yasmien De Guzman - May 29</div>
+            @forelse ($pendingClaims as $claim)
+                <div class="claim-item">
+                    <div class="claim-info">
+                        <div class="claim-name">{{ $claim->item->name ?? 'Item' }}</div>
+                        <div class="claim-meta">by {{ $claim->user->name }} - {{ $claim->date_claimed->format('M d') }}</div>
+                    </div>
+                    <div class="claim-status status-pending">{{ ucfirst($claim->status) }}</div>
                 </div>
-                <div class="claim-status status-active">Active</div>
-            </div>
-
-            <div class="claim-item">
-                <div class="claim-info">
-                    <div class="claim-name">School ID card</div>
-                    <div class="claim-meta">by Jasmine Santos - May 27</div>
+            @empty
+                <div class="empty-state">
+                    <p>No pending claims</p>
                 </div>
-                <div class="claim-status status-active">Active</div>
-            </div>
-
-            <div class="claim-item">
-                <div class="claim-info">
-                    <div class="claim-name">Android phone</div>
-                    <div class="claim-meta">by Ian Derilo - May 24</div>
-                </div>
-                <div class="claim-status status-approved">Approved</div>
-            </div>
-
-            <div class="claim-item">
-                <div class="claim-info">
-                    <div class="claim-name">Blue backpack</div>
-                    <div class="claim-meta">by Ana Reyes - May 23</div>
-                </div>
-                <div class="claim-status status-rejected">Rejected</div>
-            </div>
+            @endforelse
         </div>
 
-        <!-- Recent Activity -->
+        <!-- Recent Returns -->
         <div class="content-card">
-            <div class="card-title" style="margin-bottom: 20px;">Recent activity</div>
-
-            <div class="activity-item">
-                <div class="activity-avatar"></div>
-                <div class="activity-content">
-                    <div class="activity-title">Found: Wireless earphones</div>
-                    <div class="activity-meta">Reported by Maria R. — Library</div>
-                </div>
-                <div class="activity-time">2h ago</div>
+            <div class="card-header">
+                <div class="card-title">Recent returns to review</div>
+                <a href="{{ route('admin.returns') }}?status=pending" class="view-all-link">View all</a>
             </div>
 
-            <div class="activity-item">
-                <div class="activity-avatar"></div>
-                <div class="activity-content">
-                    <div class="activity-title">Lost: Black backpack</div>
-                    <div class="activity-meta">by Jasmine Santos - May 27</div>
+            @forelse ($pendingReturns as $return)
+                <div class="claim-item">
+                    <div class="claim-info">
+                        <div class="claim-name">{{ $return->item->name ?? 'Item' }}</div>
+                        <div class="claim-meta">by {{ $return->user->name }} - {{ $return->created_at->format('M d') }}</div>
+                    </div>
+                    <div class="claim-status status-pending">{{ ucfirst($return->status) }}</div>
                 </div>
-                <div class="activity-time">4h ago</div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-avatar"></div>
-                <div class="activity-content">
-                    <div class="activity-title">Android phone</div>
-                    <div class="activity-meta">Reported by Juan D. — Bldg A</div>
+            @empty
+                <div class="empty-state">
+                    <p>No pending returns</p>
                 </div>
-                <div class="activity-time">2h ago</div>
-            </div>
+            @endforelse
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="button-group">
-        <button class="primary-button">Review Active Claims (5)</button>
-        <button class="secondary-button">Generate Report</button>
+    <!-- Recent Activity -->
+    <div class="content-card">
+        <div class="card-header">
+            <div class="card-title">Recent activity</div>
+            <a href="{{ route('admin.items') }}" class="view-all-link">View all</a>
+        </div>
+
+        @forelse ($recentItems as $item)
+            <div class="activity-item">
+                <div class="activity-content">
+                    <div class="activity-title">
+                        {{ ucfirst($item->type) }}: {{ $item->name }}
+                    </div>
+                    <div class="activity-meta">Reported by {{ $item->user->name }} — {{ $item->location }}</div>
+                </div>
+                <div class="activity-time">{{ $item->date_reported->diffForHumans() }}</div>
+            </div>
+        @empty
+            <div class="empty-state">
+                <p>No recent activity</p>
+            </div>
+        @endforelse
     </div>
+
 </x-admin-layout>

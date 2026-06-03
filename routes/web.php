@@ -206,9 +206,7 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
         return view('dashboard');
     })->name('dashboard');
     
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
     Route::get('/admin/items', [AdminController::class, 'manageItems'])->name('admin.items');
     Route::get('/admin/users', [AdminController::class, 'manageUsers'])->name('admin.users');
@@ -235,4 +233,13 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
 Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/api/returns/{return}', [AdminController::class, 'getReturnDetails'])->name('api.returns.show');
     Route::patch('/api/returns/{id}/status', [AdminController::class, 'updateReturnStatus'])->name('api.returns.updateStatus');
+});
+
+// API Routes for Reports & Analytics
+Route::middleware(['auth', IsAdmin::class])->group(function () {
+    Route::get('/api/reports/items-stats', [AdminController::class, 'getItemsStats'])->name('api.reports.items-stats');
+    Route::get('/api/reports/claims-stats', [AdminController::class, 'getClaimsStats'])->name('api.reports.claims-stats');
+    Route::get('/api/reports/returns-stats', [AdminController::class, 'getReturnsStats'])->name('api.reports.returns-stats');
+    Route::get('/api/reports/users-stats', [AdminController::class, 'getUsersStats'])->name('api.reports.users-stats');
+    Route::get('/api/reports/{reportType}/export', [AdminController::class, 'exportReport'])->name('api.reports.export');
 });

@@ -403,7 +403,7 @@
                 <thead class="table-header">
                     <tr>
                         <th>ITEM NAME</th>
-                        <th>POSTED BY</th>
+                        <th>REPORTED BY</th>
                         <th>RETURNED BY</th>
                         <th>EMAIL</th>
                         <th>DATE</th>
@@ -561,8 +561,24 @@
                                         <div class="detail-value">${data.item.location}</div>
                                     </div>
                                     <div class="detail-row">
-                                        <div class="detail-label">Date Found:</div>
+                                        <div class="detail-label">Date Lost:</div>
                                         <div class="detail-value">${new Date(data.item.date_reported).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="section-title">Reporter Information</div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Name:</div>
+                                        <div class="detail-value"><strong>${data.item.user.name}</strong></div>
+                                    </div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Email:</div>
+                                        <div class="detail-value">${data.item.user.email}</div>
+                                    </div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Phone:</div>
+                                        <div class="detail-value">${data.item.user.phone_number || 'N/A'}</div>
                                     </div>
                                 </div>
                             </div>
@@ -579,6 +595,28 @@
                                     `}
                                 </div>
                                 
+                                
+                                <div>
+                                    <div class="section-title">Return Status</div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Status:</div>
+                                        <div class="detail-value">
+                                            <span class="status-badge status-${data.status}">
+                                                ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                ${data.additional_details ? `
+                                <div>
+                                    <div class="section-title">Additional Details</div>
+                                    <div class="detail-value" style="padding: 8px; background-color: #f9fafb; border-radius: 6px; font-size: 13px;">
+                                        ${data.additional_details}
+                                    </div>
+                                </div>
+                                ` : ''}
+
                                 <div>
                                     <div class="section-title">Returner Information</div>
                                     <div class="detail-row">
@@ -595,30 +633,6 @@
                                     </div>
                                 </div>
                                 
-                                <div>
-                                    <div class="section-title">Return Status</div>
-                                    <div class="detail-row">
-                                        <div class="detail-label">Status:</div>
-                                        <div class="detail-value">
-                                            <span class="status-badge status-${data.status}">
-                                                ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <div class="detail-row">
-                                        <div class="detail-label">Date Returned:</div>
-                                        <div class="detail-value">${new Date(data.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
-                                    </div>
-                                </div>
-                                
-                                ${data.additional_details ? `
-                                <div>
-                                    <div class="section-title">Additional Details</div>
-                                    <div class="detail-value" style="padding: 8px; background-color: #f9fafb; border-radius: 6px; font-size: 13px;">
-                                        ${data.additional_details}
-                                    </div>
-                                </div>
-                                ` : ''}
                             </div>
                         </div>
                         

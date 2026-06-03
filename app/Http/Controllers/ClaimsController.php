@@ -40,7 +40,7 @@ class ClaimsController extends Controller
 
         // Fetch claims
         $claims = Claim::where('user_id', Auth::id())
-            ->with(['item.category', 'user'])
+            ->with(['item.category', 'item.user', 'user'])
             ->get()
             ->map(function ($claim) {
                 $claim->type = 'claim';

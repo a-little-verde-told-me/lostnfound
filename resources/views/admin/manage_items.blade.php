@@ -128,7 +128,7 @@
             font-weight: 500;
             color: #1f2937;
         }
-        .posted-by {
+        .reported-by {
             color: #6b7280;
         }
         .type-badge {
@@ -213,6 +213,148 @@
             color: #9ca3af;
             cursor: not-allowed;
         }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 32px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 95%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid #e5e7eb;
+            padding-bottom: 16px;
+        }
+        .modal-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1f2937;
+        }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            color: #6b7280;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .modal-close:hover {
+            color: #1f2937;
+        }
+        .detail-row {
+            display: flex;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: #1f2937;
+            min-width: 140px;
+        }
+        .detail-value {
+            color: #4b5563;
+            flex: 1;
+        }
+        .modal-body-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .modal-column {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        .column-header {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2563eb;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .section-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 12px;
+            margin-bottom: 8px;
+        }
+        .image-container {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #f9fafb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 200px;
+            margin-bottom: 12px;
+        }
+        .image-container img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        .no-image {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        @media (max-width: 1024px) {
+            .modal-body-columns {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            .modal-content {
+                max-width: 800px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .modal-content {
+                max-width: 95vw;
+                padding: 20px;
+            }
+            .modal-header {
+                margin-bottom: 16px;
+                padding-bottom: 12px;
+            }
+            .modal-title {
+                font-size: 18px;
+            }
+        }
     </style>
         <h1 class="page-title">Manage User Reports</h1>
 
@@ -228,7 +370,7 @@
                     type="text"
                     id="searchInput"
                     name="search"
-                    placeholder="Search items"
+                    placeholder="Search reports"
                     value="{{ request('search') }}">
 
                 <input
@@ -258,7 +400,7 @@
                 <thead class="table-header">
                     <tr>
                         <th class="table-header-cell">Item Name</th>
-                        <th class="table-header-cell">Posted By</th>
+                        <th class="table-header-cell">Reported By</th>
                         <th class="table-header-cell">Type</th>
                         <th class="table-header-cell">Date</th>
                         <th class="table-header-cell">Status</th>
@@ -272,7 +414,7 @@
                                 <span class="item-name">{{ $item->name }}</span>
                             </td>
                             <td class="table-body-cell">
-                                <span class="posted-by">{{ $item->user?->name ?? 'Unknown' }}</span>
+                                <span class="reported-by">{{ $item->user?->name ?? 'Unknown' }}</span>
                             </td>
                             <td class="table-body-cell">
                                 <span class="type-badge {{ strtolower($item->type) === 'lost' ? 'type-lost' : 'type-found' }}">
@@ -280,7 +422,7 @@
                                 </span>
                             </td>
                             <td class="table-body-cell">
-                                <span class="date">{{ $item->date_reported->format('M d, Y') }}</span>
+                                <span class="date">{{ $item->created_at->format('M d, Y') }}</span>
                             </td>
                             <td class="table-body-cell">
                                 <span class="status-badge {{ strtolower($item->status) === 'active' ? 'status-active' : (strtolower($item->status) === 'claimed' ? 'status-claimed' : 'status-returned') }}">
@@ -288,7 +430,7 @@
                                 </span>
                             </td>
                             <td class="table-body-cell">
-                                <button class="view-button">View</button>
+                                <button class="view-button" onclick="openItemModal({{ $item->id }})">View</button>
                             </td>
                         </tr>
                     @empty
@@ -305,7 +447,21 @@
         <!-- Pagination -->
         <div style="margin-top: 24px; display: flex; justify-content: center;">
             {{ $items->links() }}
-    </div>
+        </div>
+
+        <!-- Modal -->
+        <div id="itemModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title">Item Report Details</h2>
+                    <button class="modal-close" onclick="closeItemModal()">&times;</button>
+                </div>
+
+                <div id="modalBody">
+                    <!-- Content will be loaded here -->
+                </div>
+            </div>
+        </div>
 </body>
 <script>
     const searchInput = document.getElementById('searchInput');
@@ -350,5 +506,121 @@
 
         rows.forEach(row => tbody.appendChild(row));
     }
+
+    function openItemModal(itemId) {
+        // Fetch item details via AJAX
+        fetch(`/api/items/${itemId}`)
+            .then(response => response.json())
+            .then(data => {
+                const modalBody = document.getElementById('modalBody');
+                const imageUrl = data.image ? `/storage/${data.image}` : null;
+                
+                modalBody.innerHTML = `
+                    <div class="modal-body-columns">
+                        <!-- LEFT COLUMN: Item Image & Basic Info -->
+                        <div class="modal-column">
+                            <div class="column-header">Item Information</div>
+                            
+                            <div class="image-container">
+                                ${imageUrl ? `
+                                    <img src="${imageUrl}" alt="${data.name}" />
+                                ` : `
+                                    <div class="no-image">No image available</div>
+                                `}
+                            </div>
+                            
+                            <div>
+                                <div class="section-title">Basic Details</div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Item Name:</div>
+                                    <div class="detail-value"><strong>${data.name}</strong></div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Type:</div>
+                                    <div class="detail-value">${data.type === 'found' ? 'Found' : 'Lost'}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Category:</div>
+                                    <div class="detail-value">${data.category?.name || 'N/A'}</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="section-title">Description</div>
+                                <div class="detail-value" style="padding: 8px; background-color: #f9fafb; border-radius: 6px;">
+                                    ${data.description || 'No description provided'}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- RIGHT COLUMN: Reporter & Location Info -->
+                        <div class="modal-column">
+                            <div class="column-header">Report Details</div>
+                            
+                            <div>
+                                <div class="section-title">Reporter Information</div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Name:</div>
+                                    <div class="detail-value"><strong>${data.user?.name || 'Unknown'}</strong></div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Email:</div>
+                                    <div class="detail-value">${data.user?.email || 'N/A'}</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="section-title">Location & Timeline</div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Location:</div>
+                                    <div class="detail-value">${data.location}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Found/Lost Date:</div>
+                                    <div class="detail-value">${new Date(data.date_reported).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
+                                </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Report Created:</div>
+                                    <div class="detail-value">${new Date(data.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="section-title">Current Status</div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Status:</div>
+                                    <div class="detail-value">
+                                        <span class="status-badge ${data.status === 'active' ? 'status-active' : (data.status === 'claimed' ? 'status-claimed' : 'status-returned')}">
+                                            ${data.status.charAt(0).toUpperCase() + data.status.slice(1)}
+                                        </span>
+                                    </div>
+                                </div>
+                                ${data.surrender_location ? `
+                                <div class="detail-row">
+                                    <div class="detail-label">Pickup Location:</div>
+                                    <div class="detail-value">${data.surrender_location}</div>
+                                </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.getElementById('itemModal').classList.add('active');
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function closeItemModal() {
+        document.getElementById('itemModal').classList.remove('active');
+    }
+
+    // Close modal when clicking outside
+    document.getElementById('itemModal').addEventListener('click', (e) => {
+        if (e.target.id === 'itemModal') {
+            closeItemModal();
+        }
+    });
+
 </script>
 </x-admin-layout>

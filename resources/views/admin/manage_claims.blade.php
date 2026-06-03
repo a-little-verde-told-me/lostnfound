@@ -565,6 +565,12 @@
                                         <div class="detail-label">Type:</div>
                                         <div class="detail-value">${data.item.type === 'found' ? 'Found' : 'Lost'}</div>
                                     </div>
+                                    ${data.item.category ? `
+                                    <div class="detail-row">
+                                        <div class="detail-label">Category:</div>
+                                        <div class="detail-value">${data.item.category}</div>
+                                    </div>
+                                    ` : ''}
                                 </div>
                                 
                                 <div>
@@ -585,6 +591,22 @@
                                         <div class="detail-value">${new Date(data.item.date_reported).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
                                     </div>
                                 </div>
+                                
+                                <div>
+                                    <div class="section-title">Reporter Information</div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Name:</div>
+                                        <div class="detail-value"><strong>${data.item.user.name}</strong></div>
+                                    </div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Email:</div>
+                                        <div class="detail-value">${data.item.user.email}</div>
+                                    </div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Phone:</div>
+                                        <div class="detail-value">${data.item.user.phone_number || 'N/A'}</div>
+                                    </div>
+                                </div>
                             </div>
                             
                             <!-- RIGHT COLUMN: Claim Details -->
@@ -600,18 +622,9 @@
                                 </div>
                                 
                                 <div>
-                                    <div class="section-title">Claimant Information</div>
-                                    <div class="detail-row">
-                                        <div class="detail-label">Name:</div>
-                                        <div class="detail-value"><strong>${data.user.name}</strong></div>
-                                    </div>
-                                    <div class="detail-row">
-                                        <div class="detail-label">Email:</div>
-                                        <div class="detail-value">${data.user.email}</div>
-                                    </div>
-                                    <div class="detail-row">
-                                        <div class="detail-label">Phone:</div>
-                                        <div class="detail-value">${data.phone_number || 'N/A'}</div>
+                                    <div class="section-title">Proof of Ownership Description</div>
+                                    <div class="detail-value" style="padding: 8px; background-color: #f9fafb; border-radius: 6px; font-size: 13px;">
+                                        ${data.proof_description || 'No description provided'}
                                     </div>
                                 </div>
                                 
@@ -625,19 +638,25 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="detail-row">
-                                        <div class="detail-label">Date Claimed:</div>
-                                        <div class="detail-value">${new Date(data.date_claimed).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
-                                    </div>
                                 </div>
+                                
                                 
                                 <div>
-                                    <div class="section-title">Proof of Ownership</div>
-                                    <div class="detail-value" style="padding: 8px; background-color: #f9fafb; border-radius: 6px; font-size: 13px;">
-                                        ${data.proof_description || 'No description provided'}
+                                    <div class="section-title">Claimant Information</div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Name:</div>
+                                        <div class="detail-value"><strong>${data.user.name}</strong></div>
+                                    </div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Email:</div>
+                                        <div class="detail-value">${data.user.email}</div>
+                                    </div>
+                                    <div class="detail-row">
+                                        <div class="detail-label">Phone:</div>
+                                        <div class="detail-value">${data.contact_number || 'N/A'}</div>
                                     </div>
                                 </div>
-                                
+
                                 ${data.additional_details ? `
                                 <div>
                                     <div class="section-title">Additional Details</div>

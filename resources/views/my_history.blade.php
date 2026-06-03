@@ -347,12 +347,10 @@
         }
 
         .history-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-top: 12px;
         }
 
         .info-item {
@@ -363,12 +361,29 @@
             font-weight: 600;
             color: #6b7280;
             text-transform: uppercase;
-            margin-bottom: 4px;
+            margin-bottom: 2px;
         }
 
         .info-value {
             color: #1f2937;
             font-size: 14px;
+        }
+
+        .view-button {
+            padding: 8px 16px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            margin-left: auto;
+        }
+
+        .view-button:hover {
+            background-color: #1d4ed8;
         }
 
         .claim-feedback {
@@ -407,7 +422,7 @@
         }
 
         .history-actions {
-            display: flex;
+            display: none;
             gap: 12px;
             margin-top: 16px;
         }
@@ -466,7 +481,13 @@
             }
 
             .history-info {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .view-button {
+                margin-left: 0;
+                width: 100%;
             }
 
             .history-actions {
@@ -480,6 +501,129 @@
             .filter-section {
                 justify-content: center;
             }
+        }
+
+        /* Button for reporter info */
+        .btn-view-reporter {
+            display: none;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            animation: fadeIn 0.2s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 32px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: #1f2937;
+        }
+
+        .modal-body {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .modal-info-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .modal-info-value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #1f2937;
+        }
+
+        .modal-info-value a {
+            color: #2563eb;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .modal-info-value a:hover {
+            color: #1d4ed8;
+            text-decoration: underline;
         }
     </style>
 
@@ -543,27 +687,12 @@
                             </div>
 
                             <div class="history-info">
-                                <div class="info-item">
-                                    <div class="info-label">Item Category</div>
-                                    <div class="info-value">{{ $item->item?->category?->name ?? '-' }}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Your Email</div>
-                                    <div class="info-value">{{ $item->contact_email }}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Your Phone</div>
-                                    <div class="info-value">{{ $item->contact_number }}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Item Location</div>
-                                    <div class="info-value">{{ $item->item?->location ?? '-' }}</div>
-                                </div>
+                                <button class="view-button" onclick="openDetailModal({{ $item->id }}, 'claim')">View Details</button>
                             </div>
-
+                            
                             @if($item->status === 'approved')
                                 <div class="claim-feedback approved">
-                                    <div class="claim-feedback-label">✓ Claim approved by Admin</div>
+                                    <div class="claim-feedback-label">Claim approved by Admin</div>
                                     <div class="claim-feedback-text">
                                         Pick up your item at: {{ $item->item?->location ?? 'Guard post, main entrance' }}
                                     </div>
@@ -575,12 +704,8 @@
                                         Reason: {{ $item->admin_feedback ?? 'Insufficient proof of ownership. Please provide more details.' }}
                                     </div>
                                 </div>
-                                <div class="history-actions">
+                                <div class="history-actions" style="display: flex;">
                                     <a href="{{ route('claim.edit', $item->id) }}" class="btn-small primary">Re-submit with better proof</a>
-                                </div>
-                            @elseif($item->status === 'pending')
-                                <div style="margin-top: 12px; padding: 12px; background-color: #fef3c7; border-left: 4px solid #d97706; border-radius: 4px;">
-                                    <div style="font-size: 12px; font-weight: 600; color: #92400e; text-transform: uppercase;">Admin is reviewing your claim</div>
                                 </div>
                             @endif
                         </div>
@@ -600,24 +725,9 @@
                             </div>
 
                             <div class="history-info">
-                                <div class="info-item">
-                                    <div class="info-label">Item Category</div>
-                                    <div class="info-value">{{ $item->item?->category?->name ?? '-' }}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Your Email</div>
-                                    <div class="info-value">{{ $item->contact_email }}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Your Phone</div>
-                                    <div class="info-value">{{ $item->contact_number }}</div>
-                                </div>
-                                <div class="info-item">
-                                    <div class="info-label">Item Found Location</div>
-                                    <div class="info-value">{{ $item->item?->location ?? '-' }}</div>
-                                </div>
+                                <button class="view-button" onclick="openDetailModal({{ $item->id }}, 'return')">View Details</button>
                             </div>
-
+                            
                             @if($item->status === 'approved')
                                 <div class="claim-feedback approved">
                                     <div class="claim-feedback-label">✓ Return approved by Admin</div>
@@ -627,17 +737,13 @@
                                 </div>
                             @elseif($item->status === 'rejected')
                                 <div class="claim-feedback">
-                                    <div class="claim-feedback-label">Return rejected by Admin</div>
+                                    <div class="claim-feedback-label">✗ Return rejected by Admin</div>
                                     <div class="claim-feedback-text">
                                         Your return submission could not be processed. Please contact support for more information.
                                     </div>
                                 </div>
-                                <div class="history-actions">
+                                <div class="history-actions" style="display: flex;">
                                     <a href="{{ route('return.edit', $item->id) }}" class="btn-small primary">Re-submit Return</a>
-                                </div>
-                            @elseif($item->status === 'pending')
-                                <div style="margin-top: 12px; padding: 12px; background-color: #fef3c7; border-left: 4px solid #d97706; border-radius: 4px;">
-                                    <div style="font-size: 12px; font-weight: 600; color: #92400e; text-transform: uppercase;">Admin is reviewing your return</div>
                                 </div>
                             @endif
                         </div>
@@ -646,4 +752,112 @@
             </div>
         @endif
     </div>
+
+    <!-- Detail Modal -->
+    <div id="detailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Claim Details</h2>
+                <button class="modal-close" onclick="closeDetailModal()">×</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Content will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let historyData = @json($history);
+
+        function openDetailModal(itemId, type) {
+            // Find the item in history
+            const item = historyData.find(h => h.id == itemId);
+            
+            if (!item) {
+                console.error('Item not found');
+                return;
+            }
+
+            const modal = document.getElementById('detailModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalBody = document.getElementById('modalBody');
+            
+            const itemType = type === 'claim' ? 'Claim' : 'Return';
+            modalTitle.textContent = `${itemType} Details`;
+            
+            // Build the modal content
+            let content = `
+                <div class="modal-info-item">
+                    <div class="modal-info-label">Item Name</div>
+                    <div class="modal-info-value">${item.item?.name || 'N/A'}</div>
+                </div>
+                <div class="modal-info-item">
+                    <div class="modal-info-label">Item Type</div>
+                    <div class="modal-info-value">${item.item?.type ? item.item.type.charAt(0).toUpperCase() + item.item.type.slice(1) : 'N/A'}</div>
+                </div>
+                <div class="modal-info-item">
+                    <div class="modal-info-label">Status</div>
+                    <div class="modal-info-value">${item.status.charAt(0).toUpperCase() + item.status.slice(1)}</div>
+                </div>
+                <div class="modal-info-item">
+                    <div class="modal-info-label">Submitted Date</div>
+                    <div class="modal-info-value">${new Date(item.date).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</div>
+                </div>
+                </div>
+            `;
+
+            // Only show reporter information if the claim/return is approved
+            if (item.status === 'approved' && item.item?.user) {
+                content += `
+                    <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
+                    
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Reporter Name</div>
+                        <div class="modal-info-value">${item.item.user.name}</div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Reporter Email</div>
+                        <div class="modal-info-value">
+                            <a href="mailto:${item.item.user.email}">${item.item.user.email}</a>
+                        </div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Reporter Phone</div>
+                        <div class="modal-info-value">
+                            <a href="tel:${item.item.user.phone_number}">${item.item.user.phone_number}</a>
+                        </div>
+                    </div>
+                    <div class="modal-info-item">
+                        <div class="modal-info-label">Item Location</div>
+                        <div class="modal-info-value">${item.item?.location || 'Not specified'}</div>
+                    </div>
+                `;
+            }
+
+            modalBody.innerHTML = content;
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDetailModal() {
+            const modal = document.getElementById('detailModal');
+            modal.classList.remove('show');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('detailModal');
+            if (event.target === modal) {
+                closeDetailModal();
+            }
+        });
+
+        // Close modal with Escape key
+        window.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeDetailModal();
+            }
+        });
+    </script>
 </x-layout>

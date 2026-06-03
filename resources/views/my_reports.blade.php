@@ -36,7 +36,8 @@
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 16px;
+            margin-bottom: 12px;
+            gap: 16px;
         }
 
         .report-title {
@@ -73,65 +74,35 @@
         .report-date {
             font-size: 13px;
             color: #6b7280;
-            margin-bottom: 16px;
+            margin-top: 4px;
         }
 
         .report-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 12px;
         }
 
         .info-item {
-            padding: 12px;
-            background: #f9fafb;
-            border-radius: 6px;
+            font-size: 13px;
         }
 
         .info-label {
-            font-size: 12px;
             font-weight: 600;
             color: #6b7280;
             text-transform: uppercase;
-            margin-bottom: 4px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .info-label i {
-            color: #2563eb;
-            width: 14px;
-            text-align: center;
+            margin-bottom: 2px;
         }
 
         .info-value {
-            font-size: 14px;
             color: #1f2937;
-            font-weight: 500;
+            font-size: 14px;
         }
 
         .report-description {
-            padding: 12px;
-            background: #f9fafb;
-            border-radius: 6px;
-            margin-bottom: 16px;
-            border-left: 3px solid #2563eb;
-        }
-
-        .report-description-label {
-            font-size: 12px;
-            font-weight: 600;
-            color: #6b7280;
-            text-transform: uppercase;
-            margin-bottom: 8px;
-        }
-
-        .report-description-text {
-            font-size: 14px;
-            color: #1f2937;
-            line-height: 1.5;
+            display: none;
         }
 
         .admin-feedback {
@@ -224,15 +195,14 @@
         .report-actions {
             display: flex;
             gap: 12px;
-            padding-top: 16px;
-            border-top: 1px solid #e5e7eb;
+            margin-top: 12px;
         }
 
         .btn {
-            padding: 10px 16px;
+            padding: 8px 16px;
             border-radius: 6px;
             border: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.2s;
@@ -445,9 +415,52 @@
             margin-top: 12px;
         }
 
+        .filter-section {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-button {
+            padding: 10px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .filter-button:hover {
+            background: #f3f4f6;
+            border-color: #9ca3af;
+        }
+
+        .filter-button.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
         @media (max-width: 768px) {
+            .filter-section {
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .filter-button {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+
             .report-info {
-                grid-template-columns: 1fr;
+                flex-direction: column;
+                align-items: flex-start;
             }
 
             .report-header {
@@ -477,6 +490,15 @@
             </div>
         @endif
 
+        @if (!$reports->isEmpty())
+            <!-- Filter Section -->
+            <div class="filter-section">
+                <button class="filter-button active" onclick="filterReports('all')">All ({{ $reports->count() }})</button>
+                <button class="filter-button" onclick="filterReports('Found')">Found ({{ $reports->where('type', 'Found')->count() }})</button>
+                <button class="filter-button" onclick="filterReports('Lost')">Lost ({{ $reports->where('type', 'Lost')->count() }})</button>
+            </div>
+        @endif
+
         @if ($reports->isEmpty())
             <div class="empty-state">
                 <div class="empty-icon"><i class="fa fa-file-text"></i></div>
@@ -489,90 +511,67 @@
             </div>
         @else
             @foreach ($reports as $report)
-                <div class="report-card {{ $report->type }}">
+                <div class="report-card {{ strtolower($report->type) }}" data-report-type="{{ $report->type }}">
                     <!-- Header with Title and Status -->
                     <div class="report-header">
-                        <h2 class="report-title">{{ $report->name }}</h2>
-                        <span class="report-status status-{{ strtolower($report->status) }}">
-                            {{ ucfirst($report->status) }}
+                        <div>
+                            <h2 class="report-title">{{ $report->name }}</h2>
+                            <div class="report-date">Submitted {{ $report->created_at->format('M d, Y \a\t g:i A') }}</div>
+                        </div>
+                        @php
+                            $displayStatus = $report->getDisplayStatus();
+                            $statusClass = $report->isResolved() ? 'approved' : strtolower($displayStatus);
+                        @endphp
+                        <span class="report-status status-{{ $statusClass }}">
+                            {{ ucfirst($displayStatus) }}
                         </span>
                     </div>
 
-                    <!-- Date Submitted -->
-                    <div class="report-date">
-                        Submitted {{ $report->date_reported->format('M d, Y') }} at {{ $report->date_reported->format('h:i A') }}
-                    </div>
-
-                    <!-- Report Information -->
-                    <div class="report-info">
-                        <div class="info-item">
-                            <div class="info-label"><i class="fa fa-map-marker"></i> Found Location</div>
-                            <div class="info-value">{{ $report->location }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label"><i class="fa fa-map-marker"></i> Surrender Location</div>
-                            <div class="info-value">{{ $report->surrender_location ?? 'Not specified' }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label"><i class="fa fa-tag"></i> Category</div>
-                            <div class="info-value">{{ $report->category->name ?? 'N/A' }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label"><i class="fa fa-file"></i> Type</div>
-                            <div class="info-value">{{ ucfirst($report->type) }}</div>
-                        </div>
-                        <div class="info-item">
-                            <div class="info-label"><i class="fa fa-info-circle"></i> Status</div>
-                            <div class="info-value">{{ ucfirst($report->status) }}</div>
-                        </div>
-                    </div>
-
-                    <!-- Description -->
-                    <div class="report-description">
-                        <div class="report-description-label">Description</div>
-                        <div class="report-description-text">{{ $report->description }}</div>
-                        @if ($report->image)
-                            <img src="{{ asset('storage/' . $report->image) }}" alt="{{ $report->name }}" class="report-image">
-                        @endif
-                    </div>
-
-                    <!-- Admin Feedback/Messages -->
-                    <!-- @if ($report->status === 'Approved')
+                    <!-- Approval Message Card -->
+                    @if ($report->getApprovedReturn())
                         <div class="admin-approval">
-                            <div class="admin-approval-label"><i class="fa fa-check-circle"></i> Claim approved by Admin</div>
-                            <div class="admin-approval-text">Your report has been approved and verified.</div>
+                            <div class="admin-approval-label">
+                                <i class="fa fa-check"></i> Item Returned
+                            </div>
+                            <div class="admin-approval-text">
+                                Someone returned this item, and the admin has approved the return.
+                            </div>
                         </div>
-                    @elseif ($report->status === 'Rejected')
-                        <div class="admin-action">
-                            <div class="admin-action-label"><i class="fa fa-times-circle"></i> Report rejected by Admin</div>
-                            <div class="admin-action-text">Your report does not meet the requirements. Please review and resubmit with better details or proof.</div>
+                    @elseif ($report->getApprovedClaim())
+                        <div class="admin-approval">
+                            <div class="admin-approval-label">
+                                <i class="fa fa-check"></i> Item Claimed
+                            </div>
+                            <div class="admin-approval-text">
+                                Someone claimed this item, and the admin has approved the claim.
+                            </div>
                         </div>
-                    @else
-                        <div class="admin-feedback">
-                            <div class="admin-feedback-label"><i class="fa fa-spinner"></i> Admin is reviewing your report</div>
-                            <div class="admin-feedback-text">Your report is under review. Please wait for admin feedback.</div>
-                        </div>
-                    @endif -->
+                    @endif
 
-                    <!-- Action Buttons -->
-                    <div class="report-actions">
-                        @if ($report->status === 'Rejected')
-                            <button class="btn btn-primary">Re-submit with better proof</button>
-                        @endif
-                        <button class="btn btn-primary" onclick="openEditModal({{ $report->id }})">
-                            <i class="fa fa-edit"></i> Edit
-                        </button>
-                        <button class="btn btn-danger" onclick="confirmDelete({{ $report->id }})">
-                            <i class="fa fa-trash"></i> Delete
-                        </button>
-                        <a href="{{ route('home') }}" class="btn btn-secondary">Back to Home</a>
+                    <!-- Report Information - Minimal -->
+                    <div class="report-info">
+                        <button class="btn btn-primary" onclick="openReportDetailModal({{ $report->id }})">View Details</button>
                     </div>
                 </div>
             @endforeach
         @endif
     </div>
 
-    <!-- Edit Report Modal -->
+    <!-- Report Detail Modal -->
+    <div id="reportDetailModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="detailModalTitle">Report Details</h2>
+                <button class="modal-close" onclick="closeReportDetailModal()">×</button>
+            </div>
+            <div class="modal-body" id="detailModalBody">
+                <!-- Content will be loaded here -->
+            </div>
+            <div class="modal-footer" id="detailModalFooter">
+                <!-- Footer buttons will be dynamically added here -->
+            </div>
+        </div>
+    </div>
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -630,15 +629,26 @@
             @endforeach
         };
 
+        // Track the current detail modal report ID
+        let currentDetailReportId = null;
+
         // Get reports data for the modal
         const reportsData = {
             @foreach ($reports as $report)
                 {{ $report->id }}: {
                     name: "{{ $report->name }}",
                     category_id: {{ $report->category_id }},
+                    category_name: "{{ $report->category->name ?? 'N/A' }}",
                     location: "{{ $report->location }}",
                     surrender_location: "{{ $report->surrender_location ?? '' }}",
-                    description: "{{ addslashes($report->description) }}"
+                    description: "{{ addslashes($report->description) }}",
+                    type: "{{ $report->type }}",
+                    status: "{{ $report->status }}",
+                    image: "{{ $report->image ? asset('storage/' . $report->image) : '' }}",
+                    created_at: "{{ $report->created_at->format('M d, Y \\a\\t g:i A') }}",
+                    date_reported: "{{ $report->date_reported->format('M d, Y \\a\\t g:i A') }}",
+                    approved_claim: {!! json_encode($report->getApprovedClaim() ? ['user_name' => $report->getApprovedClaim()->user->name, 'email' => $report->getApprovedClaim()->contact_email, 'phone' => $report->getApprovedClaim()->contact_number] : null) !!},
+                    approved_return: {!! json_encode($report->getApprovedReturn() ? ['user_name' => $report->getApprovedReturn()->user->name, 'email' => $report->getApprovedReturn()->email, 'phone' => $report->getApprovedReturn()->phone_number] : null) !!}
                 },
             @endforeach
         };
@@ -697,6 +707,164 @@
 
             document.body.appendChild(form);
             form.submit();
+        }
+
+        function openReportDetailModal(reportId) {
+            currentDetailReportId = reportId;
+            const report = reportsData[reportId];
+            if (!report) {
+                console.error('Report not found:', reportId);
+                return;
+            }
+
+            const modal = document.getElementById('reportDetailModal');
+            const modalTitle = document.getElementById('detailModalTitle');
+            const modalBody = document.getElementById('detailModalBody');
+            const modalFooter = document.getElementById('detailModalFooter');
+
+            modalTitle.textContent = `${report.name} - Report Details`;
+
+            let content = `
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Item Name</div>
+                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.name}</div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Report Type</div>
+                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Status</div>
+                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.approved_return ? 'Returned' : (report.approved_claim ? 'Claimed' : report.status.charAt(0).toUpperCase() + report.status.slice(1))}</div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">${report.type === 'Lost' ? 'Date Lost' : 'Date Found'}</div>
+                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.date_reported}</div>
+                </div>
+
+                <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Category</div>
+                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.category_name}</div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Found Location</div>
+                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.location}</div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Surrender Location</div>
+                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.surrender_location || 'Not specified'}</div>
+                </div>
+
+                <div style="margin-bottom: 16px;">
+                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Description</div>
+                    <div style="color: #1f2937; font-size: 14px; line-height: 1.5; padding: 12px; background-color: #f9fafb; border-radius: 6px;">${report.description}</div>
+                </div>
+            `;
+
+            // Show claimant/returner information if available
+            if (report.approved_return) {
+                content += `
+                    <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
+                    <div style="padding: 12px; background-color: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 6px; margin-bottom: 16px;">
+                        <div style="font-weight: 600; color: #166534; margin-bottom: 12px; font-size: 12px;">RETURNER INFORMATION</div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Name</div>
+                            <div style="color: #1f2937; font-size: 14px;">${report.approved_return.user_name}</div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Email</div>
+                            <div style="color: #1f2937; font-size: 14px;">${report.approved_return.email}</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Phone Number</div>
+                            <div style="color: #1f2937; font-size: 14px;">${report.approved_return.phone}</div>
+                        </div>
+                    </div>
+                `;
+            } else if (report.approved_claim) {
+                content += `
+                    <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
+                    <div style="padding: 12px; background-color: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 6px; margin-bottom: 16px;">
+                        <div style="font-weight: 600; color: #166534; margin-bottom: 12px; font-size: 12px;">CLAIMANT INFORMATION</div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Name</div>
+                            <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.user_name}</div>
+                        </div>
+                        <div style="margin-bottom: 10px;">
+                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Email</div>
+                            <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.email}</div>
+                        </div>
+                        <div>
+                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Phone Number</div>
+                            <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.phone}</div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (report.image) {
+                content += `
+                    <div style="margin-bottom: 16px;">
+                        <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px; font-size: 12px;">Photo</div>
+                        <img src="${report.image}" alt="${report.name}" style="max-width: 100%; height: auto; border-radius: 6px;">
+                    </div>
+                `;
+            }
+
+            modalBody.innerHTML = content;
+
+            // Build footer based on report status
+            const isResolved = report.approved_claim || report.approved_return;
+            let footerHTML = `<button type="button" class="btn-cancel" onclick="closeReportDetailModal()">Close</button>`;
+            
+            if (!isResolved) {
+                footerHTML += `<button type="button" class="btn btn-primary" onclick="openEditFromDetail()">Edit</button>`;
+                footerHTML += `<button type="button" class="btn btn-danger" onclick="deleteFromDetail()">Delete</button>`;
+            }
+            
+            modalFooter.innerHTML = footerHTML;
+            modal.classList.add('active');
+        }
+
+        function closeReportDetailModal() {
+            document.getElementById('reportDetailModal').classList.remove('active');
+        }
+
+        function openEditFromDetail() {
+            if (currentDetailReportId) {
+                openEditModal(currentDetailReportId);
+            }
+        }
+
+        function deleteFromDetail() {
+            if (currentDetailReportId) {
+                confirmDelete(currentDetailReportId);
+            }
+        }
+
+        function filterReports(type) {
+            // Update active button
+            const buttons = document.querySelectorAll('.filter-button');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Filter reports
+            const cards = document.querySelectorAll('.report-card');
+            cards.forEach(card => {
+                if (type === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const reportType = card.getAttribute('data-report-type');
+                    card.style.display = reportType.toLowerCase() === type.toLowerCase() ? 'block' : 'none';
+                }
+            });
         }
 
         // Close modal when clicking outside
