@@ -46,9 +46,11 @@ Follow these steps to run the project on your local machine.
 ### Step 1 - Clone the repository
 
 ```bash
-git clone https://github.com/your-username/findit-lost-and-found.git
+git clone https://github.com/a-little-verde-told-me/lostnfound.git
 cd findit-lost-and-found
-Step 2 - Install dependencies
+
+### Step 2 - Install dependencies
+
 composer install
 Step 3 - Set up your environment file
 cp .env.example .env
@@ -60,21 +62,27 @@ DB_PORT=your_port
 DB_DATABASE=lostnfound
 DB_USERNAME=root
 DB_PASSWORD=your_password
-Step 4 - Create the database
+
+### Step 4 - Create the database
+
 Open your MySQL client (phpMyAdmin or terminal) and create a database named:
 lostnfound 
-Step 5 - Run migrations and seeders
+
+### Step 5 - Run migrations and seeders
+
 php artisan migrate
 php artisan db:seed
 This will create all the tables and add sample data including a default admin account.
 Default admin credentials:
 Email:    admin@example.com
 Password: admin123
-Step 6 - Run the development server
+
+### Step 6 - Run the development server
+
 php artisan serve
 Click Ctrl + click the link to directly go to your browser or Open your browser and go to:
 http://127.0.0.1:8000
 
-Hosting
+## Hosting
 The live version of this project is deployed here:
 https://findit-app.up.railway.app
