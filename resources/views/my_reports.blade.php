@@ -13,7 +13,7 @@
             text-align: center;
             margin-bottom: 40px;
         }
-
+        
         .report-card {
             background: white;
             border-radius: 12px;

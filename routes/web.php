@@ -7,6 +7,7 @@ use App\Http\Controllers\ClaimsController;
 use App\Http\Middleware\IsAdmin;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     $items = \App\Models\Item::where('status', 'active')
@@ -34,10 +35,6 @@ Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 Route::get('/signup', [AuthController::class, 'showSignup'])->name('signup');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-// Admin Authentication Routes
-Route::get('/admin/login', [AuthController::class, 'showAdminLogin'])->name('admin.login');
-Route::post('/admin/login', [AuthController::class, 'adminLogin'])->name('admin.login.post');
 
 // Report Routes
 Route::middleware('auth')->group(function () {
@@ -78,8 +75,13 @@ Route::middleware('auth')->group(function () {
             'item_id' => 'required|exists:item,id',
             'contact_email' => 'required|email',
             'contact_phone' => 'required|string|max:20',
-            'proof_upload' => 'required|file|mimes:jpeg,png,jpg,pdf,doc,docx|max:5120',
+            'proof_upload' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
             'additional_details' => 'nullable|string|max:1000'
+        ], [
+            'proof_upload.required' => 'Please upload a proof image of the found item.',
+            'proof_upload.image' => 'The file must be an image.',
+            'proof_upload.mimes' => 'The image must be JPG, PNG, or GIF format.',
+            'proof_upload.max' => 'The image size must not exceed 2MB.'
         ]);
 
         // Store the file
@@ -89,9 +91,8 @@ Route::middleware('auth')->group(function () {
             $filePath = $file->store('returns', 'public');
         }
 
-        // Create a return record
-        \Illuminate\Support\Facades\DB::table('return')->insert([
-            'user_id' => \Illuminate\Support\Facades\Auth::id(),
+        DB::table('return')->insert([
+            'user_id' => Auth::id(),
             'item_id' => $validated['item_id'],
             'contact_email' => $validated['contact_email'],
             'contact_number' => $validated['contact_phone'],

@@ -28,7 +28,7 @@ class AuthController extends Controller
     }
 
     /**
-     * Handle login
+     * Handle login - unified for both users and admins
      */
     public function login(Request $request): RedirectResponse
     {
@@ -38,7 +38,14 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
             $request->session()->regenerate();
+            
+            // Redirect admin users to admin dashboard, regular users to home
+            if ($user->role === 'admin') {
+                return redirect()->intended(route('admin.dashboard'));
+            }
+            
             return redirect()->intended(route('home'));
         }
 
@@ -67,43 +74,7 @@ class AuthController extends Controller
         return redirect(route('login'))->with('status', 'Account created successfully. Please login.');
     }
 
-    /**
-     * Show admin login form
-     */
-    public function showAdminLogin(): View
-    {
-        return view('auth.admin_login');
-    }
 
-    /**
-     * Handle admin login
-     */
-    public function adminLogin(Request $request): RedirectResponse
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required'
-        ]);
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            
-            // Check if user is admin
-            if ($user->role !== 'admin') {
-                Auth::logout();
-                return back()->withErrors([
-                    'email' => 'You are not authorized to access admin panel.',
-                ])->onlyInput('email');
-            }
-
-            $request->session()->regenerate();
-            return redirect()->intended(route('admin.dashboard'));
-        }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ])->onlyInput('email');
-    }
 
     /**
      * Handle logout

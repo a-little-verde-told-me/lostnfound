@@ -14,9 +14,8 @@
         }
         .navbar {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 16px 32px;
+            padding: 0 32px;
             background: white;
             border-bottom: 1px solid #e5e7eb;
             position: fixed;
@@ -24,21 +23,32 @@
             left: 0;
             right: 0;
             z-index: 1000;
+            height: 60px;
         }
         .navbar-logo {
             font-size: 24px;
             font-weight: 900;
             color: #1f2937;
             min-width: fit-content;
+            flex-shrink: 0;
         }
         .navbar-logo-highlight {
             color: #2563eb;
         }
         .navbar-links {
             display: flex;
-            gap: 40px;
+            gap: 32px;
+            align-items: center;
+            flex: 1;
+            justify-content: center;
+        }
+        .navbar-right {
+            display: flex;
+            gap: 16px;
             align-items: center;
             margin-left: auto;
+            border-left: 1px solid #e5e7eb;
+            padding-left: 32px;
         }
         .navbar-link {
             color: #1f2937;
@@ -61,16 +71,23 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #d1d5db;
+            background: #2563eb;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: #6b7280;
-            font-size: 12px;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .user-avatar:hover {
+            background: #1d4ed8;
         }
         .navbar-logout {
             color: #2563eb;
+            font-size: 14px;
+            font-weight: 500;
         }
         .navbar-logout:hover {
             color: #1d4ed8;
@@ -85,35 +102,43 @@
     <!-- Navbar -->
     <div class="navbar">
         <div class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></div>
-        <div class="navbar-links">
-            <x-nav-link href="/">Home</x-nav-link>
-            <x-nav-link href="#">Browse</x-nav-link>
-            
-            @auth
-                <!-- Logged-in user navigation -->
+        
+        @auth
+            <!-- Logged-in user navigation -->
+            <div class="navbar-links">
+                <x-nav-link href="/">Home</x-nav-link>
+                <x-nav-link href="#">Browse</x-nav-link>
                 <x-nav-link href="{{ route('report.found') }}">Report Found</x-nav-link>
                 <x-nav-link href="{{ route('report.lost') }}">Report Lost</x-nav-link>
                 <x-nav-link href="{{ route('history.index') }}">My History</x-nav-link>
-                
-                <!-- User avatar and logout -->
-                <div style="display: flex; gap: 12px; align-items: center; margin-left: 20px; border-left: 1px solid #e5e7eb; padding-left: 20px;">
-                    <a href="{{ route('profile') }}" style="text-decoration: none;">
-                        <div class="user-avatar" style="cursor: pointer; transition: background 0.2s;">
-                            {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                        </div>
-                    </a>
-                    <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                        @csrf
-                        <button type="submit" class="navbar-link navbar-logout" style="background: none; border: none; cursor: pointer; padding: 0;">Logout</button>
-                    </form>
-                </div>
-            @else
-                <!-- Guest user navigation -->
+            </div>
+            
+            <!-- User avatar and logout -->
+            <div class="navbar-right" style="margin-left: auto;">
+                <a href="{{ route('profile') }}" style="text-decoration: none;">
+                    <div class="user-avatar">
+                        {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                    </div>
+                </a>
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="navbar-link navbar-logout" style="background: none; border: none; cursor: pointer; padding: 0;">Logout</button>
+                </form>
+            </div>
+        @else
+            <!-- Guest user navigation -->
+            <div class="navbar-links">
+                <x-nav-link href="/">Home</x-nav-link>
+                <x-nav-link href="#">Browse</x-nav-link>
                 <x-nav-link href="/about">About</x-nav-link>
                 <x-nav-link href="/contact">Contact</x-nav-link>
-                <x-nav-link href="/login">Login</x-nav-link>
-            @endauth
-        </div>
+            </div>
+            
+            <!-- Login button -->
+            <div class="navbar-right" style="margin-left: auto;">
+                <a href="/login" class="navbar-link login" style="padding: 8px 16px; background-color: #2563eb; color: white; border-radius: 6px;">Login</a>
+            </div>
+        @endauth
     </div>
 
     <!-- Main Content -->

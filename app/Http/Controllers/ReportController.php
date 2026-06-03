@@ -48,14 +48,17 @@ class ReportController extends Controller
 
             // Handle image upload (optional)
             if ($request->hasFile('photo')) {
-                try {
-                    $file = $request->file('photo');
-                    if ($file->isValid()) {
-                        $imagePath = $file->storePublicly('items', 'public');
+                $file = $request->file('photo');
+                if ($file && $file->isValid()) {
+                    try {
+                        // Store the file and get the path
+                        $path = $file->store('items', 'public');
+                        if ($path) {
+                            $imagePath = $path;
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Image upload error: ' . $e->getMessage());
                     }
-                } catch (\Exception $e) {
-                    // Silently fail - image is optional
-                    $imagePath = null;
                 }
             }
 
@@ -69,7 +72,7 @@ class ReportController extends Controller
                 'status' => 'active',
                 'location' => $validated['location_found'],
                 'surrender_location' => $validated['location_current'],
-                'date_reported' => now(),
+                'date_reported' => $validated['date_found'],
                 'user_id' => Auth::id() ?? 1
             ]);
 
@@ -115,14 +118,17 @@ class ReportController extends Controller
 
             // Handle image upload (optional)
             if ($request->hasFile('photo')) {
-                try {
-                    $file = $request->file('photo');
-                    if ($file->isValid()) {
-                        $imagePath = $file->storePublicly('items', 'public');
+                $file = $request->file('photo');
+                if ($file && $file->isValid()) {
+                    try {
+                        // Store the file and get the path
+                        $path = $file->store('items', 'public');
+                        if ($path) {
+                            $imagePath = $path;
+                        }
+                    } catch (\Exception $e) {
+                        \Log::error('Image upload error: ' . $e->getMessage());
                     }
-                } catch (\Exception $e) {
-                    // Silently fail - image is optional
-                    $imagePath = null;
                 }
             }
 
@@ -135,7 +141,7 @@ class ReportController extends Controller
                 'type' => 'Lost',
                 'status' => 'active',
                 'location' => $validated['location_lost'],
-                'date_reported' => now(),
+                'date_reported' => $validated['date_lost'],
                 'user_id' => Auth::id() ?? 1
             ]);
 

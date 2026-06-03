@@ -484,12 +484,12 @@
                         </div>
                         </div>
                         <div class="upload-text">Upload a photo of the found item</div>
-                        <div class="upload-help">JPG, PNG, or GIF</div>
+                        <div class="upload-help">JPG, PNG, or GIF (Max 2MB)</div>
                     </div>
-                    <input type="file" id="proof_upload" name="proof_upload" accept="image/*,.pdf,.doc,.docx" style="display: none;" required>
+                    <input type="file" id="proof_upload" name="proof_upload" accept="image/*" style="display: none;">
                     <div id="photoPreview"></div>
                     @error('proof_upload')
-                        <span style="color: #ef4444; font-size: 12px;">{{ $message }}</span>
+                        <div style="color: #ef4444; font-size: 12px; margin-top: 8px; padding: 8px; background: #fee2e2; border-radius: 4px;">{{ $message }}</div>
                     @enderror
                 </div>
 
@@ -520,6 +520,7 @@
             const photoUploadArea = document.getElementById('photoUploadArea');
             const photoInput = document.getElementById('proof_upload');
             const photoPreview = document.getElementById('photoPreview');
+            const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
 
             photoUploadArea.addEventListener('click', () => photoInput.click());
 
@@ -547,6 +548,21 @@
             function handlePhotoChange() {
                 if (photoInput.files.length > 0) {
                     const file = photoInput.files[0];
+                    
+                    // Validate file size
+                    if (file.size > MAX_FILE_SIZE) {
+                        alert('File size exceeds 2MB limit. Please choose a smaller file.');
+                        photoInput.value = '';
+                        return;
+                    }
+                    
+                    // Validate file type
+                    if (!file.type.startsWith('image/')) {
+                        alert('Please upload an image file (JPG, PNG, or GIF).');
+                        photoInput.value = '';
+                        return;
+                    }
+                    
                     const reader = new FileReader();
                     reader.onload = (e) => {
                         photoUploadArea.innerHTML = '<div style="color: #10b981; font-weight: 600;">✓ Image selected</div>';
@@ -559,6 +575,8 @@
                         `;
                     };
                     reader.readAsDataURL(file);
+                } else {
+                    removePhoto();
                 }
             }
 
@@ -571,11 +589,27 @@
                         </div>
                     </div>
                     <div class="upload-text">Upload a photo of the found item</div>
-                    <div class="upload-help">JPG, PNG, or GIF</div>
+                    <div class="upload-help">JPG, PNG, or GIF (Max 2MB)</div>
                 `;
                 photoUploadArea.classList.remove('has-file');
                 photoPreview.innerHTML = '';
             }
+
+            // Form validation on submit
+            document.getElementById('returnForm').addEventListener('submit', function(e) {
+                if (!photoInput.files || photoInput.files.length === 0) {
+                    e.preventDefault();
+                    alert('Please upload a proof image of the found item.');
+                    return false;
+                }
+                
+                const file = photoInput.files[0];
+                if (file.size > MAX_FILE_SIZE) {
+                    e.preventDefault();
+                    alert(`File size exceeds 2MB limit (Current: ${(file.size / 1024 / 1024).toFixed(2)}MB). Please choose a smaller file.`);
+                    return false;
+                }
+            });
         </script>
 </body>
 </html>

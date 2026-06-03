@@ -15,6 +15,7 @@
         body {
             background-color: #f9fafb;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            margin-top: 60px;
         }
 
         /* Navbar Styles */
@@ -22,9 +23,15 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 32px;
+            padding: 0 32px;
             background: white;
             border-bottom: 1px solid #e5e7eb;
+            height: 60px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
         }
 
         .navbar-logo {
@@ -49,13 +56,13 @@
         .navbar-nav a {
             text-decoration: none;
             color: #1f2937;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 500;
             transition: color 0.2s;
         }
 
         .navbar-nav a:hover {
-            color: #2563eb;
+            color: #6b7280;
         }
 
         .navbar-nav a.active {
@@ -67,6 +74,9 @@
             display: flex;
             align-items: center;
             gap: 16px;
+            margin-left: 32px;
+            border-left: 1px solid #e5e7eb;
+            padding-left: 32px;
         }
 
         .user-menu {
@@ -77,28 +87,35 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: #e5e7eb;
-            cursor: pointer;
+            background: #2563eb;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 600;
-            color: #6b7280;
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.2s;
             text-decoration: none;
-            transition: all 0.2s;
         }
 
         .user-avatar:hover {
-            background-color: #2563eb;
-            color: white;
+            background: #1d4ed8;
         }
 
         .nav-link-logout {
-            color: #ef4444;
+            color: #2563eb;
+            font-size: 14px;
+            font-weight: 500;
+            text-decoration: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.2s;
         }
 
         .nav-link-logout:hover {
-            color: #dc2626;
+            color: #1d4ed8;
         }
 
         .nav-link-login {

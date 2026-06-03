@@ -188,7 +188,7 @@
             </div>
 
             <div class="login-link">
-                <a href="{{ route('admin.login') }}">Go back to login as admin</a>
+                <a href="{{ route('login') }}">Go back to login</a>
             </div>
 
         </div>

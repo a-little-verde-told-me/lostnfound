@@ -1,4 +1,4 @@
-<x-layout title="Login">
+<x-layout title="Login to FindIt">
     <style slot="styles">
         .login-container {
             display: flex;
@@ -86,35 +86,6 @@
         .signup-link a:hover {
             text-decoration: underline;
         }
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 32px 0;
-        }
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background-color: #e5e7eb;
-        }
-        .divider-text {
-            padding: 0 12px;
-            color: #9ca3af;
-            font-size: 13px;
-        }
-        .admin-link {
-            text-align: center;
-            margin-top: 16px;
-        }
-        .admin-link a {
-            color: #2563eb;
-            text-decoration: none;
-            font-size: 14px;
-        }
-        .admin-link a:hover {
-            text-decoration: underline;
-        }
         .error-message {
             color: #dc2626;
             font-size: 13px;
@@ -151,14 +122,6 @@
 
             <div class="signup-link">
                 No account? <a href="{{ route('signup') }}">Create here</a>
-            </div>
-
-            <div class="divider">
-                <span class="divider-text">or</span>
-            </div>
-
-            <div class="admin-link">
-                <a href="{{ route('admin.login') }}">Proceed to login as Admin</a>
             </div>
         </div>
     </div>
