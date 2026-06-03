@@ -144,7 +144,7 @@
             <a href="{{ route('admin.items') }}" class="sidebar-link">Manage All Items</a>
             <a href="{{ route('admin.categories') }}" class="sidebar-link">Manage Category</a>
             <a href="{{ route('admin.users') }}" class="sidebar-link">Manage Users</a>
-            <a href="{{ route('admin.reports') }}" class="sidebar-link active">Reports</a>
+            <a href="{{ route('admin.reports') }}" class="sidebar-link">Reports</a>
         </div>
 
         <div class="sidebar-spacer"></div>

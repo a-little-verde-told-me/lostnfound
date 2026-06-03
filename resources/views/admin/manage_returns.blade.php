@@ -492,7 +492,7 @@
         <div class="sidebar-section">
             <div class="sidebar-section-title">MANAGEMENT</div>
             <a href="{{ route('admin.claims') }}" class="sidebar-link">Manage Claims</a>
-            <a href="{{ route('admin.returns') }}" class="sidebar-link active">Manage Returns</a>
+            <a href="{{ route('admin.returns') }}" class="sidebar-link">Manage Submissions</a>
             <a href="{{ route('admin.items') }}" class="sidebar-link">Manage All Items</a>
             <a href="{{ route('admin.categories') }}" class="sidebar-link">Manage Category</a>
             <a href="{{ route('admin.users') }}" class="sidebar-link">Manage Users</a>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Return an Item - Findit</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -209,11 +210,13 @@
         /* Upload Section */
         .upload-area {
             border: 2px dashed #d1d5db;
-            border-radius: 8px;
-            padding: 32px 16px;
+            border-radius: 6px;
+            padding: 32px;
             text-align: center;
             cursor: pointer;
             transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
         }
 
         .upload-area:hover {
@@ -221,26 +224,59 @@
             background-color: #f0f9ff;
         }
 
-        .upload-area.active {
-            border-color: #2563eb;
-            background-color: #f0f9ff;
+        .upload-area.has-file {
+            border-color: #10b981;
+            background-color: #f0fdf4;
         }
 
         .upload-icon {
-            font-size: 48px;
-            color: #d1d5db;
+            display: flex;
+            justify-content: center;
             margin-bottom: 12px;
+            
         }
 
         .upload-text {
             color: #6b7280;
             font-size: 14px;
+            margin-bottom: 4px;
         }
 
-        .upload-input {
-            display: none;
+        .upload-help {
+            color: #9ca3af;
+            font-size: 12px;
         }
 
+        .photo-preview {
+            position: relative;
+            display: inline-block;
+            margin-top: 16px;
+        }
+
+        .photo-preview img {
+            max-width: 200px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .remove-photo {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: #10b981;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: background-color 0.2s;
+        }
+
+        .remove-photo:hover {
+            background-color: #dc2626;
+        }
         /* Form Actions */
         .form-actions {
             display: flex;
@@ -319,6 +355,7 @@
         <a href="{{ route('home') }}" class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></a>
         
         @if (Auth::check())
+            <!-- Logged In User Navigation -->
             <ul class="navbar-nav">
                 <li><a href="{{ route('home') }}">Home</a></li>
                 <li><a href="{{ route('home') }}#browse">Browse</a></li>
@@ -327,11 +364,24 @@
                 <li><a href="{{ route('history.index') }}">My History</a></li>
             </ul>
             <div class="navbar-right">
-                <a href="{{ route('profile') }}" class="user-avatar" title="View Profile">{{ substr(Auth::user()->name, 0, 1) }}</a>
+                <div class="user-menu">
+                    <a href="{{ route('profile') }}" class="user-avatar" title="View Profile">{{ substr(Auth::user()->name, 0, 1) }}</a>
+                </div>
                 <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                     @csrf
-                    <button type="submit" class="nav-link-logout">Logout</button>
+                    <button type="submit" class="nav-link-logout" style="background: none; border: none; cursor: pointer; font-weight: 500;">Logout</button>
                 </form>
+            </div>
+        @else
+            <!-- Guest Navigation -->
+            <ul class="navbar-nav">
+                <li><a href="{{ route('home') }}">Home</a></li>
+                <li><a href="{{ route('home') }}#browse">Browse</a></li>
+                <li><a href="{{ route('about') }}">About</a></li>
+                <li><a href="{{ route('contact') }}">Contact</a></li>
+            </ul>
+            <div class="navbar-right">
+                <a href="{{ route('login') }}" class="nav-link-login">Login</a>
             </div>
         @endif
     </div>
@@ -418,18 +468,26 @@
                         Upload proof of found item <span class="required">*</span>
                     </label>
                     <div class="form-hint">Upload photos, receipts, or any documents that prove you found this item</div>
-                    <div class="upload-area" id="uploadArea">
-                        <div class="upload-icon">📷</div>
+                    <div class="upload-area" id="photoUploadArea">
+                        <div class="upload-icon">
+                        <div style="
+                            width: 45px;
+                            height: 30px;
+                            background-color: white;
+                            border-radius: 14px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            margin: 0 auto;
+                        ">
+                            <i class="fa-solid fa-image" style="color: #2563eb; font-size: 45px;"></i>
+                        </div>
+                        </div>
                         <div class="upload-text">Upload a photo of the found item</div>
-                        <input 
-                            type="file" 
-                            id="proof_upload" 
-                            name="proof_upload" 
-                            class="upload-input" 
-                            accept="image/*,.pdf,.doc,.docx"
-                            required
-                        >
+                        <div class="upload-help">JPG, PNG, or GIF</div>
                     </div>
+                    <input type="file" id="proof_upload" name="proof_upload" accept="image/*,.pdf,.doc,.docx" style="display: none;" required>
+                    <div id="photoPreview"></div>
                     @error('proof_upload')
                         <span style="color: #ef4444; font-size: 12px;">{{ $message }}</span>
                     @enderror
@@ -458,52 +516,66 @@
         </div>
     </div>
 
-    <script>
-        // File upload drag and drop
-        const uploadArea = document.getElementById('uploadArea');
-        const uploadInput = document.getElementById('proof_upload');
+        <script>
+            const photoUploadArea = document.getElementById('photoUploadArea');
+            const photoInput = document.getElementById('proof_upload');
+            const photoPreview = document.getElementById('photoPreview');
 
-        uploadArea.addEventListener('click', () => {
-            uploadInput.click();
-        });
+            photoUploadArea.addEventListener('click', () => photoInput.click());
 
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('active');
-        });
+            photoUploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                photoUploadArea.style.borderColor = '#2563eb';
+                photoUploadArea.style.backgroundColor = '#f0f9ff';
+            });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('active');
-        });
+            photoUploadArea.addEventListener('dragleave', () => {
+                photoUploadArea.style.borderColor = '#d1d5db';
+                photoUploadArea.style.backgroundColor = 'white';
+            });
 
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('active');
-            uploadInput.files = e.dataTransfer.files;
-            
-            // Update the display with file name
-            updateFileDisplay();
-        });
-
-        uploadInput.addEventListener('change', () => {
-            updateFileDisplay();
-        });
-
-        function updateFileDisplay() {
-            if (uploadInput.files.length > 0) {
-                // Find or create the display element
-                let fileDisplay = uploadArea.querySelector('.file-display');
-                if (!fileDisplay) {
-                    fileDisplay = document.createElement('div');
-                    fileDisplay.className = 'file-display';
-                    uploadArea.appendChild(fileDisplay);
+            photoUploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer.files.length > 0) {
+                    photoInput.files = e.dataTransfer.files;
+                    handlePhotoChange();
                 }
-                fileDisplay.innerHTML = `
-                    <div class="upload-icon">✓</div>
-                    <div class="upload-text">${uploadInput.files[0].name}</div>
-                `;
+            });
+
+            photoInput.addEventListener('change', handlePhotoChange);
+
+            function handlePhotoChange() {
+                if (photoInput.files.length > 0) {
+                    const file = photoInput.files[0];
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        photoUploadArea.innerHTML = '<div style="color: #10b981; font-weight: 600;">✓ Image selected</div>';
+                        photoUploadArea.classList.add('has-file');
+                        photoPreview.innerHTML = `
+                                <div class="photo-preview">
+                                    <img src="${e.target.result}" alt="Preview">
+                                    <button type="button" class="remove-photo" onclick="removePhoto()"><i class="fa fa-close" style="font-size:14px"></i></button>
+                                </div>
+                        `;
+                    };
+                    reader.readAsDataURL(file);
+                }
             }
-        }
-    </script>
+
+            function removePhoto() {
+                photoInput.value = '';
+                photoUploadArea.innerHTML = `
+                    <div class="upload-icon">
+                        <div style="width:64px;height:64px;background-color:#d1d5db;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto;">
+                            <i class="fa-solid fa-image" style="color:#2563eb ;font-size:28px;"></i>
+                        </div>
+                    </div>
+                    <div class="upload-text">Upload a photo of the found item</div>
+                    <div class="upload-help">JPG, PNG, or GIF</div>
+                `;
+                photoUploadArea.classList.remove('has-file');
+                photoPreview.innerHTML = '';
+            }
+        </script>
 </body>
 </html>

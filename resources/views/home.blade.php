@@ -266,14 +266,6 @@
             margin-bottom: 8px;
         }
 
-        .item-location {
-            font-size: 14px;
-            color: #6b7280;
-            display: flex;
-            align-items: center;
-            margin-bottom: 8px;
-        }
-
         .item-date {
             font-size: 13px;
             color: #9ca3af;
@@ -912,7 +904,7 @@
             <h2 class="section-title">Browse Items</h2>
             
             <div class="search-filter-row">
-                <input type="text" id="searchInput" class="search-box" placeholder="Search for lost item by names, locations, or category...">
+                <input type="text" id="searchInput" class="search-box" placeholder="Search for lost item by names, or category...">
                 <div class="filter-button-wrapper">
                     <button class="filter-button" id="filterToggle">Filter</button>
                     <!-- Filter Panel -->
@@ -946,10 +938,15 @@
                                 @php
                                     $categories = [
                                         'Electronics' => 'Electronics',
+                                        'Accessories' => 'Accessories',
+                                        'Clothing' => 'Clothing',
                                         'Bags' => 'Bags',
                                         'Wallets' => 'Wallets',
-                                        'Keys' => 'Keys',
-                                        'IDs' => 'IDs'
+                                        'Jewelry' => 'Jewelry',
+                                        'Books' => 'Books',
+                                        'Documents' => 'Documents',
+                                        'Personal Items' => 'Personal Items',
+                                        'Others' => 'Others'
                                     ];
                                 @endphp
                                 @foreach($categories as $key => $value)
@@ -960,23 +957,6 @@
                                 @endforeach
                             </div>
 
-                            <!-- Location Filter -->
-                            <div class="filter-section">
-                                <h4>Location</h4>
-                                @php
-                                    $locations = [
-                                        'IT Room' => 'IT Room',
-                                        'TechVoc Building' => 'TechVoc Building',
-                                        'Convention Hall' => 'Convention Hall'
-                                    ];
-                                @endphp
-                                @foreach($locations as $key => $value)
-                                    <div class="filter-option">
-                                        <input type="checkbox" id="location_{{ strtolower(str_replace(' ', '_', $key)) }}" name="location" value="{{ $key }}">
-                                        <label for="location_{{ strtolower(str_replace(' ', '_', $key)) }}">{{ $value }}</label>
-                                    </div>
-                                @endforeach
-                            </div>
 
                             <!-- Filter Actions -->
                             <div class="filter-actions">
@@ -1006,14 +986,6 @@
                             <input type="radio" id="sort_name_za" name="sort" value="name_za">
                             <label for="sort_name_za">Name Z-A</label>
                         </div>
-                        <div class="sort-option">
-                            <input type="radio" id="sort_found_first" name="sort" value="found_first">
-                            <label for="sort_found_first">Found First</label>
-                        </div>
-                        <div class="sort-option">
-                            <input type="radio" id="sort_lost_first" name="sort" value="lost_first">
-                            <label for="sort_lost_first">Lost First</label>
-                        </div>
                     </div>
                 </div>
                 <button class="reset-button" id="resetButton">Reset</button>
@@ -1026,6 +998,7 @@
                             @if($item->image)
                                 <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" />
                             @else
+                            <div>{{ $item->image }}</div>
                                 <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
                                     <span style="color: #9ca3af; font-size: 14px;">No image</span>
                                 </div>
@@ -1371,8 +1344,6 @@
                     'oldest': 'Sort: Oldest',
                     'name_az': 'Sort: Name A-Z',
                     'name_za': 'Sort: Name Z-A',
-                    'found_first': 'Sort: Found First',
-                    'lost_first': 'Sort: Lost First'
                 };
                 
                 sortToggle.textContent = sortLabels[currentSort];
@@ -1398,11 +1369,6 @@
             // Get selected categories
             document.querySelectorAll('input[name="category"]:checked').forEach(checkbox => {
                 categories.push(checkbox.value);
-            });
-
-            // Get selected locations
-            document.querySelectorAll('input[name="location"]:checked').forEach(checkbox => {
-                locations.push(checkbox.value);
             });
 
             // Build query parameters
@@ -1432,10 +1398,6 @@
             document.querySelectorAll('input[name="category"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
-            
-            document.querySelectorAll('input[name="location"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
 
             renderItems(allItems);
             filterPanel.classList.remove('active');
@@ -1452,10 +1414,6 @@
             statusLost.checked = false;
             
             document.querySelectorAll('input[name="category"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            
-            document.querySelectorAll('input[name="location"]').forEach(checkbox => {
                 checkbox.checked = false;
             });
             

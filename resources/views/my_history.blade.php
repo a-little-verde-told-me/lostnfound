@@ -69,6 +69,30 @@
             gap: 16px;
         }
 
+        .user-menu {
+            position: relative;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: #6b7280;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .user-avatar:hover {
+            background-color: #2563eb;
+            color: white;
+        }
+
         .nav-link-logout {
             color: #ef4444;
         }
@@ -450,29 +474,40 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar">
+    <div class="navbar">
         <a href="{{ route('home') }}" class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></a>
-        <ul class="navbar-nav">
-            <li><a href="{{ route('home') }}">Home</a></li>
-            <li><a href="{{ route('home') }}#browse">Browse</a></li>
-            <li><a href="{{ route('report.found') }}">Report Found</a></li>
-            <li><a href="{{ route('report.lost') }}">Report Lost</a></li>
-            @if(Auth::check())
-                <li><a href="{{ route('history.index') }}" class="active">My History</a></li>
-            @endif
-        </ul>
-        <div class="navbar-right">
-            @if(Auth::check())
-                <span style="color: #6b7280; font-size: 14px;">{{ Auth::user()->name ?? 'User' }}</span>
-                <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+        
+        @if (Auth::check())
+            <!-- Logged In User Navigation -->
+            <ul class="navbar-nav">
+                <li><a href="{{ route('home') }}">Home</a></li>
+                <li><a href="{{ route('home') }}#browse">Browse</a></li>
+                <li><a href="{{ route('report.found') }}">Report Found</a></li>
+                <li><a href="{{ route('report.lost') }}">Report Lost</a></li>
+                <li><a href="{{ route('history.index') }}">My History</a></li>
+            </ul>
+            <div class="navbar-right">
+                <div class="user-menu">
+                    <a href="{{ route('profile') }}" class="user-avatar" title="View Profile">{{ substr(Auth::user()->name, 0, 1) }}</a>
+                </div>
+                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
                     @csrf
-                    <button type="submit" style="background: none; border: none; color: #ef4444; cursor: pointer; font-weight: 500; font-size: 14px;">Logout</button>
+                    <button type="submit" class="nav-link-logout" style="background: none; border: none; cursor: pointer; font-weight: 500;">Logout</button>
                 </form>
-            @else
+            </div>
+        @else
+            <!-- Guest Navigation -->
+            <ul class="navbar-nav">
+                <li><a href="{{ route('home') }}">Home</a></li>
+                <li><a href="{{ route('home') }}#browse">Browse</a></li>
+                <li><a href="{{ route('about') }}">About</a></li>
+                <li><a href="{{ route('contact') }}">Contact</a></li>
+            </ul>
+            <div class="navbar-right">
                 <a href="{{ route('login') }}" class="nav-link-login">Login</a>
-            @endif
-        </div>
-    </nav>
+            </div>
+        @endif
+    </div>
 
     <!-- Main Container -->
     <div class="container">

@@ -37,14 +37,20 @@ class AdminController extends Controller
         }
 
         // Search functionality
-        if ($request->has('search')) {
-            $search = $request->input('search');
-            $query->where('name', 'LIKE', "%{$search}%")
-                  ->orWhere('location', 'LIKE', "%{$search}%");
+        if ($request->filled('search')) {
+
+            $search = $request->search;
+
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('location', 'LIKE', "%{$search}%");
+            });
         }
 
         // Sort by latest date reported
-        $items = $query->latest('date_reported')->paginate(10);
+        $items = $query->latest('date_reported')
+              ->paginate(10)
+              ->withQueryString();
 
         // Calculate status counts (always for all items, not filtered by status)
         $totalCount = Item::count();

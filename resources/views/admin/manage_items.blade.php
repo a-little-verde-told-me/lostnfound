@@ -331,12 +331,12 @@
 
         <div class="sidebar-section">
             <div class="sidebar-section-title">MANAGEMENT</div>
-            <a href="#" class="sidebar-link">Manage Claims</a>
-            <a href="#" class="sidebar-link">Manage Submissions</a>
-            <a href="{{ route('admin.items') }}" class="sidebar-link active">Manage All Items</a>
+            <a href="{{ route('admin.claims') }}" class="sidebar-link">Manage Claims</a>
+            <a href="{{ route('admin.returns') }}" class="sidebar-link">Manage Submissions</a>
+            <a href="{{ route('admin.items') }}" class="sidebar-link">Manage All Items</a>
             <a href="{{ route('admin.categories') }}" class="sidebar-link">Manage Category</a>
             <a href="{{ route('admin.users') }}" class="sidebar-link">Manage Users</a>
-            <a href="#" class="sidebar-link">Reports</a>
+            <a href="{{ route('admin.reports') }}" class="sidebar-link">Reports</a>
         </div>
 
         <div class="sidebar-spacer"></div>
@@ -355,15 +355,30 @@
 
         <!-- Controls -->
         <div class="controls-container">
-            <div class="search-box">
-                <form method="GET" action="{{ route('admin.items') }}" style="display: flex; flex: 1;">
-                    <input type="text" name="search" placeholder="Search items" value="{{ request('search') }}">
-                </form>
-            </div>
-            <div class="sort-dropdown">
-                <span class="sort-icon">⇅</span>
-                Sort: Latest
-            </div>
+        <div class="search-box">
+            <form id="searchForm"
+                method="GET"
+                action="{{ route('admin.items') }}"
+                style="display: flex; flex: 1;">
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    name="search"
+                    placeholder="Search items"
+                    value="{{ request('search') }}">
+
+                <input
+                    type="hidden"
+                    name="status"
+                    value="{{ request('status', 'all') }}">
+            </form>
+        </div>
+        <select class="sort-dropdown" id="sortSelect" onchange="sortItems()">
+            <option value="latest">Sort: Latest</option>
+            <option value="oldest">Sort: Oldest</option>
+            <option value="name">Sort: Name A-Z</option>
+        </select>
         </div>
 
         <!-- Tabs -->
@@ -387,9 +402,9 @@
                         <th class="table-header-cell">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="itemsTableBody">
                     @forelse($items as $item)
-                        <tr class="table-body-row">
+                        <tr class="table-body-row item-row">
                             <td class="table-body-cell">
                                 <span class="item-name">{{ $item->name }}</span>
                             </td>
@@ -429,4 +444,48 @@
             {{ $items->links() }}
     </div>
 </body>
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const searchForm = document.getElementById('searchForm');
+    let searchTimeout;
+
+    if (searchInput) {
+        searchInput.addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+
+            searchTimeout = setTimeout(function () {
+                searchForm.submit();
+            }, 500);
+        });
+    }
+
+    function sortItems() {
+        const sortValue = document.getElementById('sortSelect').value;
+        const tbody = document.getElementById('itemsTableBody');
+        const rows = Array.from(tbody.querySelectorAll('.item-row'));
+
+        rows.sort((a, b) => {
+
+            const nameA = a.querySelectorAll('td')[0].textContent.trim();
+            const nameB = b.querySelectorAll('td')[0].textContent.trim();
+
+            const dateA = new Date(a.querySelectorAll('td')[3].textContent);
+            const dateB = new Date(b.querySelectorAll('td')[3].textContent);
+
+            if (sortValue === 'latest') {
+                return dateB - dateA;
+            }
+
+            if (sortValue === 'oldest') {
+                return dateA - dateB;
+            }
+
+            if (sortValue === 'name') {
+                return nameA.localeCompare(nameB);
+            }
+        });
+
+        rows.forEach(row => tbody.appendChild(row));
+    }
+</script>
 </html>
