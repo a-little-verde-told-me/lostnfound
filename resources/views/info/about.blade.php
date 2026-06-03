@@ -4,9 +4,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            min-height: calc(100vh - 60px);
             padding: 20px;
-            margin-left: 100px;
+            box-sizing: border-box;
+            width: 100%; 
+            margin: 0 auto;
         }
         .content-card {
             background: white;
