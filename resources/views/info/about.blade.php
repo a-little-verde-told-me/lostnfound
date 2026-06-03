@@ -52,11 +52,12 @@
 
                 <p><strong>Our Features:</strong></p>
                 <ul style="margin-left: 20px; margin-bottom: 16px;">
-                    <li>Browse items available in your area</li>
+                    <li>Browse available lost and found items</li>
                     <li>Report lost or found items with detailed descriptions</li>
                     <li>Categorize items for better searchability</li>
-                    <li>Connect with other community members</li>
-                    <li>Secure claims and verification process</li>
+                    <li>Claim and return an item</li>
+                    <li>Track the status of your claims and returns</li>
+                    <li>Secure claims/returns and verification process</li>
                 </ul>
 
                 <p><strong>Why Choose Findit?</strong></p>
