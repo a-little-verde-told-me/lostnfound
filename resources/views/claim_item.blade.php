@@ -204,28 +204,31 @@
 
         /* Upload Section */
         .upload-area {
-            border: 2px dashed #d1d5db;
-            border-radius: 8px;
-            padding: 32px 16px;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: #f9fafb;
             cursor: pointer;
             transition: all 0.2s;
         }
 
         .upload-area:hover {
             border-color: #2563eb;
-            background-color: #f0f9ff;
+            background-color: #eff6ff;
         }
 
-        .upload-area.active {
-            border-color: #2563eb;
-            background-color: #f0f9ff;
+        .upload-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
         }
 
         .upload-icon {
-            font-size: 48px;
-            color: #d1d5db;
-            margin-bottom: 12px;
+            display: none;
         }
 
         .upload-text {
@@ -233,16 +236,24 @@
             font-size: 14px;
         }
 
-        .upload-input {
+        .form-group input[type="file"] {
             display: none;
         }
 
-        .upload-display {
-            pointer-events: none;
+        .upload-button {
+            padding: 8px 24px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            white-space: nowrap;
         }
 
-        .upload-display.hidden {
-            display: none;
+        .upload-button:hover {
+            background-color: #1d4ed8;
         }
 
         /* Form Actions */
@@ -439,9 +450,9 @@
                     </label>
                     <div class="form-hint">Upload photos, receipts, or any documents that prove you own this item</div>
                     <div class="upload-area" id="uploadArea">
+                        <button type="button" class="upload-button" onclick="document.getElementById('proof_upload').click();">Choose File</button>
                         <div id="uploadDisplay" class="upload-display">
-                            <div class="upload-icon">📷</div>
-                            <div class="upload-text">Upload a photo of the owned item</div>
+                            <div class="upload-text">No file chosen</div>
                         </div>
                         <input 
                             type="file" 
@@ -481,30 +492,10 @@
     </div>
 
     <script>
-        // File upload drag and drop
+        // File upload
         const uploadArea = document.getElementById('uploadArea');
         const uploadDisplay = document.getElementById('uploadDisplay');
         const uploadInput = document.getElementById('proof_upload');
-
-        uploadArea.addEventListener('click', () => {
-            uploadInput.click();
-        });
-
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('active');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('active');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('active');
-            uploadInput.files = e.dataTransfer.files;
-            updateFileDisplay();
-        });
 
         uploadInput.addEventListener('change', () => {
             updateFileDisplay();
@@ -512,10 +503,9 @@
 
         function updateFileDisplay() {
             if (uploadInput.files.length > 0) {
-                uploadDisplay.innerHTML = `
-                    <div class="upload-icon">✓</div>
-                    <div class="upload-text">${uploadInput.files[0].name}</div>
-                `;
+                uploadDisplay.innerHTML = `<div class="upload-text">${uploadInput.files[0].name}</div>`;
+            } else {
+                uploadDisplay.innerHTML = `<div class="upload-text">No file chosen</div>`;
             }
         }
     </script>

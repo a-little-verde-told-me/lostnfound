@@ -169,72 +169,32 @@
 
         /* Photo Upload */
         .photo-upload-area {
-            border: 2px dashed #d1d5db;
+            display: none;
+        }
+
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
             border-radius: 6px;
-            padding: 32px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .photo-upload-area:hover {
-            border-color: #2563eb;
-            background-color: #f0f9ff;
-        }
-
-        .photo-upload-area.has-file {
-            border-color: #10b981;
-            background-color: #f0fdf4;
-        }
-
-        .photo-upload-icon {
-            font-size: 48px;
-            margin-bottom: 12px;
-        }
-
-        .photo-upload-text {
-            color: #6b7280;
             font-size: 14px;
-            margin-bottom: 4px;
+            cursor: pointer;
         }
 
-        .photo-upload-help {
-            color: #9ca3af;
-            font-size: 12px;
-        }
-
-        .photo-preview {
-            position: relative;
-            display: inline-block;
-            margin-top: 16px;
-        }
-
-        .photo-preview img {
-            max-width: 200px;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .remove-photo {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #10b981;
+        .form-group input[type="file"]::file-selector-button {
+            padding: 8px 16px;
+            background-color: #2563eb;
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 18px;
+            margin-right: 8px;
             transition: background-color 0.2s;
         }
 
-        .remove-photo:hover {
-            background-color: #dc2626;
+        .form-group input[type="file"]::file-selector-button:hover {
+            background-color: #1d4ed8;
         }
 
         /* Buttons */
@@ -455,24 +415,13 @@
                 <!-- Photo Upload -->
                 <div class="form-group">
                     <label for="photo">Photo</label>
-                    <div class="photo-upload-area" id="photoUploadArea">
-                        
-                        <div class="photo-upload-icon">
-                            <i class="fa-solid fa-image"></i>
-                        </div>
-
-                        <div class="photo-upload-text">Upload a photo of the found item</div>
-                        <div class="photo-upload-help">JPG, PNG, or GIF</div>
-                    </div>
                     <input
                         type="file"
                         id="photo"
                         name="photo"
                         accept="image/*"
-                        style="display: none;"
                         class="@error('photo') error @enderror"
                     >
-                    <div id="photoPreview"></div>
                     @error('photo')
                         <span class="error-message">{{ $message }}</span>
                     @enderror
@@ -488,69 +437,6 @@
     </div>
 
     <script>
-        // Photo upload handling
-        const photoUploadArea = document.getElementById('photoUploadArea');
-        const photoInput = document.getElementById('photo');
-        const photoPreview = document.getElementById('photoPreview');
-
-        photoUploadArea.addEventListener('click', () => photoInput.click());
-
-        photoUploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            photoUploadArea.style.borderColor = '#2563eb';
-            photoUploadArea.style.backgroundColor = '#f0f9ff';
-        });
-
-        photoUploadArea.addEventListener('dragleave', () => {
-            photoUploadArea.style.borderColor = '#d1d5db';
-            photoUploadArea.style.backgroundColor = 'white';
-        });
-
-        photoUploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            if (e.dataTransfer.files.length > 0) {
-                photoInput.files = e.dataTransfer.files;
-                handlePhotoChange();
-            }
-        });
-
-        photoInput.addEventListener('change', handlePhotoChange);
-
-        function handlePhotoChange() {
-            if (photoInput.files.length > 0) {
-                const file = photoInput.files[0];
-                const reader = new FileReader();
-
-                reader.onload = (e) => {
-                    photoUploadArea.innerHTML = '<div style="color: #10b981; font-weight: 600;">✓ Image selected</div>';
-                    photoUploadArea.classList.add('has-file');
-
-                    photoPreview.innerHTML = `
-                        <div class="photo-preview">
-                            <img src="${e.target.result}" alt="Preview">
-                            <button type="button" class="remove-photo" onclick="removePhoto()"><i class="fa fa-close" style="font-size:14px"></i></button>
-                        </div>
-                        </div>
-                    `;
-                };
-
-                reader.readAsDataURL(file);
-            }
-        }
-
-        function removePhoto() {
-            photoInput.value = '';
-            photoUploadArea.innerHTML = `
-                <div class="photo-upload-icon">
-                    <i class="fa-solid fa-image"></i>
-                </div>
-                <div class="photo-upload-text">Upload a photo of the found item</div>
-                <div class="photo-upload-help">JPG, PNG, or GIF (Max 2MB)</div>
-            `;
-            photoUploadArea.classList.remove('has-file');
-            photoPreview.innerHTML = '';
-        }
-
         // Prevent form submission if required fields are empty
         document.querySelector('form').addEventListener('submit', function(e) {
             const itemName = document.getElementById('item_name').value.trim();

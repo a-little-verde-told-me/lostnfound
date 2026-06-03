@@ -204,73 +204,32 @@
 
         /* Upload Section */
         .upload-area {
-            border: 2px dashed #d1d5db;
+            display: none;
+        }
+
+        .form-group input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
             border-radius: 6px;
-            padding: 32px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .upload-area:hover {
-            border-color: #2563eb;
-            background-color: #f0f9ff;
-        }
-
-        .upload-area.has-file {
-            border-color: #10b981;
-            background-color: #f0fdf4;
-        }
-
-        .upload-icon {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 12px;
-            
-        }
-
-        .upload-text {
-            color: #6b7280;
             font-size: 14px;
-            margin-bottom: 4px;
+            cursor: pointer;
         }
 
-        .upload-help {
-            color: #9ca3af;
-            font-size: 12px;
-        }
-
-        .photo-preview {
-            position: relative;
-            display: inline-block;
-            margin-top: 16px;
-        }
-
-        .photo-preview img {
-            max-width: 200px;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-        }
-
-        .remove-photo {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background-color: #10b981;
+        .form-group input[type="file"]::file-selector-button {
+            padding: 8px 16px;
+            background-color: #2563eb;
             color: white;
             border: none;
-            border-radius: 50%;
-            width: 28px;
-            height: 28px;
+            border-radius: 4px;
             cursor: pointer;
-            font-size: 18px;
+            font-weight: 600;
+            margin-right: 8px;
             transition: background-color 0.2s;
         }
 
-        .remove-photo:hover {
-            background-color: #dc2626;
+        .form-group input[type="file"]::file-selector-button:hover {
+            background-color: #1d4ed8;
         }
         /* Form Actions */
         .form-actions {
@@ -430,26 +389,7 @@
                         Upload proof of found item <span class="required">*</span>
                     </label>
                     <div class="form-hint">Upload photos, receipts, or any documents that prove you found this item</div>
-                    <div class="upload-area" id="photoUploadArea">
-                        <div class="upload-icon">
-                        <div style="
-                            width: 45px;
-                            height: 30px;
-                            background-color: white;
-                            border-radius: 14px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            margin: 0 auto;
-                        ">
-                            <i class="fa-solid fa-image" style="color: #2563eb; font-size: 45px;"></i>
-                        </div>
-                        </div>
-                        <div class="upload-text">Upload a photo of the found item</div>
-                        <div class="upload-help">JPG, PNG, or GIF (Max 2MB)</div>
-                    </div>
-                    <input type="file" id="proof_upload" name="proof_upload" accept="image/*" style="display: none;">
-                    <div id="photoPreview"></div>
+                    <input type="file" id="proof_upload" name="proof_upload" accept="image/*" class="@error('proof_upload') error @enderror">
                     @error('proof_upload')
                         <div style="color: #ef4444; font-size: 12px; margin-top: 8px; padding: 8px; background: #fee2e2; border-radius: 4px;">{{ $message }}</div>
                     @enderror
@@ -479,93 +419,18 @@
     </div>
 
         <script>
-            const photoUploadArea = document.getElementById('photoUploadArea');
-            const photoInput = document.getElementById('proof_upload');
-            const photoPreview = document.getElementById('photoPreview');
-            const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
-
-            photoUploadArea.addEventListener('click', () => photoInput.click());
-
-            photoUploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                photoUploadArea.style.borderColor = '#2563eb';
-                photoUploadArea.style.backgroundColor = '#f0f9ff';
-            });
-
-            photoUploadArea.addEventListener('dragleave', () => {
-                photoUploadArea.style.borderColor = '#d1d5db';
-                photoUploadArea.style.backgroundColor = 'white';
-            });
-
-            photoUploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                if (e.dataTransfer.files.length > 0) {
-                    photoInput.files = e.dataTransfer.files;
-                    handlePhotoChange();
-                }
-            });
-
-            photoInput.addEventListener('change', handlePhotoChange);
-
-            function handlePhotoChange() {
-                if (photoInput.files.length > 0) {
-                    const file = photoInput.files[0];
-                    
-                    // Validate file size
-                    if (file.size > MAX_FILE_SIZE) {
-                        alert('File size exceeds 2MB limit. Please choose a smaller file.');
-                        photoInput.value = '';
-                        return;
-                    }
-                    
-                    // Validate file type
-                    if (!file.type.startsWith('image/')) {
-                        alert('Please upload an image file (JPG, PNG, or GIF).');
-                        photoInput.value = '';
-                        return;
-                    }
-                    
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        photoUploadArea.innerHTML = '<div style="color: #10b981; font-weight: 600;">✓ Image selected</div>';
-                        photoUploadArea.classList.add('has-file');
-                        photoPreview.innerHTML = `
-                                <div class="photo-preview">
-                                    <img src="${e.target.result}" alt="Preview">
-                                    <button type="button" class="remove-photo" onclick="removePhoto()"><i class="fa fa-close" style="font-size:14px"></i></button>
-                                </div>
-                        `;
-                    };
-                    reader.readAsDataURL(file);
-                } else {
-                    removePhoto();
-                }
-            }
-
-            function removePhoto() {
-                photoInput.value = '';
-                photoUploadArea.innerHTML = `
-                    <div class="upload-icon">
-                        <div style="width:64px;height:64px;background-color:#d1d5db;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto;">
-                            <i class="fa-solid fa-image" style="color:#2563eb ;font-size:28px;"></i>
-                        </div>
-                    </div>
-                    <div class="upload-text">Upload a photo of the found item</div>
-                    <div class="upload-help">JPG, PNG, or GIF (Max 2MB)</div>
-                `;
-                photoUploadArea.classList.remove('has-file');
-                photoPreview.innerHTML = '';
-            }
-
             // Form validation on submit
             document.getElementById('returnForm').addEventListener('submit', function(e) {
-                if (!photoInput.files || photoInput.files.length === 0) {
+                const proofUpload = document.getElementById('proof_upload');
+                const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB
+                
+                if (!proofUpload.files || proofUpload.files.length === 0) {
                     e.preventDefault();
                     alert('Please upload a proof image of the found item.');
                     return false;
                 }
                 
-                const file = photoInput.files[0];
+                const file = proofUpload.files[0];
                 if (file.size > MAX_FILE_SIZE) {
                     e.preventDefault();
                     alert(`File size exceeds 2MB limit (Current: ${(file.size / 1024 / 1024).toFixed(2)}MB). Please choose a smaller file.`);
