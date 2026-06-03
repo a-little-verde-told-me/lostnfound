@@ -89,12 +89,12 @@
             font-weight: 700;
         }
         .navbar-logout {
-            color: #2563eb;
+            color: #ef4444;
             font-size: 14px;
             font-weight: 500;
         }
         .navbar-logout:hover {
-            color: #1d4ed8;
+            color: #dc2626;
         }
         body {
             margin-top: 60px;
@@ -143,7 +143,7 @@
             
             <!-- Login button -->
             <div class="navbar-right" style="margin-left: auto;">
-                <a href="/login" class="navbar-link login" style="padding: 8px 16px; background-color: #2563eb; color: white; border-radius: 6px;">Login</a>
+                <a href="/login" class="navbar-link login">Login</a>
             </div>
         @endauth
     </div>

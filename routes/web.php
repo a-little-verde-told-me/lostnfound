@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
     $items = \App\Models\Item::where('status', 'active')
-        ->with('user')
+        ->with('user', 'category')
         ->whereDoesntHave('claims', function($query) {
             $query->where('status', 'approved');
         })
@@ -66,7 +66,7 @@ Route::middleware('auth')->group(function () {
 // Item Views Routes
 Route::middleware('auth')->group(function () {
     Route::get('/return-item/{itemId}', function ($itemId) {
-        $item = \App\Models\Item::findOrFail($itemId);
+        $item = \App\Models\Item::with('category')->findOrFail($itemId);
         return view('return_item', ['item' => $item]);
     })->name('return.item');
     
@@ -105,7 +105,7 @@ Route::middleware('auth')->group(function () {
     })->name('return.store');
     
     Route::get('/claim-item-view/{itemId}', function ($itemId) {
-        $item = \App\Models\Item::findOrFail($itemId);
+        $item = \App\Models\Item::with('category')->findOrFail($itemId);
         return view('claim_item', ['item' => $item]);
     })->name('claim.item');
 });

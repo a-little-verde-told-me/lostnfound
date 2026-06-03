@@ -7,6 +7,7 @@
             min-height: 100vh;
             padding: 20px;
             margin-left: 100px;
+            margin-top: 70px;
         }
         .content-card {
             background: white;

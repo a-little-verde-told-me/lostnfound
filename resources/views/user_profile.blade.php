@@ -7,6 +7,7 @@
             border-radius: 12px;
             padding: 40px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin: 100px auto;
         }
         .profile-header {
             text-align: center;

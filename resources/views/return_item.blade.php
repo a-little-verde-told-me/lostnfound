@@ -96,6 +96,7 @@
             max-width: 600px;
             margin: 40px auto;
             padding: 0 16px;
+            margin-top: 100px;
         }
 
         .page-title {
@@ -361,6 +362,11 @@
             </div>
 
             <div class="item-detail-row">
+                <div class="item-detail-label">Category:</div>
+                <div class="item-detail-value">{{ $item->category?->name ?? 'Uncategorized' }}</div>
+            </div>
+
+            <div class="item-detail-row">
                 <div class="item-detail-label">Lost at:</div>
                 <div class="item-detail-value">{{ $item->location }}</div>
             </div>
@@ -401,19 +407,19 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="contact_number" class="form-label">
+                        <label for="contact_phone" class="form-label">
                             Contact Phone <span class="required">*</span>
                         </label>
                         <input 
                             type="tel" 
-                            id="contact_number" 
-                            name="contact_number" 
-                            class="form-input @error('contact_number') error @enderror" 
+                            id="contact_phone" 
+                            name="contact_phone" 
+                            class="form-input @error('contact_phone') error @enderror" 
                             placeholder="0900-000-0000"
-                            value="{{ old('contact_number', Auth::user()->phone_number ?? '') }}"
+                            value="{{ old('contact_phone', Auth::user()->phone_number ?? '') }}"
                             required
                         >
-                        @error('contact_number')
+                        @error('contact_phone')
                             <span style="color: #ef4444; font-size: 12px;">{{ $message }}</span>
                         @enderror
                     </div>

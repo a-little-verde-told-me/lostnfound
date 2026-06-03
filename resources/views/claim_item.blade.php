@@ -96,6 +96,7 @@
             max-width: 600px;
             margin: 40px auto;
             padding: 0 16px;
+            margin-top: 100px;
         }
 
         .page-title {
@@ -331,6 +332,11 @@
             <div class="item-detail-row">
                 <div class="item-detail-label">Description:</div>
                 <div class="item-detail-value">{{ $item->description }}</div>
+            </div>
+
+            <div class="item-detail-row">
+                <div class="item-detail-label">Category:</div>
+                <div class="item-detail-value">{{ $item->category?->name ?? 'Uncategorized' }}</div>
             </div>
 
             <div class="item-detail-row">

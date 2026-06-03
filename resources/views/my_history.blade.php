@@ -505,13 +505,13 @@
         <!-- Filter Section -->
         <div class="filter-section">
             <a href="{{ route('history.index', ['filter' => 'all']) }}" class="filter-button {{ $filter === 'all' ? 'active' : '' }}">
-                <i class="fa fa-list"></i> All ({{ $history->count() }})
+                All ({{ $history->count() }})
             </a>
             <a href="{{ route('history.index', ['filter' => 'claims']) }}" class="filter-button {{ $filter === 'claims' ? 'active' : '' }}">
-                <i class="fa fa-clipboard"></i> Claims ({{ $claims->count() }})
+                Claims ({{ $claims->count() }})
             </a>
             <a href="{{ route('history.index', ['filter' => 'returns']) }}" class="filter-button {{ $filter === 'returns' ? 'active' : '' }}">
-                <i class="fa fa-undo"></i> Returns ({{ $returns->count() }})
+                Returns ({{ $returns->count() }})
             </a>
         </div>
 

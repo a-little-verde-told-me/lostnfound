@@ -1101,20 +1101,16 @@
                             <div class="detail-value">${item.description || 'No description'}</div>
                         </div>
                         <div class="detail-row">
+                            <div class="detail-label">Category:</div>
+                            <div class="detail-value">${item.category?.name || 'Uncategorized'}</div>
+                        </div>
+                        <div class="detail-row">
                             <div class="detail-label">Location:</div>
-                            <div class="detail-value">
-                                <div class="icon-text">
-                                    ${item.location}
-                                </div>
-                            </div>
+                            <div class="detail-value">${item.location}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Date Reported:</div>
-                            <div class="detail-value">
-                                <div class="icon-text">
-                                    ${new Date(item.date_reported).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
-                                </div>
-                            </div>
+                            <div class="detail-value">${new Date(item.date_reported).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
                         </div>
                     </div>
                     
