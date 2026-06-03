@@ -5,11 +5,17 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ClaimsController;
 use App\Http\Middleware\IsAdmin;
+use App\Http\Middleware\IsUser;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 Route::get('/', function () {
+    // Redirect admin users to admin dashboard
+    if (Auth::check() && Auth::user()->role === 'admin') {
+        return redirect()->route('admin.dashboard');
+    }
+    
     $items = \App\Models\Item::where('status', 'active')
         ->with('user', 'category')
         ->whereDoesntHave('claims', function($query) {
@@ -36,22 +42,22 @@ Route::get('/signup', [AuthController::class, 'showSignup'])->name('signup');
 Route::post('/signup', [AuthController::class, 'signup'])->name('signup.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Report Routes
-Route::middleware('auth')->group(function () {
+// Report Routes (User Only)
+Route::middleware(['auth', IsUser::class])->group(function () {
     Route::get('/report/found', [ReportController::class, 'showReportFound'])->name('report.found');
     Route::post('/report/found', [ReportController::class, 'storeFoundItem'])->name('report.found.store');
     Route::get('/report/lost', [ReportController::class, 'showReportLost'])->name('report.lost');
     Route::post('/report/lost', [ReportController::class, 'storeLostItem'])->name('report.lost.store');
 });
 
-// Report Edit/Update/Delete Routes
-Route::middleware('auth')->group(function () {
+// Report Edit/Update/Delete Routes (User Only)
+Route::middleware(['auth', IsUser::class])->group(function () {
     Route::put('/reports/{id}', [ReportController::class, 'update'])->name('reports.update');
     Route::delete('/reports/{id}', [ReportController::class, 'destroy'])->name('reports.destroy');
 });
 
-// Claims Routes
-Route::middleware('auth')->group(function () {
+// Claims Routes (User Only)
+Route::middleware(['auth', IsUser::class])->group(function () {
     Route::get('/my-claims', [ClaimsController::class, 'myClaims'])->name('claims.index');
     Route::get('/my-history', [ClaimsController::class, 'myHistory'])->name('history.index');
     Route::get('/claim/create/{itemId}', [ClaimsController::class, 'create'])->name('claim.create');
@@ -63,8 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/return/{returnId}', [ClaimsController::class, 'updateReturn'])->name('return.update');
 });
 
-// Item Views Routes
-Route::middleware('auth')->group(function () {
+// Item Views Routes (User Only)
+Route::middleware(['auth', IsUser::class])->group(function () {
     Route::get('/return-item/{itemId}', function ($itemId) {
         $item = \App\Models\Item::with('category')->findOrFail($itemId);
         return view('return_item', ['item' => $item]);
@@ -110,8 +116,8 @@ Route::middleware('auth')->group(function () {
     })->name('claim.item');
 });
 
-// My Reports Route
-Route::middleware('auth')->group(function () {
+// My Reports Route (User Only)
+Route::middleware(['auth', IsUser::class])->group(function () {
     Route::get('/my-reports', function () {
         $reports = Auth::user()->items()->latest('date_reported')->get();
         $categories = \App\Models\Category::all();
@@ -119,8 +125,8 @@ Route::middleware('auth')->group(function () {
     })->name('reports.index');
 });
 
-// Profile Routes
-Route::middleware('auth')->group(function () {
+// Profile Routes (User Only)
+Route::middleware(['auth', IsUser::class])->group(function () {
     Route::get('/profile', function () {
         return view('user_profile', ['user' => Auth::user()]);
     })->name('profile');
