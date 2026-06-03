@@ -48,30 +48,38 @@ Follow these steps to run the project on your local machine.
 ```bash
 git clone https://github.com/a-little-verde-told-me/lostnfound.git
 cd findit-lost-and-found
-
+```
 ### Step 2 - Install dependencies
-
+```
 composer install
-Step 3 - Set up your environment file
+```
+### Step 3 - Set up your environment file
+```
 cp .env.example .env
 php artisan key:generate
+```
 Then open .env and update your database credentials:
+```
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=your_port
 DB_DATABASE=lostnfound
 DB_USERNAME=root
 DB_PASSWORD=your_password
-
+```
 ### Step 4 - Create the database
 
 Open your MySQL client (phpMyAdmin or terminal) and create a database named:
+```
 lostnfound 
-
+```
 ### Step 5 - Run migrations and seeders
-
+```
 php artisan migrate
+```
+```
 php artisan db:seed
+```
 This will create all the tables and add sample data including a default admin account.
 Default admin credentials:
 Email:    admin@example.com
