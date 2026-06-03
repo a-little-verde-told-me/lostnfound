@@ -104,7 +104,7 @@
         .dashboard-title {
             font-size: 32px;
             font-weight: bold;
-            color: #1f2937;
+            color: #2563eb;
             margin-bottom: 32px;
         }
         .stats-grid {
@@ -289,8 +289,8 @@
         <div class="sidebar-section">
             <div class="sidebar-section-title">MANAGEMENT</div>
             <a href="{{ route('admin.claims') }}" class="sidebar-link">Manage Claims</a>
-            <a href="{{ route('admin.returns') }}" class="sidebar-link">Manage Submissions</a>
-            <a href="{{ route('admin.items') }}" class="sidebar-link">Manage All Items</a>
+            <a href="{{ route('admin.returns') }}" class="sidebar-link">Manage Returns</a>
+            <a href="{{ route('admin.items') }}" class="sidebar-link">Manage User Reports</a>
             <a href="{{ route('admin.categories') }}" class="sidebar-link">Manage Category</a>
             <a href="{{ route('admin.users') }}" class="sidebar-link">Manage Users</a>
             <a href="{{ route('admin.reports') }}" class="sidebar-link">Reports</a>

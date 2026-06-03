@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Claim an Item - Findit</title>
+<x-layout title="Claim an Item">
     <style>
         * {
             margin: 0;
@@ -320,31 +315,7 @@
             }
         }
     </style>
-</head>
-<body>
-    <!-- Navbar -->
-    <div class="navbar">
-        <a href="{{ route('home') }}" class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></a>
-        
-        @if (Auth::check())
-            <ul class="navbar-nav">
-                <li><a href="{{ route('home') }}">Home</a></li>
-                <li><a href="{{ route('home') }}#browse">Browse</a></li>
-                <li><a href="{{ route('report.found') }}">Report Found</a></li>
-                <li><a href="{{ route('report.lost') }}">Report Lost</a></li>
-                <li><a href="{{ route('history.index') }}">My History</a></li>
-            </ul>
-            <div class="navbar-right">
-                <a href="{{ route('profile') }}" class="user-avatar" title="View Profile">{{ substr(Auth::user()->name, 0, 1) }}</a>
-                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                    @csrf
-                    <button type="submit" class="nav-link-logout">Logout</button>
-                </form>
-            </div>
-        @endif
-    </div>
 
-    <!-- Main Content -->
     <div class="container">
         <h1 class="page-title">Claim Item</h1>
 
@@ -542,5 +513,4 @@
             }
         }
     </script>
-</body>
-</html>
+</x-layout>

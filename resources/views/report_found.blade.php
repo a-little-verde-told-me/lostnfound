@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report a Found Item - Findit</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<x-layout title="Report a Found Item">
     <style>
         * {
             margin: 0;
@@ -12,120 +6,10 @@
             box-sizing: border-box;
         }
 
-        body {
-            background-color: #f9fafb;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-        }
-
-        /* Navbar Styles */
-        .navbar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 32px;
-            background: white;
-            border-bottom: 1px solid #e5e7eb;
-            height: 60px;
-        }
-
-        .navbar-logo {
-            font-size: 24px;
-            font-weight: 900;
-            color: #1f2937;
-            text-decoration: none;
-        }
-
-        .navbar-logo-highlight {
-            color: #2563eb;
-        }
-
-        .navbar-nav {
-            display: flex;
-            gap: 32px;
-            align-items: center;
-            margin: 0;
-            list-style: none;
-        }
-
-        .navbar-nav a {
-            text-decoration: none;
-            color: #1f2937;
-            font-size: 14px;
-            font-weight: 500;
-            transition: color 0.2s;
-        }
-
-        .navbar-nav a:hover {
-            color: #6b7280;
-        }
-
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-left: 32px;
-            border-left: 1px solid #e5e7eb;
-            padding-left: 32px;
-        }
-
-        .nav-link-logout {
-            color: #2563eb;
-            font-size: 14px;
-            font-weight: 500;
-            text-decoration: none;
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: color 0.2s;
-        }
-
-        .nav-link-logout:hover {
-            color: #1d4ed8;
-        }
-
-        .nav-link-login {
-            padding: 8px 16px;
-            background-color: #2563eb;
-            color: white;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background-color 0.2s;
-        }
-
-        .nav-link-login:hover {
-            background-color: #1d4ed8;
-        }
-
-        .user-menu {
-            position: relative;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #2563eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: white;
-            font-size: 14px;
-            cursor: pointer;
-            transition: background 0.2s;
-            text-decoration: none;
-        }
-
-        .user-avatar:hover {
-            background: #1d4ed8;
-        }
-
         /* Main Container */
         .container {
             max-width: 700px;
-            margin: 40px auto;
+            margin: 100px auto;
             padding: 0 16px;
         }
 
@@ -433,49 +317,11 @@
             }
         }
     </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <div class="navbar">
-        <a href="{{ route('home') }}" class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></a>
-        
-        @if (Auth::check())
-            <!-- Logged In User Navigation -->
-            <ul class="navbar-nav">
-                <li><a href="{{ route('home') }}">Home</a></li>
-                <li><a href="{{ route('home') }}#browse">Browse</a></li>
-                <li><a href="{{ route('report.found') }}">Report Found</a></li>
-                <li><a href="{{ route('report.lost') }}">Report Lost</a></li>
-                <li><a href="{{ route('history.index') }}">My History</a></li>
-            </ul>
-            <div class="navbar-right">
-                <div class="user-menu">
-                    <a href="{{ route('profile') }}" class="user-avatar" title="View Profile">{{ substr(Auth::user()->name, 0, 1) }}</a>
-                </div>
-                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                    @csrf
-                    <button type="submit" class="nav-link-logout" style="background: none; border: none; cursor: pointer; font-weight: 500;">Logout</button>
-                </form>
-            </div>
-        @else
-            <!-- Guest Navigation -->
-            <ul class="navbar-nav">
-                <li><a href="{{ route('home') }}">Home</a></li>
-                <li><a href="{{ route('home') }}#browse">Browse</a></li>
-                <li><a href="{{ route('about') }}">About</a></li>
-                <li><a href="{{ route('contact') }}">Contact</a></li>
-            </ul>
-            <div class="navbar-right">
-                <a href="{{ route('login') }}" class="nav-link-login">Login</a>
-            </div>
-        @endif
-    </div>
 
-    <!-- Main Container -->
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
-            <h1>Report a found item</h1>
+            <h1><strong>Report a found item</strong></h1>
         </div>
 
         <!-- Card -->
@@ -720,5 +566,4 @@
             }
         });
     </script>
-</body>
-</html>
+</x-layout>

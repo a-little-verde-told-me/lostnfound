@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Report a Lost Item - Findit</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+<x-layout title="Report a Lost Item">
     <style>
         * {
             margin: 0;
@@ -127,6 +121,7 @@
             max-width: 700px;
             margin: 40px auto;
             padding: 0 16px;
+            margin: 100px auto;
         }
 
         .page-header {
@@ -433,49 +428,11 @@
             }
         }
     </style>
-</head>
-<body>
-    <!-- Navigation -->
-    <div class="navbar">
-        <a href="{{ route('home') }}" class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></a>
-        
-        @if (Auth::check())
-            <!-- Logged In User Navigation -->
-            <ul class="navbar-nav">
-                <li><a href="{{ route('home') }}">Home</a></li>
-                <li><a href="{{ route('home') }}#browse">Browse</a></li>
-                <li><a href="{{ route('report.found') }}">Report Found</a></li>
-                <li><a href="{{ route('report.lost') }}">Report Lost</a></li>
-                <li><a href="{{ route('history.index') }}">My History</a></li>
-            </ul>
-            <div class="navbar-right">
-                <div class="user-menu">
-                    <a href="{{ route('profile') }}" class="user-avatar" title="View Profile">{{ substr(Auth::user()->name, 0, 1) }}</a>
-                </div>
-                <form action="{{ route('logout') }}" method="POST" style="margin: 0;">
-                    @csrf
-                    <button type="submit" class="nav-link-logout" style="background: none; border: none; cursor: pointer; font-weight: 500;">Logout</button>
-                </form>
-            </div>
-        @else
-            <!-- Guest Navigation -->
-            <ul class="navbar-nav">
-                <li><a href="{{ route('home') }}">Home</a></li>
-                <li><a href="{{ route('home') }}#browse">Browse</a></li>
-                <li><a href="{{ route('about') }}">About</a></li>
-                <li><a href="{{ route('contact') }}">Contact</a></li>
-            </ul>
-            <div class="navbar-right">
-                <a href="{{ route('login') }}" class="nav-link-login">Login</a>
-            </div>
-        @endif
-    </div>
 
-    <!-- Main Container -->
     <div class="container">
         <!-- Page Header -->
         <div class="page-header">
-            <h1>Report a lost item</h1>
+            <h1><strong>Report a lost item</strong></h1>
         </div>
 
         <!-- Card -->
@@ -704,5 +661,4 @@
             }
         });
     </script>
-</body>
-</html>
+</x-layout>

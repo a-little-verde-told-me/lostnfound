@@ -6,6 +6,7 @@
             align-items: center;
             min-height: 100vh;
             padding: 20px;
+            margin-left: 100px;
         }
         .content-card {
             background: white;

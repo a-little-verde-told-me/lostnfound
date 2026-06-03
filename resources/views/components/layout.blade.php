@@ -84,6 +84,10 @@
         .user-avatar:hover {
             background: #1d4ed8;
         }
+        .navbar-link.active-page-style {
+            color: #2563eb !important; /* Changes text to blue when on that page */
+            font-weight: 700;
+        }
         .navbar-logout {
             color: #2563eb;
             font-size: 14px;
@@ -107,10 +111,13 @@
             <!-- Logged-in user navigation -->
             <div class="navbar-links">
                 <x-nav-link href="/">Home</x-nav-link>
-                <x-nav-link href="#">Browse</x-nav-link>
+                <x-nav-link href="/#browse">Browse</x-nav-link>
                 <x-nav-link href="{{ route('report.found') }}">Report Found</x-nav-link>
                 <x-nav-link href="{{ route('report.lost') }}">Report Lost</x-nav-link>
                 <x-nav-link href="{{ route('history.index') }}">My History</x-nav-link>
+                <x-nav-link href="{{ route('reports.index') }}">My Reports</x-nav-link>
+                <x-nav-link href="/about">About</x-nav-link>
+                <x-nav-link href="/contact">Contact</x-nav-link>
             </div>
             
             <!-- User avatar and logout -->
@@ -129,7 +136,7 @@
             <!-- Guest user navigation -->
             <div class="navbar-links">
                 <x-nav-link href="/">Home</x-nav-link>
-                <x-nav-link href="#">Browse</x-nav-link>
+                <x-nav-link href="/#browse">Browse</x-nav-link>
                 <x-nav-link href="/about">About</x-nav-link>
                 <x-nav-link href="/contact">Contact</x-nav-link>
             </div>

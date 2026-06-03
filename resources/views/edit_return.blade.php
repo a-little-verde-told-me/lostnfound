@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Re-submit Return - Findit</title>
+<x-layout title="Re-submit Return">
     <style>
         * {
             margin: 0;
@@ -362,30 +357,7 @@
             }
         }
     </style>
-</head>
-<body>
-    <!-- Navbar -->
-    <nav class="navbar">
-        <a href="{{ route('home') }}" class="navbar-logo">
-            <span class="navbar-logo-highlight">Findit</span>
-        </a>
-        <ul class="navbar-nav">
-            <li><a href="{{ route('home') }}">Home</a></li>
-            <li><a href="{{ route('home') }}#browse">Browse</a></li>
-            <li><a href="{{ route('history.index') }}">My History</a></li>
-        </ul>
-        <div class="navbar-right">
-            <a href="{{ route('profile') }}" class="user-avatar">
-                {{ substr(Auth::user()->name, 0, 1) }}
-            </a>
-            <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
-                @csrf
-                <button type="submit" class="nav-link-logout">Logout</button>
-            </form>
-        </div>
-    </nav>
 
-    <!-- Main Content -->
     <div class="container">
         <h1 class="page-title">Re-submit Your Return</h1>
         <p class="page-subtitle">Your return submission was rejected. Please review and submit again with any necessary updates.</p>
@@ -570,5 +542,4 @@
             }
         }
     </script>
-</body>
-</html>
+</x-layout>
