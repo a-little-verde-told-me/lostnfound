@@ -62,21 +62,6 @@
             color: #6b7280;
         }
 
-        .navbar-right {
-            display: none;
-            align-items: center;
-            gap: 16px;
-            margin-left: 32px;
-            border-left: 1px solid #e5e7eb;
-            padding-left: 32px;
-        }
-
-        @media (min-width: 768px) {
-            .navbar-right {
-                display: flex;
-            }
-        }
-
         .nav-link-logout {
             color: #2563eb;
             font-size: 14px;

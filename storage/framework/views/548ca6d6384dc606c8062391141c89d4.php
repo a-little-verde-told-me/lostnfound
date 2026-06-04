@@ -525,7 +525,7 @@
                     <div class="report-header">
                         <div>
                             <h2 class="report-title"><?php echo e($report->name); ?></h2>
-                            <div class="report-date">Submitted <?php echo e($report->created_at->format('M d, Y \a\t g:i A')); ?></div>
+                            <div class="report-date">Submitted <?php echo e($report->created_at->format('M d, Y')); ?></div>
                         </div>
                         <?php
                             $displayStatus = $report->getDisplayStatus();
@@ -655,8 +655,8 @@
                     type: "<?php echo e($report->type); ?>",
                     status: "<?php echo e($report->status); ?>",
                     image: "<?php echo e($report->image ? asset('storage/' . $report->image) : ''); ?>",
-                    created_at: "<?php echo e($report->created_at->format('M d, Y \\a\\t g:i A')); ?>",
-                    date_reported: "<?php echo e($report->created_at->format('M d, Y \\a\\t g:i A')); ?>",
+                    created_at: "<?php echo e($report->created_at->format('M d, Y')); ?>",
+                    date_reported: "<?php echo e($report->created_at->format('M d, Y')); ?>",
                     date_found: "<?php echo e($report->date_found ? $report->date_found->format('M d, Y') : ''); ?>",
                     date_lost: "<?php echo e($report->date_lost ? $report->date_lost->format('M d, Y') : ''); ?>",
                     approved_claim: <?php echo json_encode($report->getApprovedClaim() ? ['user_name' => $report->getApprovedClaim()->user->name, 'email' => $report->getApprovedClaim()->contact_email, 'phone' => $report->getApprovedClaim()->contact_number] : null); ?>,

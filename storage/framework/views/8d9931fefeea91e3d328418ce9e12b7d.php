@@ -61,18 +61,6 @@
             color: #2563eb;
         }
 
-        .navbar-right {
-            display: none;
-            align-items: center;
-            gap: 16px;
-        }
-
-        @media (min-width: 768px) {
-            .navbar-right {
-                display: flex;
-            }
-        }
-
         .nav-link-logout {
             color: #ef4444;
             background: none;

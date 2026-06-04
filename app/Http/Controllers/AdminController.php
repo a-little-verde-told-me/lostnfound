@@ -582,7 +582,7 @@ class AdminController extends Controller
                 'Category' => $item->category->name ?? 'N/A',
                 'Type' => $item->type,
                 'Status' => ucfirst($item->status),
-                'Location Found/Lost' => $item->location,
+                'Location Found/Lost' => $item->found_location ?? $item->lost_location ?? 'N/A',
                 'Reporter' => $item->user->name ?? 'Unknown',
                 'Date Found/Lost' => $item->created_at->format('Y-m-d H:i:s'),
                 'Created At' => $item->created_at->format('Y-m-d H:i:s'),
