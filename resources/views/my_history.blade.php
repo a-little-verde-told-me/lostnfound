@@ -64,21 +64,6 @@
             font-weight: 600;
         }
 
-        .navbar-right {
-            display: none;
-            align-items: center;
-            gap: 16px;
-            margin-left: 32px;
-            border-left: 1px solid #e5e7eb;
-            padding-left: 32px;
-        }
-
-        @media (min-width: 768px) {
-            .navbar-right {
-                display: flex;
-            }
-        }
-
         .user-menu {
             position: relative;
         }

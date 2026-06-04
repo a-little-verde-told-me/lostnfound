@@ -33,8 +33,8 @@
         .navbar-left {
             display: flex;
             align-items: center;
-            gap: 1rem;
             flex: 0 0 auto;
+            gap: 1rem;
         }
 
         .navbar-center {
@@ -42,6 +42,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            gap: 2rem;
         }
 
         .navbar-logo {
@@ -59,6 +60,14 @@
             color: #2563eb;
         }
 
+        .navbar-logo-desktop {
+            display: none;
+        }
+
+        .navbar-logo-mobile {
+            display: flex;
+        }
+
         /* Desktop Navigation - Hidden on Mobile */
         .navbar-links {
             display: none;
@@ -67,24 +76,61 @@
         }
 
         @media (min-width: 768px) {
-            .navbar-links {
+            .navbar-logo-desktop {
                 display: flex;
             }
-            .navbar-logo {
-                display: none !important;
+
+            .navbar-logo-mobile {
+                display: none;
             }
             .navbar {
+                display: grid;
+                grid-template-columns: auto 1fr auto;
                 padding: 0 2rem;
+            }
+            
+            .navbar-left {
+                grid-column: 1;
+                flex: 0 0 auto;
+            }
+            
+            .navbar-center {
+                grid-column: 2;
+                flex: 1;
+                justify-content: center;
+                gap: 0;
+            }
+            
+            .navbar-right {
+                grid-column: 3;
+                justify-content: flex-end;
+            }
+            
+            .navbar-links {
+                display: flex;
+                gap: 1.5rem;
+            }
+        }
+
+        /* Mobile: Logo centered */
+        @media (max-width: 767px) {
+            .navbar-center {
+                justify-content: center;
             }
         }
 
         .navbar-right {
-            display: none;
+            display: flex;
             gap: 1rem;
             align-items: center;
             flex: 0 0 auto;
-            border-left: 1px solid #e5e7eb;
-            padding-left: 1rem;
+        }
+
+        @media (max-width: 767px) {
+            .navbar-right {
+                border-left: none;
+                padding-left: 0;
+            }
         }
 
         @media (min-width: 768px) {
@@ -301,19 +347,19 @@
     <!-- Navbar -->
     <nav class="navbar">
         @auth
-            <!-- Left: Hamburger Menu Button (Mobile) + Logo (Desktop) -->
+            <!-- Left: Hamburger Menu Button (Mobile only) + Logo (Desktop only) -->
             <div class="navbar-left">
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
-                <a href="/" class="navbar-logo" style="display: none;">Find<span class="navbar-logo-highlight">it</span></a>
+                <a href="/" class="navbar-logo navbar-logo-desktop">Find<span class="navbar-logo-highlight">it</span></a>
             </div>
 
-            <!-- Center: Logo (Mobile) + Navigation Links (Desktop) -->
+            <!-- Center: Logo (Mobile only) + Navigation Links (Desktop) -->
             <div class="navbar-center">
-                <a href="/" class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></a>
+                <a href="/" class="navbar-logo navbar-logo-mobile">Find<span class="navbar-logo-highlight">it</span></a>
                 <div class="navbar-links">
                     <x-nav-link href="/">Home</x-nav-link>
                     <x-nav-link href="/#browse">Browse</x-nav-link>
@@ -337,19 +383,19 @@
                 </form>
             </div>
         @else
-            <!-- Left: Hamburger Menu Button (Mobile) + Logo (Desktop) -->
+            <!-- Left: Hamburger Menu Button (Mobile only) + Logo (Desktop only) -->
             <div class="navbar-left">
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
-                <a href="/" class="navbar-logo" style="display: none;">Find<span class="navbar-logo-highlight">it</span></a>
+                <a href="/" class="navbar-logo navbar-logo-desktop">Find<span class="navbar-logo-highlight">it</span></a>
             </div>
 
-            <!-- Center: Logo (Mobile) + Navigation Links (Desktop) -->
+            <!-- Center: Logo (Mobile only) + Navigation Links (Desktop) -->
             <div class="navbar-center">
-                <a href="/" class="navbar-logo">Find<span class="navbar-logo-highlight">it</span></a>
+                <a href="/" class="navbar-logo navbar-logo-mobile">Find<span class="navbar-logo-highlight">it</span></a>
                 <div class="navbar-links">
                     <x-nav-link href="/">Home</x-nav-link>
                     <x-nav-link href="/#browse">Browse</x-nav-link>
