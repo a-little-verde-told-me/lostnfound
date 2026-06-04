@@ -16,13 +16,15 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('category')->onDelete('cascade');
             $table->foreignId('user_id')->constrained('user')->onDelete('cascade');
             $table->string('name');
+            $table->timestamp('date_found')->nullable();
+            $table->timestamp('date_lost')->nullable();
+            $table->string('found_location')->nullable();
+            $table->string('lost_location')->nullable();
+            $table->string('surrender_location')->nullable();
             $table->text('description');
             $table->string('image')->nullable();
             $table->string('type');
             $table->enum('status', ['active', 'claimed', 'returned'])->default('active');
-            $table->string('location');
-            $table->string('surrender_location')->nullable();
-            $table->timestamp('date_reported');
             $table->timestamps();
         });
     }

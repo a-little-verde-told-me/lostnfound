@@ -36,7 +36,7 @@ class ItemApiController extends Controller
                 $query->where('category_id', $category);
             }
 
-            $items = $query->latest('date_reported')->paginate($perPage);
+            $items = $query->latest('created_at')->paginate($perPage);
 
             return response()->json([
                 'success' => true,
@@ -82,7 +82,6 @@ class ItemApiController extends Controller
                 'name' => 'required|string|max:255',
                 'category_id' => 'required|exists:category,id',
                 'type' => 'required|in:lost,found',
-                'date_reported' => 'required|date',
                 'location' => 'required|string|max:255',
                 'surrender_location' => 'nullable|string|max:255',
                 'description' => 'required|string|max:1000',
@@ -217,7 +216,7 @@ class ItemApiController extends Controller
                 $query->where('type', $type);
             }
 
-            $items = $query->latest('date_reported')->paginate($perPage);
+            $items = $query->latest('created_at')->paginate($perPage);
 
             return response()->json([
                 'success' => true,

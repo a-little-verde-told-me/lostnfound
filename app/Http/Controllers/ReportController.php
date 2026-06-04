@@ -70,9 +70,9 @@ class ReportController extends Controller
                 'image' => $imagePath,
                 'type' => 'Found',
                 'status' => 'active',
-                'location' => $validated['location_found'],
+                'found_location' => $validated['location_found'],
                 'surrender_location' => $validated['location_current'],
-                'date_reported' => $validated['date_found'],
+                'date_found' => $validated['date_found'],
                 'user_id' => Auth::id() ?? 1
             ]);
 
@@ -140,8 +140,8 @@ class ReportController extends Controller
                 'image' => $imagePath,
                 'type' => 'Lost',
                 'status' => 'active',
-                'location' => $validated['location_lost'],
-                'date_reported' => $validated['date_lost'],
+                'lost_location' => $validated['location_lost'],
+                'date_lost' => $validated['date_lost'],
                 'user_id' => Auth::id() ?? 1
             ]);
 

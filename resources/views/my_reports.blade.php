@@ -639,14 +639,16 @@
                     name: "{{ $report->name }}",
                     category_id: {{ $report->category_id }},
                     category_name: "{{ $report->category->name ?? 'N/A' }}",
-                    location: "{{ $report->location }}",
+                    location: "{{ $report->type === 'Found' ? $report->found_location : $report->lost_location }}",
                     surrender_location: "{{ $report->surrender_location ?? '' }}",
                     description: "{{ addslashes($report->description) }}",
                     type: "{{ $report->type }}",
                     status: "{{ $report->status }}",
                     image: "{{ $report->image ? asset('storage/' . $report->image) : '' }}",
                     created_at: "{{ $report->created_at->format('M d, Y \\a\\t g:i A') }}",
-                    date_reported: "{{ $report->date_reported->format('M d, Y \\a\\t g:i A') }}",
+                    date_reported: "{{ $report->created_at->format('M d, Y \\a\\t g:i A') }}",
+                    date_found: "{{ $report->date_found ? $report->date_found->format('M d, Y') : '' }}",
+                    date_lost: "{{ $report->date_lost ? $report->date_lost->format('M d, Y') : '' }}",
                     approved_claim: {!! json_encode($report->getApprovedClaim() ? ['user_name' => $report->getApprovedClaim()->user->name, 'email' => $report->getApprovedClaim()->contact_email, 'phone' => $report->getApprovedClaim()->contact_number] : null) !!},
                     approved_return: {!! json_encode($report->getApprovedReturn() ? ['user_name' => $report->getApprovedReturn()->user->name, 'email' => $report->getApprovedReturn()->email, 'phone' => $report->getApprovedReturn()->phone_number] : null) !!}
                 },
@@ -742,7 +744,7 @@
 
                 <div style="margin-bottom: 16px;">
                     <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">${report.type === 'Lost' ? 'Date Lost' : 'Date Found'}</div>
-                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.date_reported}</div>
+                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.type === 'Lost' ? report.date_lost : report.date_found}</div>
                 </div>
 
                 <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>

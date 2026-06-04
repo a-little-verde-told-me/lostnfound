@@ -260,9 +260,9 @@
                     <div class="activity-title">
                         {{ ucfirst($item->type) }}: {{ $item->name }}
                     </div>
-                    <div class="activity-meta">Reported by {{ $item->user->name }} — {{ $item->location }}</div>
+                    <div class="activity-meta">Reported by {{ $item->user->name }} — {{ $item->type === 'Found' ? $item->found_location : $item->lost_location }}</div>
                 </div>
-                <div class="activity-time">{{ $item->date_reported->diffForHumans() }}</div>
+                <div class="activity-time">{{ $item->created_at->diffForHumans() }}</div>
             </div>
         @empty
             <div class="empty-state">

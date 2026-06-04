@@ -21,7 +21,7 @@ Route::get('/', function () {
         ->whereDoesntHave('claims', function($query) {
             $query->where('status', 'approved');
         })
-        ->latest('date_reported')
+        ->latest('created_at')
         ->paginate(12);
     return view('home', ['items' => $items]);
 })->name('home');
@@ -119,7 +119,7 @@ Route::middleware(['auth', IsUser::class])->group(function () {
 // My Reports Route (User Only)
 Route::middleware(['auth', IsUser::class])->group(function () {
     Route::get('/my-reports', function () {
-        $reports = Auth::user()->items()->latest('date_reported')->get();
+        $reports = Auth::user()->items()->latest('created_at')->get();
         $categories = \App\Models\Category::all();
         return view('my_reports', ['reports' => $reports, 'categories' => $categories]);
     })->name('reports.index');
@@ -165,7 +165,7 @@ Route::get('/api/search', function (Illuminate\Http\Request $request) {
                   $subQ->where('name', 'LIKE', "%{$query}%");
               });
         })
-        ->latest('date_reported')
+        ->latest('created_at')
         ->limit(50)
         ->get();
     
@@ -201,7 +201,7 @@ Route::get('/api/filter', function (Illuminate\Http\Request $request) {
         $query->whereIn('location', array_map('trim', $locations));
     }
     
-    $items = $query->latest('date_reported')->limit(50)->get();
+    $items = $query->latest('created_at')->limit(50)->get();
     
     return response()->json($items);
 })->name('filter');
@@ -233,6 +233,7 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
 Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/api/claims/{id}', [AdminController::class, 'getClaimDetails'])->name('api.claims.show');
     Route::patch('/api/claims/{id}/status', [AdminController::class, 'updateClaimStatus'])->name('api.claims.updateStatus');
+    Route::get('/api/items/{id}', [AdminController::class, 'getItemDetails'])->name('api.items.show');
 });
 
 // API Routes for Admin Returns

@@ -390,7 +390,7 @@
 
             <div class="item-detail-row">
                 <div class="item-detail-label">Found at:</div>
-                <div class="item-detail-value">{{ $claim->item->location }}</div>
+                <div class="item-detail-value">{{ $claim->item->found_location ?? 'Not specified' }}</div>
             </div>
 
             <div class="item-detail-row">
@@ -400,7 +400,7 @@
 
             <div class="item-detail-row">
                 <div class="item-detail-label">Date found:</div>
-                <div class="item-detail-value">{{ $claim->item->date_reported->format('m/d/Y') }}</div>
+                <div class="item-detail-value">{{ $claim->item->created_at->format('m/d/Y') }}</div>
             </div>
         </div>
 

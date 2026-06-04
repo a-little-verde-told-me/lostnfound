@@ -700,7 +700,7 @@
                                 <div class="claim-feedback approved">
                                     <div class="claim-feedback-label">Claim approved by Admin</div>
                                     <div class="claim-feedback-text">
-                                        Pick up your item at: {{ $item->item?->location ?? 'Guard post, main entrance' }}
+                                        Pick up your item at: {{ $item->item?->surrender_location ?? 'Guard post, main entrance' }}
                                     </div>
                                 </div>
                             @elseif($item->status === 'rejected')
@@ -835,7 +835,7 @@
                     </div>
                     <div class="modal-info-item">
                         <div class="modal-info-label">Item Location</div>
-                        <div class="modal-info-value">${item.item?.location || 'Not specified'}</div>
+                        <div class="modal-info-value">${item.item?.type === 'Found' ? (item.item?.found_location || 'Not specified') : (item.item?.lost_location || 'Not specified')}</div>
                     </div>
                 `;
             }

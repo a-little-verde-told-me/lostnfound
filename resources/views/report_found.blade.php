@@ -352,7 +352,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="date_found">Date found <span class="required">*</span></label>
+                        <label for="date_found">Date found</label>
                         <input
                             type="date"
                             id="date_found"
@@ -368,7 +368,7 @@
 
                 <!-- Where you found it -->
                 <div class="form-group">
-                    <label for="location_found">Where you found it? <span class="required">*</span></label>
+                    <label for="location_found">Where you found it?</label>
                     <input
                         type="text"
                         id="location_found"
@@ -384,7 +384,7 @@
 
                 <!-- Where it is now (surrender location) -->
                 <div class="form-group">
-                    <label for="location_current">Where it is now (surrender location) <span class="required">*</span></label>
+                    <label for="location_current">Where it is now (surrender location)</label>
                     <input
                         type="text"
                         id="location_current"

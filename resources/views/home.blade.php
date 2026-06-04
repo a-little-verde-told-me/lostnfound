@@ -977,11 +977,11 @@
                             <div class="item-name">{{ $item->name }}</div>
                             <div class="item-location">
                                 <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
-                                {{ $item->location }}
+                                {{ $item->type === 'Found' ? $item->found_location : $item->lost_location }}
                             </div>
                             <div class="item-date">
                                 <i class="fas fa-calendar" style="color: #2563eb;"></i>
-                                {{ $item->date_reported->format('m/d/Y') }}
+                                {{ $item->created_at->format('m/d/Y') }}
                             </div>
                             <div class="item-actions">
                                 @php
@@ -1112,11 +1112,11 @@
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Location:</div>
-                            <div class="detail-value">${item.location}</div>
+                            <div class="detail-value">${item.type === 'Found' ? item.found_location : item.lost_location}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Date Reported:</div>
-                            <div class="detail-value">${new Date(item.date_reported).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
+                            <div class="detail-value">${new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
                         </div>
                     </div>
                     
@@ -1202,10 +1202,10 @@
             
             switch(sortType) {
                 case 'latest':
-                    sorted.sort((a, b) => new Date(b.date_reported) - new Date(a.date_reported));
+                    sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
                     break;
                 case 'oldest':
-                    sorted.sort((a, b) => new Date(a.date_reported) - new Date(b.date_reported));
+                    sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
                     break;
                 case 'name_az':
                     sorted.sort((a, b) => a.name.localeCompare(b.name));
@@ -1217,14 +1217,14 @@
                     sorted.sort((a, b) => {
                         if (a.type.toLowerCase() === 'found' && b.type.toLowerCase() !== 'found') return -1;
                         if (a.type.toLowerCase() !== 'found' && b.type.toLowerCase() === 'found') return 1;
-                        return new Date(b.date_reported) - new Date(a.date_reported);
+                        return new Date(b.created_at) - new Date(a.created_at);
                     });
                     break;
                 case 'lost_first':
                     sorted.sort((a, b) => {
                         if (a.type.toLowerCase() === 'lost' && b.type.toLowerCase() !== 'lost') return -1;
                         if (a.type.toLowerCase() !== 'lost' && b.type.toLowerCase() === 'lost') return 1;
-                        return new Date(b.date_reported) - new Date(a.date_reported);
+                        return new Date(b.created_at) - new Date(a.created_at);
                     });
                     break;
             }
@@ -1255,11 +1255,11 @@
                         <div class="item-name">${item.name}</div>
                         <div class="item-location">
                             <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
-                            ${item.location}
+                            ${item.type === 'Found' ? item.found_location : item.lost_location}
                         </div>
                         <div class="item-date">
                             <i class="fas fa-calendar" style="color: #2563eb;"></i>
-                            ${new Date(item.date_reported).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                            ${new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
                         </div>
                         <div class="item-actions">
                             ${item.type.toLowerCase() === 'found' 

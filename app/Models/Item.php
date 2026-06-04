@@ -19,13 +19,16 @@ class Item extends Model
         'image',
         'type',
         'status',
-        'location',
+        'found_location',
+        'lost_location',
         'surrender_location',
-        'date_reported'
+        'date_found',
+        'date_lost'
     ];
 
     protected $casts = [
-        'date_reported' => 'datetime',
+        'date_found' => 'datetime',
+        'date_lost' => 'datetime',
     ];
 
     /**

@@ -558,11 +558,11 @@
                                     <div class="section-title">Location & Date</div>
                                     <div class="detail-row">
                                         <div class="detail-label">Location:</div>
-                                        <div class="detail-value">${data.item.location}</div>
+                                        <div class="detail-value">${data.item.found_location || 'Not specified'}</div>
                                     </div>
                                     <div class="detail-row">
                                         <div class="detail-label">Date Lost:</div>
-                                        <div class="detail-value">${new Date(data.item.date_reported).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
+                                        <div class="detail-value">${new Date(data.item.created_at).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
                                     </div>
                                 </div>
                                 

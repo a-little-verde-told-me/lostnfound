@@ -42,7 +42,7 @@ class AdminController extends Controller
 
         // Recent activity (latest items - max 5)
         $recentItems = Item::with('user')
-            ->latest('date_reported')
+            ->latest('created_at')
             ->take(5)
             ->get();
 
@@ -87,12 +87,16 @@ class AdminController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'LIKE', "%{$search}%")
-                ->orWhere('location', 'LIKE', "%{$search}%");
+                ->orWhere('found_location', 'LIKE', "%{$search}%")
+                ->orWhere('lost_location', 'LIKE', "%{$search}%")
+                ->orWhereHas('user', function ($subQ) use ($search) {
+                    $subQ->where('name', 'LIKE', "%{$search}%");
+                });
             });
         }
 
         // Sort by latest date reported
-        $items = $query->latest('date_reported')
+        $items = $query->latest('created_at')
               ->paginate(10)
               ->withQueryString();
 
@@ -284,6 +288,26 @@ class AdminController extends Controller
     }
 
     /**
+     * Get item details via API
+     */
+    public function getItemDetails($id)
+    {
+        $item = Item::with('user', 'category')->find($id);
+        
+        if (!$item) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Item not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $item
+        ], 200);
+    }
+
+    /**
      * Update claim status via API
      */
     public function updateClaimStatus(Request $request, Claim $id)
@@ -405,11 +429,11 @@ class AdminController extends Controller
         }
 
         if ($request->has('from_date') && $request->from_date) {
-            $query->whereDate('date_reported', '>=', $request->from_date);
+            $query->whereDate('created_at', '>=', $request->from_date);
         }
 
         if ($request->has('to_date') && $request->to_date) {
-            $query->whereDate('date_reported', '<=', $request->to_date);
+            $query->whereDate('created_at', '<=', $request->to_date);
         }
 
         $total = $query->count();
@@ -544,11 +568,11 @@ class AdminController extends Controller
         }
 
         if ($request->has('from_date') && $request->from_date) {
-            $query->whereDate('date_reported', '>=', $request->from_date);
+            $query->whereDate('created_at', '>=', $request->from_date);
         }
 
         if ($request->has('to_date') && $request->to_date) {
-            $query->whereDate('date_reported', '<=', $request->to_date);
+            $query->whereDate('created_at', '<=', $request->to_date);
         }
 
         return $query->get()->map(function($item) {
@@ -560,7 +584,7 @@ class AdminController extends Controller
                 'Status' => ucfirst($item->status),
                 'Location Found/Lost' => $item->location,
                 'Reporter' => $item->user->name ?? 'Unknown',
-                'Date Found/Lost' => $item->date_reported->format('Y-m-d H:i:s'),
+                'Date Found/Lost' => $item->created_at->format('Y-m-d H:i:s'),
                 'Created At' => $item->created_at->format('Y-m-d H:i:s'),
             ];
         });

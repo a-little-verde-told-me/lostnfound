@@ -30,7 +30,6 @@ class ItemController extends Controller
             'type' => 'required|in:Lost,Found',
             'status' => 'required|in:active,claimed,returned',
             'location' => 'required|string|max:255',
-            'date_reported' => 'required|date',
             'description' => 'nullable|string',
         ]);
 
@@ -66,7 +65,6 @@ class ItemController extends Controller
             'type' => 'in:Lost,Found',
             'status' => 'in:active,claimed,returned',
             'location' => 'string|max:255',
-            'date_reported' => 'date',
             'description' => 'nullable|string',
         ]);
 

@@ -470,7 +470,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="date_lost">Date lost <span class="required">*</span></label>
+                        <label for="date_lost">Date lost</label>
                         <input
                             type="date"
                             id="date_lost"
@@ -486,7 +486,7 @@
 
                 <!-- Where you lost it -->
                 <div class="form-group">
-                    <label for="location_lost">Last seen location <span class="required">*</span></label>
+                    <label for="location_lost">Last seen location</label>
                     <input
                         type="text"
                         id="location_lost"
@@ -516,7 +516,7 @@
 
                 <!-- Photo Upload -->
                 <div class="form-group">
-                    <label for="photo">Photo <span class="required">*</span></label>
+                    <label for="photo">Photo</label>
                     <input
                         type="file"
                         id="photo"

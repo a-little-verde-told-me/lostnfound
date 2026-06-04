@@ -333,12 +333,12 @@
 
             <div class="item-detail-row">
                 <div class="item-detail-label">Lost at:</div>
-                <div class="item-detail-value">{{ $item->location }}</div>
+                <div class="item-detail-value">{{ $item->lost_location ?? 'Not specified' }}</div>
             </div>
 
             <div class="item-detail-row">
                 <div class="item-detail-label">Date lost:</div>
-                <div class="item-detail-value">{{ $item->date_reported->format('m/d/Y') }}</div>
+                <div class="item-detail-value">{{ $item->created_at->format('m/d/Y') }}</div>
             </div>
         </div>
 

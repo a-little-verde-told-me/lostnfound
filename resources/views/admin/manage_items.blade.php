@@ -511,7 +511,13 @@
         // Fetch item details via AJAX
         fetch(`/api/items/${itemId}`)
             .then(response => response.json())
-            .then(data => {
+            .then(response => {
+                if (!response.success) {
+                    alert('Failed to load item details');
+                    return;
+                }
+                
+                const data = response.data;
                 const modalBody = document.getElementById('modalBody');
                 const imageUrl = data.image ? `/storage/${data.image}` : null;
                 
@@ -537,7 +543,7 @@
                                 </div>
                                 <div class="detail-row">
                                     <div class="detail-label">Type:</div>
-                                    <div class="detail-value">${data.type === 'found' ? 'Found' : 'Lost'}</div>
+                                    <div class="detail-value">${data.type === 'Found' ? 'Found' : 'Lost'}</div>
                                 </div>
                                 <div class="detail-row">
                                     <div class="detail-label">Category:</div>
@@ -567,17 +573,27 @@
                                     <div class="detail-label">Email:</div>
                                     <div class="detail-value">${data.user?.email || 'N/A'}</div>
                                 </div>
+                                <div class="detail-row">
+                                    <div class="detail-label">Phone:</div>
+                                    <div class="detail-value">${data.user?.phone_number || 'N/A'}</div>
+                                </div>
                             </div>
                             
                             <div>
                                 <div class="section-title">Location & Timeline</div>
                                 <div class="detail-row">
-                                    <div class="detail-label">Location:</div>
-                                    <div class="detail-value">${data.location}</div>
+                                    <div class="detail-label">${data.type === 'Found' ? 'Found Location:' : 'Last Seen:'}</div>
+                                    <div class="detail-value">${data.type === 'Found' ? data.found_location : data.lost_location}</div>
                                 </div>
+                                ${data.type === 'Found' ? `
                                 <div class="detail-row">
-                                    <div class="detail-label">Found/Lost Date:</div>
-                                    <div class="detail-value">${new Date(data.date_reported).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
+                                    <div class="detail-label">Current Location:</div>
+                                    <div class="detail-value">${data.surrender_location || 'N/A'}</div>
+                                </div>
+                                ` : ''}
+                                <div class="detail-row">
+                                    <div class="detail-label">${data.type === 'Found' ? 'Date Found:' : 'Date Lost:'}</div>
+                                    <div class="detail-value">${data.date_found ? new Date(data.date_found).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : (data.date_lost ? new Date(data.date_lost).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A')}</div>
                                 </div>
                                 <div class="detail-row">
                                     <div class="detail-label">Report Created:</div>
@@ -595,12 +611,6 @@
                                         </span>
                                     </div>
                                 </div>
-                                ${data.surrender_location ? `
-                                <div class="detail-row">
-                                    <div class="detail-label">Pickup Location:</div>
-                                    <div class="detail-value">${data.surrender_location}</div>
-                                </div>
-                                ` : ''}
                             </div>
                         </div>
                     </div>
@@ -608,7 +618,10 @@
                 
                 document.getElementById('itemModal').classList.add('active');
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load item details');
+            });
     }
 
     function closeItemModal() {

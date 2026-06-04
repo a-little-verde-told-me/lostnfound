@@ -65,7 +65,6 @@ class ItemFactory extends Factory
             'type' => fake()->randomElement($types),
             'status' => fake()->randomElement($statuses),
             'location' => fake()->randomElement($locations),
-            'date_reported' => fake()->dateTimeBetween('-90 days', 'now'),
         ];
     }
 }
