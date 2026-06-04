@@ -685,7 +685,7 @@
                                         <div class="history-title">{{ $item->item?->name ?? 'Item' }}</div>
                                         <span class="type-badge type-claim">Claim</span>
                                     </div>
-                                    <div class="history-date">Submitted {{ $item->date->format('M d, Y \a\t g:i A') }}</div>
+                                    <div class="history-date">Submitted {{ $item->date->format('M d, Y') }}</div>
                                 </div>
                                 <span class="claim-status status-{{ strtolower($item->status) }}">
                                     {{ ucfirst($item->status) }}
@@ -723,7 +723,7 @@
                                         <div class="history-title">{{ $item->item?->name ?? 'Item' }}</div>
                                         <span class="type-badge type-return">Return</span>
                                     </div>
-                                    <div class="history-date">Submitted {{ $item->date->format('M d, Y \a\t g:i A') }}</div>
+                                    <div class="history-date">Submitted {{ $item->date->format('M d, Y') }}</div>
                                 </div>
                                 <span class="claim-status status-{{ strtolower($item->status) }}">
                                     {{ ucfirst($item->status) }}
@@ -807,7 +807,7 @@
                 </div>
                 <div class="modal-info-item">
                     <div class="modal-info-label">Submitted Date</div>
-                    <div class="modal-info-value">${new Date(item.date).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</div>
+                    <div class="modal-info-value">${new Date(item.date).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
                 </div>
                 </div>
             `;
