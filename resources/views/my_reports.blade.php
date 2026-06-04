@@ -516,7 +516,7 @@
                     <div class="report-header">
                         <div>
                             <h2 class="report-title">{{ $report->name }}</h2>
-                            <div class="report-date">Submitted {{ $report->created_at->format('M d, Y') }}</div>
+                            <div class="report-date">Submitted {{ $report->created_at->format('M d, Y \a\t g:i A') }}</div>
                         </div>
                         @php
                             $displayStatus = $report->getDisplayStatus();
@@ -645,8 +645,8 @@
                     type: "{{ $report->type }}",
                     status: "{{ $report->status }}",
                     image: "{{ $report->image ? asset('storage/' . $report->image) : '' }}",
-                    created_at: "{{ $report->created_at->format('M d, Y') }}",
-                    date_reported: "{{ $report->created_at->format('M d, Y') }}",
+                    created_at: "{{ $report->created_at->format('M d, Y \\a\\t g:i A') }}",
+                    date_reported: "{{ $report->created_at->format('M d, Y \\a\\t g:i A') }}",
                     date_found: "{{ $report->date_found ? $report->date_found->format('M d, Y') : '' }}",
                     date_lost: "{{ $report->date_lost ? $report->date_lost->format('M d, Y') : '' }}",
                     approved_claim: {!! json_encode($report->getApprovedClaim() ? ['user_name' => $report->getApprovedClaim()->user->name, 'email' => $report->getApprovedClaim()->contact_email, 'phone' => $report->getApprovedClaim()->contact_number] : null) !!},

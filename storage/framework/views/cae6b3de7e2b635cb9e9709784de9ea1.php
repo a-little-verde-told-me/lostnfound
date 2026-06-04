@@ -73,6 +73,21 @@
             font-weight: 600;
         }
 
+        .navbar-right {
+            display: none;
+            align-items: center;
+            gap: 16px;
+            margin-left: 32px;
+            border-left: 1px solid #e5e7eb;
+            padding-left: 32px;
+        }
+
+        @media (min-width: 768px) {
+            .navbar-right {
+                display: flex;
+            }
+        }
+
         .user-menu {
             position: relative;
         }
@@ -681,7 +696,7 @@
                                         <div class="history-title"><?php echo e($item->item?->name ?? 'Item'); ?></div>
                                         <span class="type-badge type-claim">Claim</span>
                                     </div>
-                                    <div class="history-date">Submitted <?php echo e($item->date->format('M d, Y')); ?></div>
+                                    <div class="history-date">Submitted <?php echo e($item->date->format('M d, Y \a\t g:i A')); ?></div>
                                 </div>
                                 <span class="claim-status status-<?php echo e(strtolower($item->status)); ?>">
                                     <?php echo e(ucfirst($item->status)); ?>
@@ -722,7 +737,7 @@
                                         <div class="history-title"><?php echo e($item->item?->name ?? 'Item'); ?></div>
                                         <span class="type-badge type-return">Return</span>
                                     </div>
-                                    <div class="history-date">Submitted <?php echo e($item->date->format('M d, Y')); ?></div>
+                                    <div class="history-date">Submitted <?php echo e($item->date->format('M d, Y \a\t g:i A')); ?></div>
                                 </div>
                                 <span class="claim-status status-<?php echo e(strtolower($item->status)); ?>">
                                     <?php echo e(ucfirst($item->status)); ?>
@@ -807,7 +822,7 @@
                 </div>
                 <div class="modal-info-item">
                     <div class="modal-info-label">Submitted Date</div>
-                    <div class="modal-info-value">${new Date(item.date).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'})}</div>
+                    <div class="modal-info-value">${new Date(item.date).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'})}</div>
                 </div>
                 </div>
             `;
