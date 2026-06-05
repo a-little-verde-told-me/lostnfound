@@ -356,27 +356,14 @@
             }
         }
     </style>
-        <h1 class="page-title">Manage User Reports</h1>
 
-        <!-- Controls -->
-        <div class="controls-container">
+    <h1 class="page-title">Manage User Reports</h1>
+
+    <div class="controls-container">
         <div class="search-box">
-            <form id="searchForm"
-                method="GET"
-                action="{{ route('admin.items') }}"
-                style="display: flex; flex: 1;">
-
-                <input
-                    type="text"
-                    id="searchInput"
-                    name="search"
-                    placeholder="Search reports"
-                    value="{{ request('search') }}">
-
-                <input
-                    type="hidden"
-                    name="status"
-                    value="{{ request('status', 'all') }}">
+            <form id="searchForm" method="GET" action="{{ route('admin.items') }}" style="display: flex; flex: 1;">
+                <input type="text" id="searchInput" name="search" placeholder="Search reports" value="{{ request('search') }}">
+                <input type="hidden" name="status" value="{{ request('status', 'all') }}">
             </form>
         </div>
         <select class="sort-dropdown" id="sortSelect" onchange="sortItems()">
@@ -384,85 +371,79 @@
             <option value="oldest">Sort: Oldest</option>
             <option value="name">Sort: Name A-Z</option>
         </select>
-        </div>
+    </div>
 
-        <!-- Tabs -->
-        <div class="tabs-container">
-            <a href="{{ route('admin.items', ['status' => 'all']) }}" class="tab-button {{ $currentStatus === 'all' ? 'active' : '' }}">All items ({{ $totalCount }})</a>
-            <a href="{{ route('admin.items', ['status' => 'active']) }}" class="tab-button {{ $currentStatus === 'active' ? 'active' : '' }}">Active ({{ $activeCount }})</a>
-            <a href="{{ route('admin.items', ['status' => 'claimed']) }}" class="tab-button {{ $currentStatus === 'claimed' ? 'active' : '' }}">Claimed ({{ $claimedCount }})</a>
-            <a href="{{ route('admin.items', ['status' => 'returned']) }}" class="tab-button {{ $currentStatus === 'returned' ? 'active' : '' }}">Returned ({{ $returnedCount }})</a>
-        </div>
+    <div class="tabs-container">
+        <a href="{{ route('admin.items', ['status' => 'all']) }}" class="tab-button {{ $currentStatus === 'all' ? 'active' : '' }}">All items ({{ $totalCount }})</a>
+        <a href="{{ route('admin.items', ['status' => 'active']) }}" class="tab-button {{ $currentStatus === 'active' ? 'active' : '' }}">Active ({{ $activeCount }})</a>
+        <a href="{{ route('admin.items', ['status' => 'claimed']) }}" class="tab-button {{ $currentStatus === 'claimed' ? 'active' : '' }}">Claimed ({{ $claimedCount }})</a>
+        <a href="{{ route('admin.items', ['status' => 'returned']) }}" class="tab-button {{ $currentStatus === 'returned' ? 'active' : '' }}">Returned ({{ $returnedCount }})</a>
+    </div>
 
-        <!-- Table -->
-        <div class="table-container">
-            <table class="table">
-                <thead class="table-header">
-                    <tr>
-                        <th class="table-header-cell">Item Name</th>
-                        <th class="table-header-cell">Reported By</th>
-                        <th class="table-header-cell">Type</th>
-                        <th class="table-header-cell">Date</th>
-                        <th class="table-header-cell">Status</th>
-                        <th class="table-header-cell">Action</th>
+    <div class="table-container">
+        <table class="table">
+            <thead class="table-header">
+                <tr>
+                    <th class="table-header-cell">Item Name</th>
+                    <th class="table-header-cell">Reported By</th>
+                    <th class="table-header-cell">Type</th>
+                    <th class="table-header-cell">Date</th>
+                    <th class="table-header-cell">Status</th>
+                    <th class="table-header-cell">Action</th>
+                </tr>
+            </thead>
+            <tbody id="itemsTableBody">
+                @forelse($items as $item)
+                    <tr class="table-body-row item-row">
+                        <td class="table-body-cell">
+                            <span class="item-name">{{ $item->name }}</span>
+                        </td>
+                        <td class="table-body-cell">
+                            <span class="reported-by">{{ $item->user?->name ?? 'Unknown' }}</span>
+                        </td>
+                        <td class="table-body-cell">
+                            <span class="type-badge {{ strtolower($item->type) === 'lost' ? 'type-lost' : 'type-found' }}">
+                                {{ ucfirst($item->type) }}
+                            </span>
+                        </td>
+                        <td class="table-body-cell">
+                            <span class="date">{{ $item->created_at->format('M d, Y') }}</span>
+                        </td>
+                        <td class="table-body-cell">
+                            <span class="status-badge {{ strtolower($item->status) === 'active' ? 'status-active' : (strtolower($item->status) === 'claimed' ? 'status-claimed' : 'status-returned') }}">
+                                {{ ucfirst($item->status) }}
+                            </span>
+                        </td>
+                        <td class="table-body-cell">
+                            <button class="view-button" onclick="openItemModal({{ $item->id }})">View</button>
+                        </td>
                     </tr>
-                </thead>
-                <tbody id="itemsTableBody">
-                    @forelse($items as $item)
-                        <tr class="table-body-row item-row">
-                            <td class="table-body-cell">
-                                <span class="item-name">{{ $item->name }}</span>
-                            </td>
-                            <td class="table-body-cell">
-                                <span class="reported-by">{{ $item->user?->name ?? 'Unknown' }}</span>
-                            </td>
-                            <td class="table-body-cell">
-                                <span class="type-badge {{ strtolower($item->type) === 'lost' ? 'type-lost' : 'type-found' }}">
-                                    {{ ucfirst($item->type) }}
-                                </span>
-                            </td>
-                            <td class="table-body-cell">
-                                <span class="date">{{ $item->created_at->format('M d, Y') }}</span>
-                            </td>
-                            <td class="table-body-cell">
-                                <span class="status-badge {{ strtolower($item->status) === 'active' ? 'status-active' : (strtolower($item->status) === 'claimed' ? 'status-claimed' : 'status-returned') }}">
-                                    {{ ucfirst($item->status) }}
-                                </span>
-                            </td>
-                            <td class="table-body-cell">
-                                <button class="view-button" onclick="openItemModal({{ $item->id }})">View</button>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr class="table-body-row">
-                            <td colspan="6" class="empty-state">
-                                No items found
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                @empty
+                    <tr class="table-body-row">
+                        <td colspan="6" class="empty-state">
+                            No items found
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 
-        <!-- Pagination -->
-        <div style="margin-top: 24px; display: flex; justify-content: center;">
-            {{ $items->links() }}
-        </div>
+    <div style="margin-top: 24px; display: flex; justify-content: center;">
+        {{ $items->links() }}
+    </div>
 
-        <!-- Modal -->
-        <div id="itemModal" class="modal">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2 class="modal-title">Item Report Details</h2>
-                    <button class="modal-close" onclick="closeItemModal()">&times;</button>
-                </div>
-
-                <div id="modalBody">
-                    <!-- Content will be loaded here -->
-                </div>
+    <div id="itemModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Item Report Details</h2>
+                <button class="modal-close" onclick="closeItemModal()">&times;</button>
             </div>
+            <div id="modalBody">
+                </div>
         </div>
-</body>
+    </div>
+
 <script>
     const searchInput = document.getElementById('searchInput');
     const searchForm = document.getElementById('searchForm');
@@ -484,7 +465,6 @@
         const rows = Array.from(tbody.querySelectorAll('.item-row'));
 
         rows.sort((a, b) => {
-
             const nameA = a.querySelectorAll('td')[0].textContent.trim();
             const nameB = b.querySelectorAll('td')[0].textContent.trim();
 
@@ -520,10 +500,10 @@
                 const data = response.data;
                 const modalBody = document.getElementById('modalBody');
                 const imageUrl = data.image ? `/storage/${data.image}` : null;
+                const itemType = data.type ? data.type.toLowerCase() : '';
                 
                 modalBody.innerHTML = `
                     <div class="modal-body-columns">
-                        <!-- LEFT COLUMN: Item Image & Basic Info -->
                         <div class="modal-column">
                             <div class="column-header">Item Information</div>
                             
@@ -543,7 +523,7 @@
                                 </div>
                                 <div class="detail-row">
                                     <div class="detail-label">Type:</div>
-                                    <div class="detail-value">${data.type === 'Found' ? 'Found' : 'Lost'}</div>
+                                    <div class="detail-value">${itemType === 'found' ? 'Found' : 'Lost'}</div>
                                 </div>
                                 <div class="detail-row">
                                     <div class="detail-label">Category:</div>
@@ -559,7 +539,6 @@
                             </div>
                         </div>
                         
-                        <!-- RIGHT COLUMN: Reporter & Location Info -->
                         <div class="modal-column">
                             <div class="column-header">Report Details</div>
                             
@@ -582,17 +561,17 @@
                             <div>
                                 <div class="section-title">Location & Timeline</div>
                                 <div class="detail-row">
-                                    <div class="detail-label">${data.type === 'Found' ? 'Found Location:' : 'Last Seen:'}</div>
-                                    <div class="detail-value">${data.type === 'Found' ? data.found_location : data.lost_location}</div>
+                                    <div class="detail-label">${itemType === 'found' ? 'Found Location:' : 'Last Seen:'}</div>
+                                    <div class="detail-value">${itemType === 'found' ? (data.found_location || 'N/A') : (data.lost_location || 'N/A')}</div>
                                 </div>
-                                ${data.type === 'Found' ? `
+                                ${itemType === 'found' ? `
                                 <div class="detail-row">
                                     <div class="detail-label">Current Location:</div>
                                     <div class="detail-value">${data.surrender_location || 'N/A'}</div>
                                 </div>
                                 ` : ''}
                                 <div class="detail-row">
-                                    <div class="detail-label">${data.type === 'Found' ? 'Date Found:' : 'Date Lost:'}</div>
+                                    <div class="detail-label">${itemType === 'found' ? 'Date Found:' : 'Date Lost:'}</div>
                                     <div class="detail-value">${data.date_found ? new Date(data.date_found).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : (data.date_lost ? new Date(data.date_lost).toLocaleDateString('en-US', {year: 'numeric', month: 'short', day: 'numeric'}) : 'N/A')}</div>
                                 </div>
                                 <div class="detail-row">
@@ -634,6 +613,5 @@
             closeItemModal();
         }
     });
-
 </script>
 </x-admin-layout>
