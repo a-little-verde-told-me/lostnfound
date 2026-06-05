@@ -7,6 +7,7 @@ use App\Models\Claim;
 use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ClaimApiController extends Controller
 {
@@ -95,9 +96,17 @@ class ClaimApiController extends Controller
             $validated['status'] = 'pending';
             $validated['date_claimed'] = now();
 
-            // Handle image upload
+            // Handle image upload to Cloudinary
             if ($request->hasFile('image')) {
-                $validated['image'] = $request->file('image')->store('claims', 'public');
+                try {
+                    $uploadedFile = Cloudinary::upload($request->file('image')->getRealPath(), [
+                        'folder' => 'lost_found_claims',
+                        'resource_type' => 'auto'
+                    ]);
+                    $validated['image'] = $uploadedFile->getSecureUrl();
+                } catch (\Exception $e) {
+                    \Log::error('Cloudinary upload error: ' . $e->getMessage());
+                }
             }
 
             $claim = Claim::create($validated);

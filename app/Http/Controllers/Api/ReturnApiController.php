@@ -8,6 +8,7 @@ use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ReturnApiController extends Controller
 {
@@ -82,9 +83,17 @@ class ReturnApiController extends Controller
 
             $validated['user_id'] = Auth::id();
 
-            // Handle image upload
+            // Handle image upload to Cloudinary
             if ($request->hasFile('image')) {
-                $validated['image'] = $request->file('image')->store('returns', 'public');
+                try {
+                    $uploadedFile = Cloudinary::upload($request->file('image')->getRealPath(), [
+                        'folder' => 'lost_found_returns',
+                        'resource_type' => 'auto'
+                    ]);
+                    $validated['image'] = $uploadedFile->getSecureUrl();
+                } catch (\Exception $e) {
+                    \Log::error('Cloudinary upload error: ' . $e->getMessage());
+                }
             }
 
             $return = ReturnItem::create($validated);

@@ -7,6 +7,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ReportController extends Controller
 {
@@ -46,19 +47,16 @@ class ReportController extends Controller
         try {
             $imagePath = null;
 
-            // Handle image upload (optional)
+            // Handle image upload to Cloudinary (optional)
             if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
-                if ($file && $file->isValid()) {
-                    try {
-                        // Store the file and get the path
-                        $path = $file->store('items', 'public');
-                        if ($path) {
-                            $imagePath = $path;
-                        }
-                    } catch (\Exception $e) {
-                        \Log::error('Image upload error: ' . $e->getMessage());
-                    }
+                try {
+                    $uploadedFile = Cloudinary::upload($request->file('photo')->getRealPath(), [
+                        'folder' => 'lost_found_items',
+                        'resource_type' => 'auto'
+                    ]);
+                    $imagePath = $uploadedFile->getSecureUrl();
+                } catch (\Exception $e) {
+                    \Log::error('Cloudinary upload error: ' . $e->getMessage());
                 }
             }
 
@@ -116,19 +114,16 @@ class ReportController extends Controller
         try {
             $imagePath = null;
 
-            // Handle image upload (optional)
+            // Handle image upload to Cloudinary (optional)
             if ($request->hasFile('photo')) {
-                $file = $request->file('photo');
-                if ($file && $file->isValid()) {
-                    try {
-                        // Store the file and get the path
-                        $path = $file->store('items', 'public');
-                        if ($path) {
-                            $imagePath = $path;
-                        }
-                    } catch (\Exception $e) {
-                        \Log::error('Image upload error: ' . $e->getMessage());
-                    }
+                try {
+                    $uploadedFile = Cloudinary::upload($request->file('photo')->getRealPath(), [
+                        'folder' => 'lost_found_items',
+                        'resource_type' => 'auto'
+                    ]);
+                    $imagePath = $uploadedFile->getSecureUrl();
+                } catch (\Exception $e) {
+                    \Log::error('Cloudinary upload error: ' . $e->getMessage());
                 }
             }
 
@@ -173,13 +168,17 @@ class ReportController extends Controller
         ]);
 
         try {
-            // Handle image upload if provided
+            // Handle image upload to Cloudinary if provided
             if ($request->hasFile('photo')) {
-                // Delete old image if exists
-                if ($report->image && Storage::disk('public')->exists($report->image)) {
-                    Storage::disk('public')->delete($report->image);
+                try {
+                    $uploadedFile = Cloudinary::upload($request->file('photo')->getRealPath(), [
+                        'folder' => 'lost_found_items',
+                        'resource_type' => 'auto'
+                    ]);
+                    $validated['image'] = $uploadedFile->getSecureUrl();
+                } catch (\Exception $e) {
+                    \Log::error('Cloudinary upload error: ' . $e->getMessage());
                 }
-                $validated['image'] = $request->file('photo')->storePublicly('items', 'public');
             }
 
             $report->update($validated);
@@ -203,11 +202,7 @@ class ReportController extends Controller
         }
 
         try {
-            // Delete image if exists
-            if ($report->image && Storage::disk('public')->exists($report->image)) {
-                Storage::disk('public')->delete($report->image);
-            }
-
+            // Cloudinary handles file cleanup automatically
             $report->delete();
 
             return redirect()->route('reports.index')->with('success', 'Report deleted successfully!');
