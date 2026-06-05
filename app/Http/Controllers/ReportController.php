@@ -50,11 +50,11 @@ class ReportController extends Controller
             // Handle image upload to Cloudinary (optional)
             if ($request->hasFile('photo')) {
                 try {
-                    $uploadedFile = Cloudinary::upload($request->file('photo')->getRealPath(), [
+                    $uploadedFile = Cloudinary::uploadApi()->upload($request->file('photo')->getRealPath(), [
                         'folder' => 'lost_found_items',
                         'resource_type' => 'auto'
                     ]);
-                    $imagePath = $uploadedFile->getSecureUrl();
+                    $imagePath = $uploadedFile['secure_url'];
                 } catch (\Exception $e) {
                     \Log::error('Cloudinary upload error: ' . $e->getMessage());
                 }
@@ -117,11 +117,11 @@ class ReportController extends Controller
             // Handle image upload to Cloudinary (optional)
             if ($request->hasFile('photo')) {
                 try {
-                    $uploadedFile = Cloudinary::upload($request->file('photo')->getRealPath(), [
+                    $uploadedFile = Cloudinary::uploadApi()->upload($request->file('photo')->getRealPath(), [
                         'folder' => 'lost_found_items',
                         'resource_type' => 'auto'
                     ]);
-                    $imagePath = $uploadedFile->getSecureUrl();
+                    $imagePath = $uploadedFile['secure_url'];
                 } catch (\Exception $e) {
                     \Log::error('Cloudinary upload error: ' . $e->getMessage());
                 }
@@ -171,11 +171,11 @@ class ReportController extends Controller
             // Handle image upload to Cloudinary if provided
             if ($request->hasFile('photo')) {
                 try {
-                    $uploadedFile = Cloudinary::upload($request->file('photo')->getRealPath(), [
+                    $uploadedFile = Cloudinary::uploadApi()->upload($request->file('photo')->getRealPath(), [
                         'folder' => 'lost_found_items',
                         'resource_type' => 'auto'
                     ]);
-                    $validated['image'] = $uploadedFile->getSecureUrl();
+                    $validated['image'] = $uploadedFile['secure_url'];
                 } catch (\Exception $e) {
                     \Log::error('Cloudinary upload error: ' . $e->getMessage());
                 }

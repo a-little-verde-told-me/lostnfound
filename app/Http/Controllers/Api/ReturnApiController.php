@@ -86,11 +86,11 @@ class ReturnApiController extends Controller
             // Handle image upload to Cloudinary
             if ($request->hasFile('image')) {
                 try {
-                    $uploadedFile = Cloudinary::upload($request->file('image')->getRealPath(), [
+                    $uploadedFile = Cloudinary::uploadApi()->upload($request->file('image')->getRealPath(), [
                         'folder' => 'lost_found_returns',
                         'resource_type' => 'auto'
                     ]);
-                    $validated['image'] = $uploadedFile->getSecureUrl();
+                    $validated['image'] = $uploadedFile['secure_url'];
                 } catch (\Exception $e) {
                     \Log::error('Cloudinary upload error: ' . $e->getMessage());
                 }

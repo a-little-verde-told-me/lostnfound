@@ -94,9 +94,9 @@ class ItemApiController extends Controller
 
             // Handle Cloudinary Upload
             if ($request->hasFile('image')) {
-                $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                $uploadedFileUrl = Cloudinary::uploadApi()->upload($request->file('image')->getRealPath(), [
                     'folder' => 'items'
-                ])->getSecureUrl();
+                ])['secure_url'];
                 
                 $validated['image'] = $uploadedFileUrl;
             }
@@ -157,9 +157,9 @@ class ItemApiController extends Controller
                 }
                 
                 // Upload fresh asset
-                $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                $uploadedFileUrl = Cloudinary::uploadApi()->upload($request->file('image')->getRealPath(), [
                     'folder' => 'items'
-                ])->getSecureUrl();
+                ])['secure_url'];
                 
                 $validated['image'] = $uploadedFileUrl;
             }
