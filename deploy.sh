@@ -1,9 +1,14 @@
 #!/bin/sh
 
-# 1. Run migrations
-echo "Running database migrations..."
-php artisan migrate --force
+# Ensure the system knows where artisan and apache binaries live
+export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
 
-# 2. Start Apache in the foreground (keep container running)
+echo "Starting deployment routine..."
+
+# 1. Run migrations AND seeders together
+echo "Running database migrations and seeders..."
+php artisan migrate --seed --force
+
+# 2. Start Apache in the foreground
 echo "Starting Apache..."
 exec apache2-foreground
