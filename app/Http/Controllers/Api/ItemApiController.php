@@ -7,7 +7,7 @@ use App\Models\Item;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class ItemApiController extends Controller
 {
@@ -82,8 +82,8 @@ class ItemApiController extends Controller
                 'name' => 'required|string|max:255',
                 'category_id' => 'required|exists:category,id',
                 'type' => 'required|in:lost,found',
-                'found_location' => 'nullable|string|max:255', // Expect found_location
-                'lost_location' => 'nullable|string|max:255',  // Expect lost_location
+                'found_location' => 'nullable|string|max:255', 
+                'lost_location' => 'nullable|string|max:255',  
                 'surrender_location' => 'nullable|string|max:255',
                 'description' => 'required|string|max:1000',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
@@ -92,9 +92,13 @@ class ItemApiController extends Controller
             $validated['user_id'] = Auth::id();
             $validated['status'] = 'active';
 
-            // Handle image upload
+            // Handle Cloudinary Upload
             if ($request->hasFile('image')) {
-                $validated['image'] = $request->file('image')->store('items', 'public');
+                $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                    'folder' => 'items'
+                ])->getSecureUrl();
+                
+                $validated['image'] = $uploadedFileUrl;
             }
 
             $item = Item::create($validated);
@@ -140,13 +144,24 @@ class ItemApiController extends Controller
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
-            // Handle image upload
+            // Handle Cloudinary Update
             if ($request->hasFile('image')) {
-                // Delete old image if exists
+                // Optional: Delete old asset from Cloudinary if database url string exists
                 if ($item->image) {
-                    Storage::disk('public')->delete($item->image);
+                    try {
+                        $publicId = 'items/' . pathinfo($item->image, PATHINFO_FILENAME);
+                        Cloudinary::destroy($publicId);
+                    } catch (\Exception $cloudinaryEx) {
+                        // Keep going if deletion fails so the update loop doesn't break
+                    }
                 }
-                $validated['image'] = $request->file('image')->store('items', 'public');
+                
+                // Upload fresh asset
+                $uploadedFileUrl = Cloudinary::upload($request->file('image')->getRealPath(), [
+                    'folder' => 'items'
+                ])->getSecureUrl();
+                
+                $validated['image'] = $uploadedFileUrl;
             }
 
             $item->update($validated);
@@ -181,9 +196,14 @@ class ItemApiController extends Controller
                 ], 403);
             }
 
-            // Delete image if exists
+            // Clean up image folder from Cloudinary assets
             if ($item->image) {
-                Storage::disk('public')->delete($item->image);
+                try {
+                    $publicId = 'items/' . pathinfo($item->image, PATHINFO_FILENAME);
+                    Cloudinary::destroy($publicId);
+                } catch (\Exception $cloudinaryEx) {
+                    // Fail silently so item data gets deleted regardless
+                }
             }
 
             $item->delete();

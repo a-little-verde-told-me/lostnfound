@@ -538,8 +538,8 @@
                 .then(response => response.json())
                 .then(data => {
                     const modalBody = document.getElementById('modalBody');
-                    const itemImageUrl = data.item.image ? `/storage/${data.item.image}` : null;
-                    const proofImageUrl = data.image ? `/storage/${data.image}` : null;
+                    const itemImageUrl = data.item.image ? data.item.image : null;
+                    const proofImageUrl = data.image ? data.image : null;
                     
                     modalBody.innerHTML = `
                         <div class="modal-body-columns">

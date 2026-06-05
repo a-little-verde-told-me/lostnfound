@@ -499,7 +499,7 @@
                 
                 const data = response.data;
                 const modalBody = document.getElementById('modalBody');
-                const imageUrl = data.image ? `/storage/${data.image}` : null;
+                const imageUrl = data.image ? data.image : null;
                 const itemType = data.type ? data.type.toLowerCase() : '';
                 
                 modalBody.innerHTML = `

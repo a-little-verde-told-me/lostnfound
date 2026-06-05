@@ -950,7 +950,7 @@
                     <div class="item-card">
                         <div class="item-image">
                             @if($item->image)
-                                <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->name }}" style="width: 100%; height: 100%; object-fit: cover;" />
+                                <img src="{{ $item->image }}" alt="{{ $item->name }}" style="width: 100%; height: 100%; object-fit: cover;" />
                             @else
                                 <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
                                     <span style="color: #9ca3af; font-size: 14px;">No image</span>
@@ -1053,7 +1053,7 @@
                 const modal = document.getElementById('detailsModal');
                 const modalBody = document.getElementById('modalBody');
                 
-                const imageUrl = item.image ? `{{ asset('storage') }}/${item.image}` : null;
+                const imageUrl = item.image ? item.image : null;
                 
                 let reporterHtml = '';
                 if (item.user) {
@@ -1229,7 +1229,7 @@
                 <div class="item-card">
                     <div class="item-image">
                         ${item.image 
-                            ? `<img src="/storage/${item.image}" alt="${item.name}" />` 
+                            ? `<img src="${item.image}" alt="${item.name}" />` 
                             : `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
                                 <span style="color: #9ca3af; font-size: 14px;">No image</span>
                               </div>`

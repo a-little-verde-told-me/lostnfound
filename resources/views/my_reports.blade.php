@@ -644,7 +644,7 @@
                     description: "{{ addslashes($report->description) }}",
                     type: "{{ $report->type }}",
                     status: "{{ $report->status }}",
-                    image: "{{ $report->image ? asset('storage/' . $report->image) : '' }}",
+                    image: "{{ $report->image ?? '' }}",
                     created_at: "{{ $report->created_at->format('M d, Y') }}",
                     date_reported: "{{ $report->created_at->format('M d, Y') }}",
                     date_found: "{{ $report->date_found ? $report->date_found->format('M d, Y') : '' }}",
