@@ -1,7 +1,7 @@
 FROM php:8.2-apache
 
 # Install system dependencies and PHP extensions needed for Laravel
-RUN apt-get update && apt-get install -io -y \
+RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
