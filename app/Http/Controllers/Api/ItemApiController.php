@@ -82,7 +82,8 @@ class ItemApiController extends Controller
                 'name' => 'required|string|max:255',
                 'category_id' => 'required|exists:category,id',
                 'type' => 'required|in:lost,found',
-                'location' => 'required|string|max:255',
+                'found_location' => 'nullable|string|max:255', // Expect found_location
+                'lost_location' => 'nullable|string|max:255',  // Expect lost_location
                 'surrender_location' => 'nullable|string|max:255',
                 'description' => 'required|string|max:1000',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
@@ -131,7 +132,8 @@ class ItemApiController extends Controller
             $validated = $request->validate([
                 'name' => 'sometimes|string|max:255',
                 'category_id' => 'sometimes|exists:category,id',
-                'location' => 'sometimes|string|max:255',
+                'found_location' => 'nullable|string|max:255',
+                'lost_location' => 'nullable|string|max:255',
                 'surrender_location' => 'nullable|string|max:255',
                 'description' => 'sometimes|string|max:1000',
                 'status' => 'sometimes|in:active,claimed,returned',
