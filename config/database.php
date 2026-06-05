@@ -60,8 +60,12 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => extension_loaded('pdo_mysql') ? array_filter([
-                Mysql::ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
-            ]) : [],
+        // Checks if you passed a CA path file via Render Env variables
+        PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
+        
+        // Alternative fallback: Bypasses the strict domain name verify check if a local CA isn't mapped
+        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+    ]) : [],
         ],
 
         'mariadb' => [
