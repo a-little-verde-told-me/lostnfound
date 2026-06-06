@@ -12,6 +12,3 @@ php artisan migrate --seed --force
 # 2. Start Apache in the foreground
 echo "Starting Apache..."
 exec apache2-foreground
-
-echo "Testing DNS resolution for Aiven..."
-nslookup lostnfound-db-lostnfound.g.aivencloud.com || ping -c 1 lostnfound-db-lostnfound.g.aivencloud.com
