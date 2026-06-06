@@ -625,15 +625,15 @@ class AdminController extends Controller
             $query->whereDate('created_at', '<=', $request->to_date);
         }
 
-        return $query->get()->map(function($return) {
+        return $query->get()->map(function($returns) {
             return [
-                'ID' => $return->id,
-                'Item' => $return->item->name ?? 'Unknown',
-                'Returner' => $return->user->name,
-                'Email' => $return->email,
-                'Phone' => $return->phone_number,
-                'Status' => ucfirst($return->status),
-                'Created At' => $return->created_at->format('Y-m-d'),
+                'ID' => $returns->id,
+                'Item' => $returns->item->name ?? 'Unknown',
+                'Returner' => $returns->user->name,
+                'Email' => $returns->contact_email,
+                'Phone' => $returns->contact_number,
+                'Status' => ucfirst($returns->status),
+                'Created At' => $returns->created_at->format('Y-m-d'),
             ];
         });
     }
