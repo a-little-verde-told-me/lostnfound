@@ -567,8 +567,8 @@ class AdminController extends Controller
                 'Status' => ucfirst($item->status),
                 'Location Found/Lost' => $item->found_location ?? $item->lost_location ?? 'N/A',
                 'Reporter' => $item->user->name ?? 'Unknown',
-                'Date Found/Lost' => $item->created_at->format('Y-m-d H:i:s'),
-                'Created At' => $item->created_at->format('Y-m-d H:i:s'),
+                'Date Found/Lost' => $item->created_at->format('Y-m-d'),
+                'Created At' => $item->created_at->format('Y-m-d'),
             ];
         });
     }
@@ -600,8 +600,8 @@ class AdminController extends Controller
                 'Email' => $claim->contact_email,
                 'Phone' => $claim->contact_number,
                 'Status' => ucfirst($claim->status),
-                'Date Claimed' => $claim->date_claimed->format('Y-m-d H:i:s'),
-                'Created At' => $claim->created_at->format('Y-m-d H:i:s'),
+                'Date Claimed' => $claim->date_claimed->format('Y-m-d'),
+                'Created At' => $claim->created_at->format('Y-m-d'),
             ];
         });
     }
@@ -633,7 +633,7 @@ class AdminController extends Controller
                 'Email' => $return->email,
                 'Phone' => $return->phone_number,
                 'Status' => ucfirst($return->status),
-                'Created At' => $return->created_at->format('Y-m-d H:i:s'),
+                'Created At' => $return->created_at->format('Y-m-d'),
             ];
         });
     }
@@ -664,7 +664,7 @@ class AdminController extends Controller
                 'Phone' => $user->phone_number ?? 'N/A',
                 'Claims' => $claims,
                 'Returns' => $returns,
-                'Joined' => $user->created_at->format('Y-m-d H:i:s'),
+                'Joined' => $user->created_at->format('Y-m-d'),
             ];
         });
     }
@@ -763,7 +763,7 @@ class AdminController extends Controller
 </head>
 <body>
     <h1>' . $reportTitle . '</h1>
-    <p>Generated on: ' . now()->format('Y-m-d H:i:s') . '</p>
+    <p>Generated on: ' . now()->format('Y-m-d') . '</p>
     <table>
         <thead>
             <tr>';
