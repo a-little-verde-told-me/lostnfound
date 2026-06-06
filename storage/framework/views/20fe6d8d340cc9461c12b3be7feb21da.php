@@ -540,7 +540,7 @@
                     <span></span>
                     <span></span>
                 </button>
-                <a href="/" class="navbar-logo navbar-logo-desktop" style="display: none;">Find<span class="navbar-logo-highlight">it</span></a>
+                <a href="/" class="navbar-logo navbar-logo-desktop">Find<span class="navbar-logo-highlight">it</span></a>
             </div>
 
             <div class="navbar-center">
