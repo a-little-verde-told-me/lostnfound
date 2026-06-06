@@ -1207,7 +1207,7 @@
                                 : `<a href="/claim-item-view/${item.id}" class="btn-small btn-claim">Claim Item</a>`)
                             : (window.currentUserId && item.user_id === window.currentUserId 
                                 ? `<button class="btn-small btn-claim disabled" disabled title="You cannot return your own report">Return Item</button>` 
- * : `<a href="/return-item/${item.id}" class="btn-small btn-claim">Return Item</a>`)
+     : `<a href="/return-item/${item.id}" class="btn-small btn-claim">Return Item</a>`)
                         }
                         <button class="btn-small btn-details" onclick="viewItemDetails(${item.id})">Details</button>
                     </div>
