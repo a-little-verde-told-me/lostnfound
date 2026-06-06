@@ -116,6 +116,9 @@
             .navbar-center {
                 justify-content: center;
             }
+            .desktop-only {
+                display: none !important;
+            }
         }
 
         .navbar-right {
@@ -376,7 +379,14 @@
                 </div>
             </div>
 
-            <div class="navbar-right">
+            <div class="navbar-right desktop-only">
+                <a href="{{ route('profile') }}" class="user-avatar">
+                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
+                </a>
+                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                    @csrf
+                    <button type="submit" class="navbar-logout">Logout</button>
+                </form>
             </div>
         @else
             <div class="navbar-left">
@@ -385,7 +395,7 @@
                     <span></span>
                     <span></span>
                 </button>
-                <a href="/" class="navbar-logo navbar-logo-desktop">Find<span class="navbar-logo-highlight">it</span></a>
+                <a href="/" class="navbar-logo navbar-logo-desktop" style="display: none;">Find<span class="navbar-logo-highlight">it</span></a>
             </div>
 
             <div class="navbar-center">
