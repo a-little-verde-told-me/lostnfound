@@ -646,19 +646,23 @@
         const reportsData = {
             <?php $__currentLoopData = $reports; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $report): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <?php echo e($report->id); ?>: {
-                    name: "<?php echo e($report->name); ?>",
+                    name: "<?php echo e(addslashes($report->name)); ?>",
                     category_id: <?php echo e($report->category_id); ?>,
-                    category_name: "<?php echo e($report->category->name ?? 'N/A'); ?>",
-                    location: "<?php echo e($report->type === 'Found' ? $report->found_location : $report->lost_location); ?>",
-                    surrender_location: "<?php echo e($report->surrender_location ?? ''); ?>",
+                    category_name: "<?php echo e(addslashes($report->category->name ?? 'N/A')); ?>",
+                    
+                    // FIXED: Checks both case variations and falls back directly if empty
+                    location: "<?php echo e(addslashes(in_array($report->type, ['Found', 'found']) ? ($report->found_location ?? $report->location) : ($report->lost_location ?? $report->location))); ?>",
+                    
+                    // FIXED: Safe escaping for inputs containing special quotes
+                    surrender_location: "<?php echo e(addslashes($report->surrender_location ?? '')); ?>",
                     description: "<?php echo e(addslashes($report->description)); ?>",
                     type: "<?php echo e($report->type); ?>",
                     status: "<?php echo e($report->status); ?>",
                     image: "<?php echo e($report->image ?? ''); ?>",
                     created_at: "<?php echo e($report->created_at->format('M d, Y')); ?>",
                     date_reported: "<?php echo e($report->created_at->format('M d, Y')); ?>",
-                    date_found: "<?php echo e($report->date_found ? $report->date_found->format('M d, Y') : ''); ?>",
-                    date_lost: "<?php echo e($report->date_lost ? $report->date_lost->format('M d, Y') : ''); ?>",
+                    date_found: "<?php echo e($report->date_found ? ($report->date_found instanceof \Carbon\Carbon ? $report->date_found->format('M d, Y') : date('M d, Y', strtotime($report->date_found))) : ''); ?>",
+                    date_lost: "<?php echo e($report->date_lost ? ($report->date_lost instanceof \Carbon\Carbon ? $report->date_lost->format('M d, Y') : date('M d, Y', strtotime($report->date_lost))) : ''); ?>",
                     approved_claim: <?php echo json_encode($report->getApprovedClaim() ? ['user_name' => $report->getApprovedClaim()->user->name, 'email' => $report->getApprovedClaim()->contact_email, 'phone' => $report->getApprovedClaim()->contact_number] : null); ?>,
                     approved_return: <?php echo json_encode($report->getApprovedReturn() ? ['user_name' => $report->getApprovedReturn()->user->name, 'email' => $report->getApprovedReturn()->email, 'phone' => $report->getApprovedReturn()->phone_number] : null); ?>
 

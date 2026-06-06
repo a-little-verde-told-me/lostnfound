@@ -636,19 +636,23 @@
         const reportsData = {
             @foreach ($reports as $report)
                 {{ $report->id }}: {
-                    name: "{{ $report->name }}",
+                    name: "{{ addslashes($report->name) }}",
                     category_id: {{ $report->category_id }},
-                    category_name: "{{ $report->category->name ?? 'N/A' }}",
-                    location: "{{ $report->type === 'Found' ? $report->found_location : $report->lost_location }}",
-                    surrender_location: "{{ $report->surrender_location ?? '' }}",
+                    category_name: "{{ addslashes($report->category->name ?? 'N/A') }}",
+                    
+                    // FIXED: Checks both case variations and falls back directly if empty
+                    location: "{{ addslashes(in_array($report->type, ['Found', 'found']) ? ($report->found_location ?? $report->location) : ($report->lost_location ?? $report->location)) }}",
+                    
+                    // FIXED: Safe escaping for inputs containing special quotes
+                    surrender_location: "{{ addslashes($report->surrender_location ?? '') }}",
                     description: "{{ addslashes($report->description) }}",
                     type: "{{ $report->type }}",
                     status: "{{ $report->status }}",
                     image: "{{ $report->image ?? '' }}",
                     created_at: "{{ $report->created_at->format('M d, Y') }}",
                     date_reported: "{{ $report->created_at->format('M d, Y') }}",
-                    date_found: "{{ $report->date_found ? $report->date_found->format('M d, Y') : '' }}",
-                    date_lost: "{{ $report->date_lost ? $report->date_lost->format('M d, Y') : '' }}",
+                    date_found: "{{ $report->date_found ? ($report->date_found instanceof \Carbon\Carbon ? $report->date_found->format('M d, Y') : date('M d, Y', strtotime($report->date_found))) : '' }}",
+                    date_lost: "{{ $report->date_lost ? ($report->date_lost instanceof \Carbon\Carbon ? $report->date_lost->format('M d, Y') : date('M d, Y', strtotime($report->date_lost))) : '' }}",
                     approved_claim: {!! json_encode($report->getApprovedClaim() ? ['user_name' => $report->getApprovedClaim()->user->name, 'email' => $report->getApprovedClaim()->contact_email, 'phone' => $report->getApprovedClaim()->contact_number] : null) !!},
                     approved_return: {!! json_encode($report->getApprovedReturn() ? ['user_name' => $report->getApprovedReturn()->user->name, 'email' => $report->getApprovedReturn()->email, 'phone' => $report->getApprovedReturn()->phone_number] : null) !!}
                 },
