@@ -408,7 +408,7 @@
                 </div>
             @endif
 
-            <form action="{{ route('report.lost.store') }}" method="POST" enctype="multipart/form-data">
+            <form id="reportLostForm" action="{{ route('report.lost.store') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <!-- Type (Hidden - Always "Lost") -->
@@ -525,7 +525,7 @@
 
     <script>
         // Prevent form submission if required fields are empty
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('reportLostForm').addEventListener('submit', function(e) {
             const itemName = document.getElementById('item_name').value.trim();
             const categoryId = document.getElementById('category_id').value;
             const dateLost = document.getElementById('date_lost').value;

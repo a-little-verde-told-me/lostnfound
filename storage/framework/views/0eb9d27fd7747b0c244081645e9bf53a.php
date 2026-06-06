@@ -316,7 +316,7 @@
                 </div>
             <?php endif; ?>
 
-            <form action="<?php echo e(route('report.found.store')); ?>" method="POST" enctype="multipart/form-data">
+            <form id="reportFoundForm" action="<?php echo e(route('report.found.store')); ?>" method="POST" enctype="multipart/form-data">
                 <?php echo csrf_field(); ?>
 
                 <!-- Type (Hidden - Always "Found") -->
@@ -547,7 +547,7 @@ unset($__errorArgs, $__bag); ?>
 
     <script>
         // Prevent form submission if required fields are empty
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('reportFoundForm').addEventListener('submit', function(e) {
             const itemName = document.getElementById('item_name').value.trim();
             const categoryId = document.getElementById('category_id').value;
             const dateFound = document.getElementById('date_found').value;

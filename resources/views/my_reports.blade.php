@@ -711,131 +711,137 @@
             form.submit();
         }
 
-        function openReportDetailModal(reportId) {
-            currentDetailReportId = reportId;
-            const report = reportsData[reportId];
-            if (!report) {
-                console.error('Report not found:', reportId);
-                return;
-            }
+function openReportDetailModal(reportId) {
+    currentDetailReportId = reportId;
+    const report = reportsData[reportId];
+    if (!report) {
+        console.error('Report not found:', reportId);
+        return;
+    }
 
-            const modal = document.getElementById('reportDetailModal');
-            const modalTitle = document.getElementById('detailModalTitle');
-            const modalBody = document.getElementById('detailModalBody');
-            const modalFooter = document.getElementById('detailModalFooter');
+    const modal = document.getElementById('reportDetailModal');
+    const modalTitle = document.getElementById('detailModalTitle');
+    const modalBody = document.getElementById('detailModalBody');
+    const modalFooter = document.getElementById('detailModalFooter');
 
-            modalTitle.textContent = `${report.name} - Report Details`;
+    modalTitle.textContent = `${report.name} - Report Details`;
 
-            let content = `
-                <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Item Name</div>
-                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.name}</div>
+    // Normalize the type check string safely
+    const reportTypeClean = (report.type || '').trim().toLowerCase();
+    const isLostType = reportTypeClean === 'lost';
+
+    // Fallback date picker logic to catch varying database field definitions
+    const reportDate = report.event_date || report.date_lost || report.date_found || report.date_reported || 'N/A';
+
+    let content = `
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Item Name</div>
+            <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.name || 'Untitled Item'}</div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Report Type</div>
+            <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${isLostType ? 'Lost' : 'Found'}</div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Status</div>
+            <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.approved_return ? 'Returned' : (report.approved_claim ? 'Claimed' : (report.status || 'Active'))}</div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">${isLostType ? 'Date Lost' : 'Date Found'}</div>
+            <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${reportDate}</div>
+        </div>
+
+        <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
+
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Category</div>
+            <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.category_name || report.category || 'Uncategorized'}</div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">${isLostType ? 'Last Seen Location' : 'Found Location'}</div>
+            <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.location || report.found_location || report.last_seen_location || 'Not Specified'}</div>
+        </div>
+
+        ${!isLostType ? `
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Surrender Location</div>
+            <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.surrender_location || 'Not surrendered / At found location'}</div>
+        </div>
+        ` : ''}
+
+        <div style="margin-bottom: 16px;">
+            <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Description</div>
+            <div style="color: #1f2937; font-size: 14px; line-height: 1.5; padding: 12px; background-color: #f9fafb; border-radius: 6px;">${report.description || 'No description provided.'}</div>
+        </div>
+    `;
+
+    // Append Returner/Claimant info blocks if applicable
+    if (report.approved_return) {
+        content += `
+            <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
+            <div style="padding: 12px; background-color: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 6px; margin-bottom: 16px;">
+                <div style="font-weight: 600; color: #166534; margin-bottom: 12px; font-size: 12px;">RETURNER INFORMATION</div>
+                <div style="margin-bottom: 10px;">
+                    <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Name</div>
+                    <div style="color: #1f2937; font-size: 14px;">${report.approved_return.user_name || 'N/A'}</div>
                 </div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Report Type</div>
-                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.type.charAt(0).toUpperCase() + report.type.slice(1)}</div>
+                <div style="margin-bottom: 10px;">
+                    <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Email</div>
+                    <div style="color: #1f2937; font-size: 14px;">${report.approved_return.email || 'N/A'}</div>
                 </div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Status</div>
-                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.approved_return ? 'Returned' : (report.approved_claim ? 'Claimed' : report.status.charAt(0).toUpperCase() + report.status.slice(1))}</div>
+                <div>
+                    <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Phone Number</div>
+                    <div style="color: #1f2937; font-size: 14px;">${report.approved_return.phone || 'N/A'}</div>
                 </div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">${report.type === 'Lost' ? 'Date Lost' : 'Date Found'}</div>
-                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.type === 'Lost' ? report.date_lost : report.date_found}</div>
+            </div>
+        `;
+    } else if (report.approved_claim) {
+        content += `
+            <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
+            <div style="padding: 12px; background-color: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 6px; margin-bottom: 16px;">
+                <div style="font-weight: 600; color: #166534; margin-bottom: 12px; font-size: 12px;">CLAIMANT INFORMATION</div>
+                <div style="margin-bottom: 10px;">
+                    <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Name</div>
+                    <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.user_name || 'N/A'}</div>
                 </div>
-
-                <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Category</div>
-                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.category_name}</div>
+                <div style="margin-bottom: 10px;">
+                    <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Email</div>
+                    <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.email || 'N/A'}</div>
                 </div>
-
-                <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">${report.type === 'Lost' ? 'Last Seen Location' : 'Found Location'}</div>
-                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.location}</div>
+                <div>
+                    <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Phone Number</div>
+                    <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.phone || 'N/A'}</div>
                 </div>
+            </div>
+        `;
+    }
 
-                ${report.type === 'Found' ? `
-                <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Surrender Location</div>
-                    <div style="color: #1f2937; font-size: 14px; font-weight: 500;">${report.surrender_location || 'Not specified'}</div>
-                </div>
-                ` : ''}
+    if (report.image) {
+        content += `
+            <div style="margin-bottom: 16px;">
+                <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px; font-size: 12px;">Photo</div>
+                <img src="${report.image}" alt="${report.name}" style="max-width: 100%; height: auto; border-radius: 6px;">
+            </div>
+        `;
+    }
 
-                <div style="margin-bottom: 16px;">
-                    <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 4px; font-size: 12px;">Description</div>
-                    <div style="color: #1f2937; font-size: 14px; line-height: 1.5; padding: 12px; background-color: #f9fafb; border-radius: 6px;">${report.description}</div>
-                </div>
-            `;
+    modalBody.innerHTML = content;
 
-            // Show claimant/returner information if available
-            if (report.approved_return) {
-                content += `
-                    <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
-                    <div style="padding: 12px; background-color: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 6px; margin-bottom: 16px;">
-                        <div style="font-weight: 600; color: #166534; margin-bottom: 12px; font-size: 12px;">RETURNER INFORMATION</div>
-                        <div style="margin-bottom: 10px;">
-                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Name</div>
-                            <div style="color: #1f2937; font-size: 14px;">${report.approved_return.user_name}</div>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Email</div>
-                            <div style="color: #1f2937; font-size: 14px;">${report.approved_return.email}</div>
-                        </div>
-                        <div>
-                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Phone Number</div>
-                            <div style="color: #1f2937; font-size: 14px;">${report.approved_return.phone}</div>
-                        </div>
-                    </div>
-                `;
-            } else if (report.approved_claim) {
-                content += `
-                    <div style="border-top: 1px solid #e5e7eb; margin: 16px 0;"></div>
-                    <div style="padding: 12px; background-color: #f0fdf4; border-left: 3px solid #16a34a; border-radius: 6px; margin-bottom: 16px;">
-                        <div style="font-weight: 600; color: #166534; margin-bottom: 12px; font-size: 12px;">CLAIMANT INFORMATION</div>
-                        <div style="margin-bottom: 10px;">
-                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Name</div>
-                            <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.user_name}</div>
-                        </div>
-                        <div style="margin-bottom: 10px;">
-                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Email</div>
-                            <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.email}</div>
-                        </div>
-                        <div>
-                            <div style="font-weight: 600; color: #6b7280; font-size: 11px;">Phone Number</div>
-                            <div style="color: #1f2937; font-size: 14px;">${report.approved_claim.phone}</div>
-                        </div>
-                    </div>
-                `;
-            }
-
-            if (report.image) {
-                content += `
-                    <div style="margin-bottom: 16px;">
-                        <div style="font-weight: 600; color: #6b7280; text-transform: uppercase; margin-bottom: 8px; font-size: 12px;">Photo</div>
-                        <img src="${report.image}" alt="${report.name}" style="max-width: 100%; height: auto; border-radius: 6px;">
-                    </div>
-                `;
-            }
-
-            modalBody.innerHTML = content;
-
-            // Build footer based on report status
-            const isResolved = report.approved_claim || report.approved_return;
-            let footerHTML = `<button type="button" class="btn-cancel" onclick="closeReportDetailModal()">Close</button>`;
-            
-            if (!isResolved) {
-                footerHTML += `<button type="button" class="btn btn-primary" onclick="openEditFromDetail()">Edit</button>`;
-                footerHTML += `<button type="button" class="btn btn-danger" onclick="deleteFromDetail()">Delete</button>`;
-            }
-            
-            modalFooter.innerHTML = footerHTML;
-            modal.classList.add('active');
-        }
+    const isResolved = report.approved_claim || report.approved_return;
+    let footerHTML = `<button type="button" class="btn-cancel" onclick="closeReportDetailModal()">Close</button>`;
+    
+    if (!isResolved) {
+        footerHTML += `<button type="button" class="btn btn-primary" onclick="openEditFromDetail()">Edit</button>`;
+        footerHTML += `<button type="button" class="btn btn-danger" onclick="deleteFromDetail()">Delete</button>`;
+    }
+    
+    modalFooter.innerHTML = footerHTML;
+    modal.classList.add('active');
+}
 
         function closeReportDetailModal() {
             document.getElementById('reportDetailModal').classList.remove('active');

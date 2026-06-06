@@ -957,11 +957,9 @@
                         <div class="item-info">
                             <div class="item-name">{{ $item->name }}</div>
                             <div class="item-location">
-                                <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
                                 {{ strtolower($item->type) === 'found' ? $item->found_location : $item->lost_location }}
                             </div>
                             <div class="item-date">
-                                <i class="fas fa-calendar" style="color: #2563eb;"></i>
                                 {{ $item->created_at->format('m/d/Y') }}
                             </div>
                             <div class="item-actions">
@@ -1070,10 +1068,10 @@
                         <div class="modal-section-title">Reported by</div>
                         <div class="reporter-info">
                             <div class="reporter-name">
-                                <i class="fas fa-user" style="margin-right: 8px;"></i>${item.user.name}
+                                <i style="margin-right: 8px;"></i>${item.user.name}
                             </div>
                             <div class="reporter-email">
-                                <i class="fas fa-envelope" style="margin-right: 8px;"></i>${item.user.email}
+                                <i style="margin-right: 8px;"></i>${item.user.email}
                             </div>
                         </div>
                     </div>
@@ -1218,11 +1216,9 @@
                 <div class="item-info">
                     <div class="item-name">${item.name}</div>
                     <div class="item-location">
-                        <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
                         ${item.type.toLowerCase() === 'found' ? (item.found_location || 'N/A') : (item.lost_location || 'N/A')}
                     </div>
                     <div class="item-date">
-                        <i class="fas fa-calendar" style="color: #2563eb;"></i>
                         ${new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
                     </div>
                     <div class="item-actions">

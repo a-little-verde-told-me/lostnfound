@@ -312,10 +312,8 @@
             margin-bottom: 8px;
         }
         .image-container {
-            border: 1px solid #e5e7eb;
             border-radius: 8px;
             overflow: hidden;
-            background-color: #f9fafb;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -326,6 +324,7 @@
             max-width: 100%;
             max-height: 300px;
             object-fit: cover;
+            border-radius: 8px;
         }
         .no-image {
             color: #9ca3af;

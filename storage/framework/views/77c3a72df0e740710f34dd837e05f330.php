@@ -418,7 +418,7 @@
                 </div>
             <?php endif; ?>
 
-            <form action="<?php echo e(route('report.lost.store')); ?>" method="POST" enctype="multipart/form-data">
+            <form id="reportLostForm" action="<?php echo e(route('report.lost.store')); ?>" method="POST" enctype="multipart/form-data">
                 <?php echo csrf_field(); ?>
 
                 <!-- Type (Hidden - Always "Lost") -->
@@ -620,7 +620,7 @@ unset($__errorArgs, $__bag); ?>
 
     <script>
         // Prevent form submission if required fields are empty
-        document.querySelector('form').addEventListener('submit', function(e) {
+        document.getElementById('reportLostForm').addEventListener('submit', function(e) {
             const itemName = document.getElementById('item_name').value.trim();
             const categoryId = document.getElementById('category_id').value;
             const dateLost = document.getElementById('date_lost').value;
