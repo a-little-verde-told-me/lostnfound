@@ -34,7 +34,7 @@
         }
 
         .report-card.lost {
-            border-left-color: #f59e0b;
+            border-left-color: #ef4444;
         }
 
         .report-card.found {
@@ -604,12 +604,16 @@
                                 <option value="<?php echo e($category->id); ?>"><?php echo e($category->name); ?></option>
                             <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                         </select>
+                    </div> 
+                    <div class="form-group" id="editDateGroup">
+                        <label class="form-label" id="editDateLabel">Date</label>
+                        <input type="date" id="editDate" name="event_date" class="form-input" required>
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Found Location</label>
+                        <label class="form-label" id="editLocationLabel">Location</label>
                         <input type="text" id="editLocation" name="location" class="form-input" required>
-                    </div>
-                    <div class="form-group">
+                    </div>        
+                    <div class="form-group" id="editSurrenderGroup">
                         <label class="form-label">Surrender Location</label>
                         <input type="text" id="editSurrenderLocation" name="surrender_location" class="form-input">
                     </div>
@@ -661,8 +665,10 @@
                     image: "<?php echo e($report->image ?? ''); ?>",
                     created_at: "<?php echo e($report->created_at->format('M d, Y')); ?>",
                     date_reported: "<?php echo e($report->created_at->format('M d, Y')); ?>",
-                    date_found: "<?php echo e($report->date_found ? ($report->date_found instanceof \Carbon\Carbon ? $report->date_found->format('M d, Y') : date('M d, Y', strtotime($report->date_found))) : ''); ?>",
-                    date_lost: "<?php echo e($report->date_lost ? ($report->date_lost instanceof \Carbon\Carbon ? $report->date_lost->format('M d, Y') : date('M d, Y', strtotime($report->date_lost))) : ''); ?>",
+                    date_lost: "<?php echo e($report->date_lost ? \Carbon\Carbon::parse($report->date_lost)->format('M d, Y') : ''); ?>",
+                    date_found: "<?php echo e($report->date_found ? \Carbon\Carbon::parse($report->date_found)->format('M d, Y') : ''); ?>",
+                    date_lost_raw: "<?php echo e($report->date_lost ? \Carbon\Carbon::parse($report->date_lost)->format('Y-m-d') : ''); ?>",
+                    date_found_raw: "<?php echo e($report->date_found ? \Carbon\Carbon::parse($report->date_found)->format('Y-m-d') : ''); ?>",
                     approved_claim: <?php echo json_encode($report->getApprovedClaim() ? ['user_name' => $report->getApprovedClaim()->user->name, 'email' => $report->getApprovedClaim()->contact_email, 'phone' => $report->getApprovedClaim()->contact_number] : null); ?>,
                     approved_return: <?php echo json_encode($report->getApprovedReturn() ? ['user_name' => $report->getApprovedReturn()->user->name, 'email' => $report->getApprovedReturn()->email, 'phone' => $report->getApprovedReturn()->phone_number] : null); ?>
 
@@ -671,26 +677,58 @@
         };
 
         function openEditModal(reportId) {
-            const report = reportsData[reportId];
-            if (!report) {
-                console.error('Report not found:', reportId);
-                return;
-            }
+    const report = reportsData[reportId];
+    if (!report) return;
 
-            // Populate form with report data
-            document.getElementById('editName').value = report.name;
-            document.getElementById('editCategory').value = report.category_id;
-            document.getElementById('editLocation').value = report.location;
-            document.getElementById('editSurrenderLocation').value = report.surrender_location;
-            document.getElementById('editDescription').value = report.description;
+    // References
+    const locationLabel = document.getElementById('editLocationLabel');
+    const surrenderGroup = document.getElementById('editSurrenderGroup');
+    const surrenderInput = document.getElementById('editSurrenderLocation');
+    const dateLabel = document.getElementById('editDateLabel');
+    const dateInput = document.getElementById('editDate');
 
-            // Update form action
-            const form = document.getElementById('editForm');
-            form.action = "<?php echo e(url('/reports')); ?>/" + reportId;
+    // Populate standard fields
+    document.getElementById('editName').value = report.name;
+    document.getElementById('editCategory').value = report.category_id;
+    document.getElementById('editDescription').value = report.description;
+    document.getElementById('editLocation').value = report.location;
 
-            // Show modal
-            document.getElementById('editModal').classList.add('active');
-        }
+    // Logic to toggle fields based on report type
+    const isLost = (report.type || '').toLowerCase() === 'lost';
+
+    if (isLost) {
+        // Handle Labels
+        locationLabel.textContent = "Lost Location";
+        dateLabel.textContent = "Date Lost";
+        
+        // Handle Date Input
+        dateInput.name = "date_lost";
+        // Ensure we fall back to empty string if date is null
+        dateInput.value = report.date_lost_raw || ''; 
+        
+        // Handle Surrender Visibility
+        surrenderGroup.style.display = 'none';
+        surrenderInput.value = '';
+    } else {
+        // Handle Labels
+        locationLabel.textContent = "Found Location";
+        dateLabel.textContent = "Date Found";
+        
+        // Handle Date Input
+        dateInput.name = "date_found";
+        // Ensure we fall back to empty string if date is null
+        dateInput.value = report.date_found_raw || '';
+        
+        // Handle Surrender Visibility
+        surrenderGroup.style.display = 'block';
+        surrenderInput.value = report.surrender_location;
+    }
+
+    // Update form action and show modal
+    document.getElementById('editForm').action = "<?php echo e(url('/reports')); ?>/" + reportId;
+    document.getElementById('editModal').classList.add('active');
+}
+        
 
         function closeEditModal() {
             document.getElementById('editModal').classList.remove('active');
@@ -746,7 +784,12 @@ function openReportDetailModal(reportId) {
     const isLostType = reportTypeClean === 'lost';
 
     // Fallback date picker logic to catch varying database field definitions
-    const reportDate = report.event_date || report.date_lost || report.date_found || report.date_reported || 'N/A';
+    let reportDate = 'Not Specified';
+    if (isLostType) {
+        reportDate = report.date_lost || 'Not Specified';
+    } else {
+        reportDate = report.date_found || 'Not Specified';
+    }
 
     let content = `
         <div style="margin-bottom: 16px;">
