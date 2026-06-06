@@ -9,7 +9,7 @@ class ReturnItem extends Model
 {
     use HasFactory;
 
-    protected $table = 'return';
+    protected $table = 'returns';
 
     protected $fillable = [
         'user_id',

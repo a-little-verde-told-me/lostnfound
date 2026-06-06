@@ -7,6 +7,8 @@ use App\Models\Item;
 use App\Models\ReturnItem;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Storage;
 
 class ClaimsController extends Controller
 {
@@ -121,11 +123,21 @@ class ClaimsController extends Controller
         'proof_upload.required' => 'Please upload proof of ownership.',
     ]);
 
-    // Handle file upload
+    // Handle file upload: try Cloudinary, fallback to local public storage
     $proofImagePath = null;
     if ($request->hasFile('proof_upload')) {
         $file = $request->file('proof_upload');
-        $proofImagePath = $file->store('claims', 'public');
+        try {
+            $uploaded = Cloudinary::uploadApi()->upload($file->getRealPath(), [
+                'folder' => 'lost_found_claims',
+                'resource_type' => 'auto'
+            ]);
+            $proofImagePath = $uploaded['secure_url'] ?? null;
+        } catch (\Exception $e) {
+            \Log::error('Cloudinary upload failed (claim store): ' . $e->getMessage());
+            $path = $file->store('claims', 'public');
+            $proofImagePath = url(Storage::url($path));
+        }
     }
 
     // Save to Database
@@ -216,8 +228,17 @@ class ClaimsController extends Controller
         // Handle file upload if provided
         if ($request->hasFile('proof_upload')) {
             $file = $request->file('proof_upload');
-            $proofImagePath = $file->store('claims', 'public');
-            $validated['image'] = $proofImagePath;
+            try {
+                $uploaded = Cloudinary::uploadApi()->upload($file->getRealPath(), [
+                    'folder' => 'lost_found_claims',
+                    'resource_type' => 'auto'
+                ]);
+                $validated['image'] = $uploaded['secure_url'] ?? null;
+            } catch (\Exception $e) {
+                \Log::error('Cloudinary upload failed (claim update): ' . $e->getMessage());
+                $path = $file->store('claims', 'public');
+                $validated['image'] = url(Storage::url($path));
+            }
         }
 
         // Update claim - reset status to pending
@@ -288,8 +309,17 @@ class ClaimsController extends Controller
         // Handle file upload if provided
         if ($request->hasFile('proof_upload')) {
             $file = $request->file('proof_upload');
-            $proofImagePath = $file->store('returns', 'public');
-            $validated['image'] = $proofImagePath;
+            try {
+                $uploaded = Cloudinary::uploadApi()->upload($file->getRealPath(), [
+                    'folder' => 'lost_found_returns',
+                    'resource_type' => 'auto'
+                ]);
+                $validated['image'] = $uploaded['secure_url'] ?? null;
+            } catch (\Exception $e) {
+                \Log::error('Cloudinary upload failed (return update): ' . $e->getMessage());
+                $path = $file->store('returns', 'public');
+                $validated['image'] = url(Storage::url($path));
+            }
         }
 
         // Update return - reset status to pending

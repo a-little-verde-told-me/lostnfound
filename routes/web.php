@@ -90,14 +90,24 @@ Route::middleware(['auth', IsUser::class])->group(function () {
             'proof_upload.max' => 'The image size must not exceed 2MB.'
         ]);
 
-        // Store the file
+        // Store the file: try Cloudinary then fallback to public storage
         $filePath = null;
         if ($request->hasFile('proof_upload')) {
             $file = $request->file('proof_upload');
-            $filePath = $file->store('returns', 'public');
+            try {
+                $uploaded = CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary::uploadApi()->upload($file->getRealPath(), [
+                    'folder' => 'lost_found_returns',
+                    'resource_type' => 'auto'
+                ]);
+                $filePath = $uploaded['secure_url'] ?? null;
+            } catch (\Exception $e) {
+                \Log::error('Cloudinary upload failed (return.store route): ' . $e->getMessage());
+                $path = $file->store('returns', 'public');
+                $filePath = url(\Illuminate\Support\Facades\Storage::url($path));
+            }
         }
 
-        DB::table('return')->insert([
+        DB::table('returns')->insert([
             'user_id' => Auth::id(),
             'item_id' => $validated['item_id'],
             'contact_email' => $validated['contact_email'],

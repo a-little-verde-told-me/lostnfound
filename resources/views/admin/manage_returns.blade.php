@@ -637,8 +637,8 @@
                         
                         <div class="modal-actions">
                             ${data.status === 'pending' ? `
-                                <button class="action-button approve-button" onclick="updateReturnStatus(${returnId}, 'approved')">✓ Approve Return</button>
-                                <button class="action-button reject-button" onclick="updateReturnStatus(${returnId}, 'rejected')">✗ Reject Return</button>
+                                <button class="action-button approve-button" onclick="updateReturnStatus(${returnId}, 'approved')">Approve Return</button>
+                                <button class="action-button reject-button" onclick="updateReturnStatus(${returnId}, 'rejected')">Reject Return</button>
                             ` : ''}
                             <button class="action-button close-button" onclick="closeReturnModal()">Close</button>
                         </div>
