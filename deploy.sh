@@ -1,14 +1,11 @@
-#!/bin/sh
+#!/usr/bin/env bash
+# Clear old configurations so the app uses the new environment variables
+php artisan config:clear
+php artisan cache:clear
+php artisan route:clear
 
-# Ensure the system knows where artisan and apache binaries live
-export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
+# Run migrations (uncomment only if your DB is reachable)
+# php artisan migrate --force
 
-echo "Starting deployment routine..."
-
-# 1. Run migrations AND seeders together
-echo "Running database migrations and seeders..."
-php artisan migrate --seed --force
-
-# 2. Start Apache in the foreground
-echo "Starting Apache..."
-exec apache2-foreground
+# Start Apache in the foreground
+apache2-foreground
