@@ -150,7 +150,6 @@ class ItemApiController extends Controller
 
             // Handle Cloudinary Update
             if ($request->hasFile('image')) {
-                // Optional: Delete old asset from Cloudinary if database url string exists
                 if ($item->image) {
                     try {
                         $publicId = 'items/' . pathinfo($item->image, PATHINFO_FILENAME);
@@ -206,7 +205,6 @@ class ItemApiController extends Controller
                     $publicId = 'items/' . pathinfo($item->image, PATHINFO_FILENAME);
                     Cloudinary::uploadApi()->destroy($publicId);
                 } catch (\Exception $cloudinaryEx) {
-                    // Fail silently so item data gets deleted regardless
                 }
             }
 

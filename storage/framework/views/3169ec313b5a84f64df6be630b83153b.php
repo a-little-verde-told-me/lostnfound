@@ -604,7 +604,6 @@ unset($__errorArgs, $__bag); ?>
                 uploadDisplay.innerHTML = `<div style="color: #059669; font-weight: 600;">✓ ${fileName}</div>`;
             } else {
                 uploadDisplay.innerHTML = `
-                    <div class="upload-icon">📷</div>
                     <div class="upload-text">Click or drag to upload new proof</div>
                 `;
             }

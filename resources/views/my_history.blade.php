@@ -820,7 +820,7 @@
                     </div>
                     <div class="modal-info-item">
                         <div class="modal-info-label">Item Location</div>
-                        <div class="modal-info-value">${item.item?.type === 'Found' ? (item.item?.found_location || 'Not specified') : (item.item?.lost_location || 'Not specified')}</div>
+                        <div class="modal-info-value">${(item.item?.type || '').toLowerCase() === 'found' ? (item.item?.surrender_location || item.item?.found_location || 'Not specified') : (item.item?.lost_location || 'Not specified')}</div>
                     </div>
                 `;
             }

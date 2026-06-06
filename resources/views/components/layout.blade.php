@@ -353,7 +353,6 @@
     <!-- Navbar -->
     <nav class="navbar">
         @auth
-            <!-- Left: Hamburger Menu Button (Mobile) + Logo (Desktop) -->
             <div class="navbar-left">
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
                     <span></span>
@@ -363,7 +362,6 @@
                 <a href="/" class="navbar-logo navbar-logo-desktop">Find<span class="navbar-logo-highlight">it</span></a>
             </div>
 
-            <!-- Center: Logo (Mobile) + Navigation Links (Desktop) -->
             <div class="navbar-center">
                 <a href="/" class="navbar-logo navbar-logo-mobile">Find<span class="navbar-logo-highlight">it</span></a>
                 <div class="navbar-links">
@@ -378,28 +376,18 @@
                 </div>
             </div>
 
-            <!-- Right: User Avatar and Logout -->
             <div class="navbar-right">
-                <a href="{{ route('profile') }}" class="user-avatar">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'U', 0, 1)) }}
-                </a>
-                <form method="POST" action="{{ route('logout') }}" style="display: inline;">
-                    @csrf
-                    <button type="submit" class="navbar-logout">Logout</button>
-                </form>
             </div>
         @else
-            <!-- Left: Hamburger Menu Button (Mobile) + Logo (Desktop) -->
             <div class="navbar-left">
                 <button class="hamburger-btn" id="hamburgerBtn" aria-label="Toggle menu">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
-                <a href="/" class="navbar-logo navbar-logo-desktop" style="display: none;">Find<span class="navbar-logo-highlight">it</span></a>
+                <a href="/" class="navbar-logo navbar-logo-desktop">Find<span class="navbar-logo-highlight">it</span></a>
             </div>
 
-            <!-- Center: Logo (Mobile) + Navigation Links (Desktop) -->
             <div class="navbar-center">
                 <a href="/" class="navbar-logo navbar-logo-mobile">Find<span class="navbar-logo-highlight">it</span></a>
                 <div class="navbar-links">

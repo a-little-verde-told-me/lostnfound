@@ -462,21 +462,6 @@
                     @enderror
                 </div>
 
-                <!-- <div class="form-group">
-                    <label for="additional_details" class="form-label">Additional Details</label>
-                    <textarea 
-                        id="additional_details" 
-                        name="additional_details" 
-                        class="form-input @error('additional_details') error @enderror" 
-                        placeholder="Any additional information about the item or how you lost it..."
-                        rows="4"
-                        style="resize: vertical; font-family: inherit;"
-                    >{{ old('additional_details') }}</textarea>
-                    @error('additional_details')
-                        <span style="color: #ef4444; font-size: 12px;">{{ $message }}</span>
-                    @enderror
-                </div> -->
-
                 <div class="form-actions">
                     <button type="submit" class="btn btn-submit">Submit</button>
                     <a href="{{ route('home') }}#browse" class="btn btn-cancel">Cancel</a>

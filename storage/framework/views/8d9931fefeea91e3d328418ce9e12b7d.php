@@ -520,35 +520,6 @@ endif;
 unset($__errorArgs, $__bag); ?>
                 </div>
 
-                <!-- <div class="form-group">
-                    <label for="additional_details" class="form-label">Additional Details</label>
-                    <textarea 
-                        id="additional_details" 
-                        name="additional_details" 
-                        class="form-input <?php $__errorArgs = ['additional_details'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> error <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>" 
-                        placeholder="Any additional information about the item or how you lost it..."
-                        rows="4"
-                        style="resize: vertical; font-family: inherit;"
-                    ><?php echo e(old('additional_details')); ?></textarea>
-                    <?php $__errorArgs = ['additional_details'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                        <span style="color: #ef4444; font-size: 12px;"><?php echo e($message); ?></span>
-                    <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?>
-                </div> -->
-
                 <div class="form-actions">
                     <button type="submit" class="btn btn-submit">Submit</button>
                     <a href="<?php echo e(route('home')); ?>#browse" class="btn btn-cancel">Cancel</a>
