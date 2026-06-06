@@ -61,12 +61,6 @@
             color: #2563eb;
         }
 
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
         .nav-link-logout {
             color: #ef4444;
             background: none;
@@ -393,7 +387,7 @@
 
             <div class="item-detail-row">
                 <div class="item-detail-label">Found at:</div>
-                <div class="item-detail-value"><?php echo e($claim->item->location); ?></div>
+                <div class="item-detail-value"><?php echo e($claim->item->found_location ?? 'Not specified'); ?></div>
             </div>
 
             <div class="item-detail-row">
@@ -403,7 +397,7 @@
 
             <div class="item-detail-row">
                 <div class="item-detail-label">Date found:</div>
-                <div class="item-detail-value"><?php echo e($claim->item->date_reported->format('m/d/Y')); ?></div>
+                <div class="item-detail-value"><?php echo e($claim->item->created_at->format('m/d/Y')); ?></div>
             </div>
         </div>
 

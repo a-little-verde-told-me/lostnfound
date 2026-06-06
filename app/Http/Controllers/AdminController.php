@@ -276,14 +276,9 @@ class AdminController extends Controller
     /**
      * Get claim details via API
      */
-    public function getClaimDetails(Claim $id)
+    public function getClaimDetails(Claim $claim)
     {
-        $claim = Claim::with(['item.user', 'item.category', 'user'])->find($id->id);
-        
-        if (!$claim) {
-            return response()->json(['error' => 'Claim not found'], 404);
-        }
-
+        $claim = $claim->load(['item.user', 'item.category', 'user']);
         return response()->json($claim);
     }
 
@@ -310,17 +305,11 @@ class AdminController extends Controller
     /**
      * Update claim status via API
      */
-    public function updateClaimStatus(Request $request, Claim $id)
+    public function updateClaimStatus(Request $request, Claim $claim)
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected'
         ]);
-
-        $claim = Claim::find($id->id);
-        
-        if (!$claim) {
-            return response()->json(['error' => 'Claim not found'], 404);
-        }
 
         $claim->update(['status' => $validated['status']]);
 
@@ -369,17 +358,11 @@ class AdminController extends Controller
     /**
      * Update return status via API
      */
-    public function updateReturnStatus(Request $request, ReturnItem $id)
+    public function updateReturnStatus(Request $request, ReturnItem $return)
     {
         $validated = $request->validate([
             'status' => 'required|in:pending,approved,rejected'
         ]);
-
-        $return = ReturnItem::find($id->id);
-        
-        if (!$return) {
-            return response()->json(['error' => 'Return not found'], 404);
-        }
 
         $return->update(['status' => $validated['status']]);
 

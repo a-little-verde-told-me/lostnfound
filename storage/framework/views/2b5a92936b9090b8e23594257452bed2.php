@@ -263,10 +263,8 @@
             margin-bottom: 8px;
         }
         .image-container {
-            border: 1px solid #e5e7eb;
             border-radius: 8px;
             overflow: hidden;
-            background-color: #f9fafb;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -277,6 +275,7 @@
             max-width: 100%;
             max-height: 300px;
             object-fit: cover;
+            border-radius: 8px;
         }
         .no-image {
             color: #9ca3af;
@@ -548,8 +547,8 @@
                 .then(response => response.json())
                 .then(data => {
                     const modalBody = document.getElementById('modalBody');
-                    const itemImageUrl = data.item.image ? `/storage/${data.item.image}` : null;
-                    const proofImageUrl = data.image ? `/storage/${data.image}` : null;
+                    const itemImageUrl = data.item.image ? data.item.image : null;
+                    const proofImageUrl = data.image ? data.image : null;
                     
                     modalBody.innerHTML = `
                         <div class="modal-body-columns">
@@ -625,7 +624,7 @@
                                 
                                 <div class="image-container">
                                     ${proofImageUrl ? `
-                                        <img src="${proofImageUrl}" alt="Proof of ownership" />
+                                        <img src="/storage/${proofImageUrl}" alt="Proof of ownership" />
                                     ` : `
                                         <div class="no-image">No proof file uploaded</div>
                                     `}
@@ -680,8 +679,8 @@
                         
                         <div class="modal-actions">
                             ${data.status === 'pending' ? `
-                                <button class="action-button approve-button" onclick="updateClaimStatus(${data.id}, 'approved')">✓ Approve Claim</button>
-                                <button class="action-button reject-button" onclick="updateClaimStatus(${data.id}, 'rejected')">✗ Reject Claim</button>
+                                <button class="action-button approve-button" onclick="updateClaimStatus(${data.id}, 'approved')">Approve Claim</button>
+                                <button class="action-button reject-button" onclick="updateClaimStatus(${data.id}, 'rejected')">Reject Claim</button>
                             ` : ''}
                             <button class="action-button close-button" onclick="closeClaimModal()">Close</button>
                         </div>
@@ -695,22 +694,29 @@
         function updateClaimStatus(claimId, status) {
             fetch(`/api/claims/${claimId}/status`, {
                 method: 'PATCH',
+                credentials: 'same-origin',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content || ''
                 },
                 body: JSON.stringify({ status: status })
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
+            .then(response => {
+                return response.json().then(body => ({ ok: response.ok, status: response.status, body }));
+            })
+            .then(({ ok, status, body }) => {
+                if (ok && body.success) {
                     closeClaimModal();
                     location.reload();
                 } else {
-                    alert('Failed to update claim status');
+                    console.error('Update failed', status, body);
+                    alert(body.message || body.error || 'Failed to update claim status');
                 }
             })
-            .catch(error => console.error('Error:', error));
+            .catch(error => {
+                console.error('Error:', error);
+                alert(error.message || 'Failed to update claim status');
+            });
         }
 
         function closeClaimModal() {

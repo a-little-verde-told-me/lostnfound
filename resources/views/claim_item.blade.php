@@ -412,7 +412,7 @@
                             id="contact_email" 
                             name="contact_email" 
                             class="form-input @error('contact_email') error @enderror" 
-                            value="{{ Auth::user()->email }}"
+                            value="{{ old('contact_email', Auth::user()->email ?? '') }}"
                             required
                         >
                         @error('contact_email')

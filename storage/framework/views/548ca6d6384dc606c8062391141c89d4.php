@@ -607,11 +607,11 @@
                     </div> 
                     <div class="form-group" id="editDateGroup">
                         <label class="form-label" id="editDateLabel">Date</label>
-                        <input type="date" id="editDate" name="event_date" class="form-input" required>
+                        <input type="date" id="editDate" name="date_found" class="form-input" required>
                     </div>
                     <div class="form-group">
                         <label class="form-label" id="editLocationLabel">Location</label>
-                        <input type="text" id="editLocation" name="location" class="form-input" required>
+                        <input type="text" id="editLocation" name="found_location" class="form-input" required>
                     </div>        
                     <div class="form-group" id="editSurrenderGroup">
                         <label class="form-label">Surrender Location</label>
@@ -682,6 +682,7 @@
 
     // References
     const locationLabel = document.getElementById('editLocationLabel');
+    const locationInput = document.getElementById('editLocation');
     const surrenderGroup = document.getElementById('editSurrenderGroup');
     const surrenderInput = document.getElementById('editSurrenderLocation');
     const dateLabel = document.getElementById('editDateLabel');
@@ -701,8 +702,11 @@
         locationLabel.textContent = "Lost Location";
         dateLabel.textContent = "Date Lost";
         
-        // Handle Date Input
+        // Handle Field Names
+        locationInput.name = "lost_location";
         dateInput.name = "date_lost";
+        
+        // Handle Date Input
         // Ensure we fall back to empty string if date is null
         dateInput.value = report.date_lost_raw || ''; 
         
@@ -714,8 +718,11 @@
         locationLabel.textContent = "Found Location";
         dateLabel.textContent = "Date Found";
         
-        // Handle Date Input
+        // Handle Field Names
+        locationInput.name = "found_location";
         dateInput.name = "date_found";
+        
+        // Handle Date Input
         // Ensure we fall back to empty string if date is null
         dateInput.value = report.date_found_raw || '';
         

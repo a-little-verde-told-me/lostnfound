@@ -442,7 +442,7 @@ $message = $__bag->first($__errorArgs[0]); ?> error <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?>" 
-                            value="<?php echo e(Auth::user()->email); ?>"
+                            value="<?php echo e(old('contact_email', Auth::user()->email ?? '')); ?>"
                             required
                         >
                         <?php $__errorArgs = ['contact_email'];

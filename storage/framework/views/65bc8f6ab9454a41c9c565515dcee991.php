@@ -61,12 +61,6 @@
             color: #2563eb;
         }
 
-        .navbar-right {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-        }
-
         .nav-link-logout {
             color: #ef4444;
             background: none;
@@ -336,12 +330,12 @@
 
             <div class="item-detail-row">
                 <div class="item-detail-label">Lost at:</div>
-                <div class="item-detail-value"><?php echo e($item->location); ?></div>
+                <div class="item-detail-value"><?php echo e($item->lost_location ?? 'Not specified'); ?></div>
             </div>
 
             <div class="item-detail-row">
                 <div class="item-detail-label">Date lost:</div>
-                <div class="item-detail-value"><?php echo e($item->date_reported->format('m/d/Y')); ?></div>
+                <div class="item-detail-value"><?php echo e($item->created_at->format('m/d/Y')); ?></div>
             </div>
         </div>
 

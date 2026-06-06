@@ -239,15 +239,15 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
 
 // API Routes for Admin Claims
 Route::middleware(['auth', IsAdmin::class])->group(function () {
-    Route::get('/api/claims/{id}', [AdminController::class, 'getClaimDetails'])->name('api.claims.show');
-    Route::patch('/api/claims/{id}/status', [AdminController::class, 'updateClaimStatus'])->name('api.claims.updateStatus');
+    Route::get('/api/claims/{claim}', [AdminController::class, 'getClaimDetails'])->name('api.claims.show');
+    Route::patch('/api/claims/{claim}/status', [AdminController::class, 'updateClaimStatus'])->name('api.claims.updateStatus');
     Route::get('/api/items/{id}', [AdminController::class, 'getItemDetails'])->name('api.items.show');
 });
 
 // API Routes for Admin Returns
 Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/api/returns/{return}', [AdminController::class, 'getReturnDetails'])->name('api.returns.show');
-    Route::patch('/api/returns/{id}/status', [AdminController::class, 'updateReturnStatus'])->name('api.returns.updateStatus');
+    Route::patch('/api/returns/{return}/status', [AdminController::class, 'updateReturnStatus'])->name('api.returns.updateStatus');
 });
 
 // API Routes for Reports & Analytics
