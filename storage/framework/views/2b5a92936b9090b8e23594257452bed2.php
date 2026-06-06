@@ -624,7 +624,7 @@
                                 
                                 <div class="image-container">
                                     ${proofImageUrl ? `
-                                        <img src="/storage/${proofImageUrl}" alt="Proof of ownership" />
+                                        <img src="${(proofImageUrl.startsWith && (proofImageUrl.startsWith('http') || proofImageUrl.startsWith('data:'))) ? proofImageUrl : '/storage/' + proofImageUrl}" alt="Proof of ownership" />
                                     ` : `
                                         <div class="no-image">No proof file uploaded</div>
                                     `}

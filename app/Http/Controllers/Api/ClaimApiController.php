@@ -78,9 +78,9 @@ class ClaimApiController extends Controller
     {
         try {
             $validated = $request->validate([
-                'item_id' => 'required|exists:item,id',
+                'item_id' => 'required|exists:items,id',
                 'proof_description' => 'required|string|max:1000',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
                 'contact_email' => 'required|email',
                 'phone_number' => 'required|string|max:20'
             ]);

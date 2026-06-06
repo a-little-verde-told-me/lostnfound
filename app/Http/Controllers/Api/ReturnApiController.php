@@ -74,7 +74,7 @@ class ReturnApiController extends Controller
     {
         try {
             $validated = $request->validate([
-                'item_id' => 'required|exists:item,id',
+                'item_id' => 'required|exists:items,id',
                 'contact_email' => 'required|email',
                 'contact_number' => 'required|string|max:20',
                 'additional_details' => 'nullable|string|max:1000',
