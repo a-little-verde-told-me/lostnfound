@@ -665,10 +665,10 @@
             }
         }
 
-        /* Modal Styles */
+/* Modal Styles */
         .modal {
             display: none;
-            position: fixed;
+            position: fixed; /* Keep fixed backdrops so it overlays properly */
             z-index: 1000;
             left: 0;
             top: 0;
@@ -685,12 +685,8 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
@@ -745,18 +741,23 @@
         }
 
         .modal-image {
-            width: 100%;
-            height: 300px;
-            background-color: #f3f4f6;
+            width: max-content; 
+            max-width: 100%;  
+            height: 380px;
+            margin: 0 auto 24px auto;
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
         }
 
         .modal-image img {
-            width: 100%;
+            width: auto;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            border-radius: 8px;
         }
 
         .modal-image.no-image {
@@ -764,6 +765,8 @@
             align-items: center;
             justify-content: center;
             color: #9ca3af;
+            background-color: #f3f4f6;
+            width: 100%;
         }
 
         .modal-section {
@@ -1046,6 +1049,20 @@
             const modalBody = document.getElementById('modalBody');
             const imageUrl = item.image ? item.image : null;
             
+            // 1. Setup dynamic labels and values depending on report type
+            const isFoundType = item.type.toLowerCase() === 'found';
+            
+            const locationLabel = isFoundType ? 'Found Location' : 'Lost Location';
+            const locationValue = isFoundType ? (item.found_location || 'N/A') : (item.lost_location || 'N/A');
+            
+            const dateLabel = isFoundType ? 'Date Found' : 'Date Lost';
+            const dateValue = isFoundType ? item.date_found : item.date_lost;
+            
+            // Format the dynamic item date nicely (MM/DD/YYYY) if it exists
+            const formattedItemDate = dateValue 
+                ? new Date(dateValue).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) 
+                : 'N/A';
+
             let reporterHtml = '';
             if (item.user) {
                 reporterHtml = `
@@ -1063,6 +1080,7 @@
                 `;
             }
             
+            // 2. Inject updated layout structure
             modalBody.innerHTML = `
                 <div class="modal-image ${!imageUrl ? 'no-image' : ''}">
                     ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" />` : '<span>No image available</span>'}
@@ -1086,10 +1104,17 @@
                         <div class="detail-label">Category:</div>
                         <div class="detail-value">${item.category?.name || 'Uncategorized'}</div>
                     </div>
+                    
                     <div class="detail-row">
-                        <div class="detail-label">Location:</div>
-                        <div class="detail-value">${item.type.toLowerCase() === 'found' ? item.found_location : item.lost_location}</div>
+                        <div class="detail-label">${locationLabel}:</div>
+                        <div class="detail-value">${locationValue}</div>
                     </div>
+                    
+                    <div class="detail-row">
+                        <div class="detail-label">${dateLabel}:</div>
+                        <div class="detail-value">${formattedItemDate}</div>
+                    </div>
+                    
                     <div class="detail-row">
                         <div class="detail-label">Date Reported:</div>
                         <div class="detail-value">${new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
