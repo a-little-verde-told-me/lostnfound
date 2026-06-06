@@ -861,7 +861,6 @@
         </div>
     </div>
 
-    <!-- Browse Section -->
     <div class="browse-section" id="browse">
         <div class="container">
             <h2 class="section-title">Browse Items</h2>
@@ -870,7 +869,6 @@
                 <input type="text" id="searchInput" class="search-box" placeholder="Search for lost item by names, or category...">
                 <div class="filter-button-wrapper">
                     <button class="filter-button" id="filterToggle">Filter</button>
-                    <!-- Filter Panel -->
                     <div class="filter-panel" id="filterPanel">
                         <div class="filter-header">
                             <h3>Filter</h3>
@@ -878,7 +876,6 @@
                         </div>
 
                         <form id="filterForm">
-                            <!-- Status Filter -->
                             <div class="filter-section">
                                 <h4>Status</h4>
                                 <div class="filter-option">
@@ -895,7 +892,6 @@
                                 </div>
                             </div>
 
-                            <!-- Category Filter -->
                             <div class="filter-section">
                                 <h4>Category</h4>
                                 <?php
@@ -920,8 +916,6 @@
                                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </div>
 
-
-                            <!-- Filter Actions -->
                             <div class="filter-actions">
                                 <button type="button" class="btn-apply-filter" id="applyFilter">Apply Filter</button>
                                 <button type="button" class="btn-clear-filter" id="clearFilter">Clear Filter</button>
@@ -931,7 +925,6 @@
                 </div>
                 <div class="sort-button-wrapper">
                     <button class="sort-button" id="sortToggle">Sort: Latest</button>
-                    <!-- Sort Panel -->
                     <div class="sort-panel" id="sortPanel">
                         <div class="sort-option">
                             <input type="radio" id="sort_latest" name="sort" value="latest" checked>
@@ -971,7 +964,7 @@
                             <div class="item-name"><?php echo e($item->name); ?></div>
                             <div class="item-location">
                                 <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
-                                <?php echo e($item->type === 'Found' ? $item->found_location : $item->lost_location); ?>
+                                <?php echo e(strtolower($item->type) === 'found' ? $item->found_location : $item->lost_location); ?>
 
                             </div>
                             <div class="item-date">
@@ -1007,14 +1000,12 @@
                 <?php endif; ?>
             </div>
 
-            <!-- Pagination Info -->
             <?php if($items->total() > 0): ?>
                 <div class="pagination-info">
                     Showing <?php echo e($items->firstItem()); ?> to <?php echo e($items->lastItem()); ?> of <?php echo e($items->total()); ?> results
                 </div>
             <?php endif; ?>
 
-            <!-- Pagination -->
             <?php if($items->hasPages()): ?>
                 <div style="display: flex; justify-content: center; margin-bottom: 32px;">
                     <?php echo e($items->links()); ?>
@@ -1023,7 +1014,6 @@
             <?php endif; ?>
         </div>
 
-        <!-- Details Modal -->
         <div id="detailsModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1031,373 +1021,323 @@
                     <button class="modal-close" onclick="closeDetailsModal()">&times;</button>
                 </div>
                 <div id="modalBody">
-                    <!-- Content will be loaded here -->
-                </div>
+                    </div>
             </div>
         </div>
     </div>
 
     <script>
-        const searchInput = document.getElementById('searchInput');
-        const itemsContainer = document.getElementById('itemsContainer');
-        const filterToggle = document.getElementById('filterToggle');
-        const filterClose = document.getElementById('filterClose');
-        const filterPanel = document.getElementById('filterPanel');
-        const filterForm = document.getElementById('filterForm');
-        const applyFilter = document.getElementById('applyFilter');
-        const clearFilter = document.getElementById('clearFilter');
-        const sortToggle = document.getElementById('sortToggle');
-        const sortPanel = document.getElementById('sortPanel');
-        const sortRadios = document.querySelectorAll('input[name="sort"]');
-        const resetButton = document.getElementById('resetButton');
-        
-        window.currentUserId = <?php echo json_encode(Auth::id() ?? null, 15, 512) ?>;
-        window.allItems = <?php echo json_encode($items->items(), 15, 512) ?>;
-        let currentSort = 'latest';
-        let searchTimeout;
+    const searchInput = document.getElementById('searchInput');
+    const itemsContainer = document.getElementById('itemsContainer');
+    const filterToggle = document.getElementById('filterToggle');
+    const filterClose = document.getElementById('filterClose');
+    const filterPanel = document.getElementById('filterPanel');
+    const filterForm = document.getElementById('filterForm');
+    const applyFilter = document.getElementById('applyFilter');
+    const clearFilter = document.getElementById('clearFilter');
+    const sortToggle = document.getElementById('sortToggle');
+    const sortPanel = document.getElementById('sortPanel');
+    const sortRadios = document.querySelectorAll('input[name="sort"]');
+    const resetButton = document.getElementById('resetButton');
+    
+    window.currentUserId = <?php echo json_encode(Auth::id() ?? null, 15, 512) ?>;
+    window.allItems = <?php echo json_encode($items->items(), 15, 512) ?>;
+    
+    // 💡 THE TRICK: Track what is currently active on the user's screen
+    let currentItems = [...window.allItems]; 
+    let currentSort = 'latest';
+    let searchTimeout;
 
-        // Function to view item details
-        function viewItemDetails(itemId) {
-            // Fetch item details from the items data
-            const item = allItems.find(item => item.id === itemId);
+    // Function to view item details
+    function viewItemDetails(itemId) {
+        // Look through current items first, fall back to global pool if needed
+        const item = currentItems.find(item => item.id === itemId) || window.allItems.find(item => item.id === itemId);
+        
+        if (item) {
+            const modal = document.getElementById('detailsModal');
+            const modalBody = document.getElementById('modalBody');
+            const imageUrl = item.image ? item.image : null;
             
-            if (item) {
-                const modal = document.getElementById('detailsModal');
-                const modalBody = document.getElementById('modalBody');
-                
-                const imageUrl = item.image ? item.image : null;
-                
-                let reporterHtml = '';
-                if (item.user) {
-                    reporterHtml = `
-                        <div class="modal-section">
-                            <div class="modal-section-title">Reported by</div>
-                            <div class="reporter-info">
-                                <div class="reporter-name">
-                                    <i class="fas fa-user" style="margin-right: 8px;"></i>${item.user.name}
-                                </div>
-                                <div class="reporter-email">
-                                    <i class="fas fa-envelope" style="margin-right: 8px;"></i>${item.user.email}
-                                </div>
+            let reporterHtml = '';
+            if (item.user) {
+                reporterHtml = `
+                    <div class="modal-section">
+                        <div class="modal-section-title">Reported by</div>
+                        <div class="reporter-info">
+                            <div class="reporter-name">
+                                <i class="fas fa-user" style="margin-right: 8px;"></i>${item.user.name}
+                            </div>
+                            <div class="reporter-email">
+                                <i class="fas fa-envelope" style="margin-right: 8px;"></i>${item.user.email}
                             </div>
                         </div>
-                    `;
-                }
-                
-                modalBody.innerHTML = `
-                    <div class="modal-image ${!imageUrl ? 'no-image' : ''}">
-                        ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" />` : '<span>No image available</span>'}
                     </div>
-                    
-                    <div class="modal-section">
-                        <div class="modal-section-title">Item Information</div>
-                        <div class="detail-row">
-                            <div class="detail-label">Name:</div>
-                            <div class="detail-value"><strong>${item.name}</strong></div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Type:</div>
-                            <div class="detail-value">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Description:</div>
-                            <div class="detail-value">${item.description || 'No description'}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Category:</div>
-                            <div class="detail-value">${item.category?.name || 'Uncategorized'}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Location:</div>
-                            <div class="detail-value">${item.type === 'Found' ? item.found_location : item.lost_location}</div>
-                        </div>
-                        <div class="detail-row">
-                            <div class="detail-label">Date Reported:</div>
-                            <div class="detail-value">${new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
-                        </div>
-                    </div>
-                    
-                    ${reporterHtml}
                 `;
+            }
+            
+            modalBody.innerHTML = `
+                <div class="modal-image ${!imageUrl ? 'no-image' : ''}">
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.name}" />` : '<span>No image available</span>'}
+                </div>
                 
-                modal.classList.add('active');
-            }
-        }
-
-        function closeDetailsModal() {
-            const modal = document.getElementById('detailsModal');
-            modal.classList.remove('active');
-        }
-
-        // Close modal when clicking outside
-        document.getElementById('detailsModal').addEventListener('click', function(event) {
-            if (event.target === this) {
-                closeDetailsModal();
-            }
-        });
-
-        // Filter Panel Toggle
-        filterToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            filterPanel.classList.toggle('active');
-            sortPanel.classList.remove('active');
-        });
-
-        filterClose.addEventListener('click', (e) => {
-            e.preventDefault();
-            filterPanel.classList.remove('active');
-        });
-
-        // Close filter panel when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.filter-button-wrapper')) {
-                filterPanel.classList.remove('active');
-            }
-        });
-
-        // Sort Panel Toggle
-        sortToggle.addEventListener('click', (e) => {
-            e.stopPropagation();
-            sortPanel.classList.toggle('active');
-            filterPanel.classList.remove('active');
-        });
-
-        // Close sort panel when clicking outside
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.sort-button-wrapper')) {
-                sortPanel.classList.remove('active');
-            }
-        });
-
-        // Status "All" checkbox logic
-        const statusCheckboxes = document.querySelectorAll('input[name="status"]');
-        const statusAll = document.getElementById('status_all');
-        const statusFound = document.getElementById('status_found');
-        const statusLost = document.getElementById('status_lost');
-
-        statusAll.addEventListener('change', () => {
-            if (statusAll.checked) {
-                statusFound.checked = false;
-                statusLost.checked = false;
-            }
-        });
-
-        statusFound.addEventListener('change', () => {
-            if (statusFound.checked) {
-                statusAll.checked = false;
-            }
-        });
-
-        statusLost.addEventListener('change', () => {
-            if (statusLost.checked) {
-                statusAll.checked = false;
-            }
-        });
-
-        function sortItems(items, sortType) {
-            const sorted = [...items];
-            
-            switch(sortType) {
-                case 'latest':
-                    sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-                    break;
-                case 'oldest':
-                    sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
-                    break;
-                case 'name_az':
-                    sorted.sort((a, b) => a.name.localeCompare(b.name));
-                    break;
-                case 'name_za':
-                    sorted.sort((a, b) => b.name.localeCompare(a.name));
-                    break;
-                case 'found_first':
-                    sorted.sort((a, b) => {
-                        if (a.type.toLowerCase() === 'found' && b.type.toLowerCase() !== 'found') return -1;
-                        if (a.type.toLowerCase() !== 'found' && b.type.toLowerCase() === 'found') return 1;
-                        return new Date(b.created_at) - new Date(a.created_at);
-                    });
-                    break;
-                case 'lost_first':
-                    sorted.sort((a, b) => {
-                        if (a.type.toLowerCase() === 'lost' && b.type.toLowerCase() !== 'lost') return -1;
-                        if (a.type.toLowerCase() !== 'lost' && b.type.toLowerCase() === 'lost') return 1;
-                        return new Date(b.created_at) - new Date(a.created_at);
-                    });
-                    break;
-            }
-            
-            return sorted;
-        }
-
-        function renderItems(items) {
-            const sortedItems = sortItems(items, currentSort);
-            
-            if (sortedItems.length === 0) {
-                itemsContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: #6b7280;"><p style="font-size: 16px;">No items found</p></div>';
-                return;
-            }
-
-            itemsContainer.innerHTML = sortedItems.map(item => `
-                <div class="item-card">
-                    <div class="item-image">
-                        ${item.image 
-                            ? `<img src="${item.image}" alt="${item.name}" />` 
-                            : `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
-                                <span style="color: #9ca3af; font-size: 14px;">No image</span>
-                              </div>`
-                        }
-                        <span class="item-badge ${item.type.toLowerCase() === 'found' ? 'badge-found' : 'badge-lost'}">${item.type.charAt(0).toUpperCase() + item.type.slice(1)}</span>
+                <div class="modal-section">
+                    <div class="modal-section-title">Item Information</div>
+                    <div class="detail-row">
+                        <div class="detail-label">Name:</div>
+                        <div class="detail-value"><strong>${item.name}</strong></div>
                     </div>
-                    <div class="item-info">
-                        <div class="item-name">${item.name}</div>
-                        <div class="item-location">
-                            <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
-                            ${item.type === 'Found' ? item.found_location : item.lost_location}
-                        </div>
-                        <div class="item-date">
-                            <i class="fas fa-calendar" style="color: #2563eb;"></i>
-                            ${new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
-                        </div>
-                        <div class="item-actions">
-                            ${item.type.toLowerCase() === 'found' 
-                                ? (window.currentUserId && item.user_id === window.currentUserId 
-                                    ? `<button class="btn-small btn-claim disabled" disabled title="You cannot claim your own report">Claim Item</button>` 
-                                    : `<a href="/claim-item-view/${item.id}" class="btn-small btn-claim">Claim Item</a>`)
-                                : (window.currentUserId && item.user_id === window.currentUserId 
-                                    ? `<button class="btn-small btn-claim disabled" disabled title="You cannot return your own report">Return Item</button>` 
-                                    : `<a href="/return-item/${item.id}" class="btn-small btn-claim">Return Item</a>`)
-                            }
-                            <button class="btn-small btn-details" onclick="viewItemDetails(${item.id})">Details</button>
-                        </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Type:</div>
+                        <div class="detail-value">${item.type.charAt(0).toUpperCase() + item.type.slice(1).toLowerCase()}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Description:</div>
+                        <div class="detail-value">${item.description || 'No description'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Category:</div>
+                        <div class="detail-value">${item.category?.name || 'Uncategorized'}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Location:</div>
+                        <div class="detail-value">${item.type.toLowerCase() === 'found' ? item.found_location : item.lost_location}</div>
+                    </div>
+                    <div class="detail-row">
+                        <div class="detail-label">Date Reported:</div>
+                        <div class="detail-value">${new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</div>
                     </div>
                 </div>
-            `).join('');
+                
+                ${reporterHtml}
+            `;
+            
+            modal.classList.add('active');
+        }
+    }
+
+    function closeDetailsModal() {
+        document.getElementById('detailsModal').classList.remove('active');
+    }
+
+    document.getElementById('detailsModal').addEventListener('click', function(event) {
+        if (event.target === this) closeDetailsModal();
+    });
+
+    // Panel Toggles
+    filterToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        filterPanel.classList.toggle('active');
+        sortPanel.classList.remove('active');
+    });
+
+    filterClose.addEventListener('click', (e) => {
+        e.preventDefault();
+        filterPanel.classList.remove('active');
+    });
+
+    sortToggle.addEventListener('click', (e) => {
+        e.stopPropagation();
+        sortPanel.classList.toggle('active');
+        filterPanel.classList.remove('active');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.filter-button-wrapper')) filterPanel.classList.remove('active');
+        if (!e.target.closest('.sort-button-wrapper')) sortPanel.classList.remove('active');
+    });
+
+    // Checkbox State Management
+    const statusAll = document.getElementById('status_all');
+    const statusFound = document.getElementById('status_found');
+    const statusLost = document.getElementById('status_lost');
+
+    statusAll.addEventListener('change', () => {
+        if (statusAll.checked) {
+            statusFound.checked = false;
+            statusLost.checked = false;
+        }
+    });
+    const toggleStatusAll = () => { if (statusFound.checked || statusLost.checked) statusAll.checked = false; };
+    statusFound.addEventListener('change', toggleStatusAll);
+    statusLost.addEventListener('change', toggleStatusAll);
+
+    // Client-side Sorting Logic
+    function sortItems(items, sortType) {
+        const sorted = [...items];
+        switch(sortType) {
+            case 'latest':
+                sorted.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                break;
+            case 'oldest':
+                sorted.sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                break;
+            case 'name_az':
+                sorted.sort((a, b) => a.name.localeCompare(b.name));
+                break;
+            case 'name_za':
+                sorted.sort((a, b) => b.name.localeCompare(a.name));
+                break;
+        }
+        return sorted;
+    }
+
+    // Dynamic Render Engine
+    function renderItems() {
+        // Sort whatever dataset is currently active
+        const sortedItems = sortItems(currentItems, currentSort);
+        
+        if (sortedItems.length === 0) {
+            itemsContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; padding: 48px 16px; color: #6b7280;"><p style="font-size: 16px;">No items found</p></div>';
+            return;
         }
 
-        function handleSearch(query) {
-            if (query.trim().length === 0) {
-                renderItems(allItems);
-                return;
-            }
+        itemsContainer.innerHTML = sortedItems.map(item => `
+            <div class="item-card">
+                <div class="item-image">
+                    ${item.image 
+                        ? `<img src="${item.image}" alt="${item.name}" />` 
+                        : `<div style="width: 100%; height: 100%; background: linear-gradient(135deg, #f3f4f6, #e5e7eb); display: flex; align-items: center; justify-content: center;">
+                            <span style="color: #9ca3af; font-size: 14px;">No image</span>
+                          </div>`
+                    }
+                    <span class="item-badge ${item.type.toLowerCase() === 'found' ? 'badge-found' : 'badge-lost'}">${item.type.charAt(0).toUpperCase() + item.type.slice(1).toLowerCase()}</span>
+                </div>
+                <div class="item-info">
+                    <div class="item-name">${item.name}</div>
+                    <div class="item-location">
+                        <i class="fas fa-map-marker-alt" style="color: #2563eb;"></i>
+                        ${item.type.toLowerCase() === 'found' ? (item.found_location || 'N/A') : (item.lost_location || 'N/A')}
+                    </div>
+                    <div class="item-date">
+                        <i class="fas fa-calendar" style="color: #2563eb;"></i>
+                        ${new Date(item.created_at).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                    </div>
+                    <div class="item-actions">
+                        ${item.type.toLowerCase() === 'found' 
+                            ? (window.currentUserId && item.user_id === window.currentUserId 
+                                ? `<button class="btn-small btn-claim disabled" disabled title="You cannot claim your own report">Claim Item</button>` 
+                                : `<a href="/claim-item-view/${item.id}" class="btn-small btn-claim">Claim Item</a>`)
+                            : (window.currentUserId && item.user_id === window.currentUserId 
+                                ? `<button class="btn-small btn-claim disabled" disabled title="You cannot return your own report">Return Item</button>` 
+     : `<a href="/return-item/${item.id}" class="btn-small btn-claim">Return Item</a>`)
+                        }
+                        <button class="btn-small btn-details" onclick="viewItemDetails(${item.id})">Details</button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
 
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
-                fetch(`/api/search?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        renderItems(data);
-                    })
-                    .catch(error => {
-                        console.error('Search error:', error);
-                        renderItems(allItems);
-                    });
-            }, 300);
+    // Live Search Engine Connection
+    function handleSearch(query) {
+        if (query.trim().length === 0) {
+            currentItems = [...window.allItems];
+            renderItems();
+            return;
         }
 
-        // Sort Radio Button Handler
-        sortRadios.forEach(radio => {
-            radio.addEventListener('change', (e) => {
-                currentSort = e.target.value;
-                
-                // Update button text
-                const sortLabels = {
-                    'latest': 'Sort: Latest',
-                    'oldest': 'Sort: Oldest',
-                    'name_az': 'Sort: Name A-Z',
-                    'name_za': 'Sort: Name Z-A',
-                };
-                
-                sortToggle.textContent = sortLabels[currentSort];
-                sortPanel.classList.remove('active');
-                renderItems(allItems);
-            });
-        });
-
-        // Apply Filter
-        applyFilter.addEventListener('click', () => {
-            const statuses = [];
-            const categories = [];
-            const locations = [];
-
-            // Get selected statuses
-            if (statusAll.checked) {
-                statuses.push('all');
-            } else {
-                if (statusFound.checked) statuses.push('found');
-                if (statusLost.checked) statuses.push('lost');
-            }
-
-            // Get selected categories
-            document.querySelectorAll('input[name="category"]:checked').forEach(checkbox => {
-                categories.push(checkbox.value);
-            });
-
-            // Build query parameters
-            const params = new URLSearchParams();
-            if (statuses.length > 0) params.append('status', statuses.join(','));
-            if (categories.length > 0) params.append('category', categories.join(','));
-            if (locations.length > 0) params.append('location', locations.join(','));
-
-            // Fetch filtered items
-            fetch(`/api/filter?${params.toString()}`)
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => {
+            fetch(`/api/search?q=${encodeURIComponent(query)}`)
                 .then(response => response.json())
                 .then(data => {
-                    renderItems(data);
-                    filterPanel.classList.remove('active');
+                    currentItems = data; // Set search matches as current tracking state
+                    renderItems();
                 })
                 .catch(error => {
-                    console.error('Filter error:', error);
+                    console.error('Search error:', error);
+                    currentItems = [...window.allItems];
+                    renderItems();
                 });
-        });
+        }, 300);
+    }
 
-        // Clear Filter
-        clearFilter.addEventListener('click', () => {
-            statusAll.checked = true;
-            statusFound.checked = false;
-            statusLost.checked = false;
+    // Sort Selection Handler
+    sortRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            currentSort = e.target.value;
             
-            document.querySelectorAll('input[name="category"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-
-            renderItems(allItems);
-            filterPanel.classList.remove('active');
-        });
-
-        // Reset Button
-        resetButton.addEventListener('click', () => {
-            // Clear search input
-            searchInput.value = '';
+            const sortLabels = {
+                'latest': 'Sort: Latest',
+                'oldest': 'Sort: Oldest',
+                'name_az': 'Sort: Name A-Z',
+                'name_za': 'Sort: Name Z-A',
+            };
             
-            // Reset all filters
-            statusAll.checked = true;
-            statusFound.checked = false;
-            statusLost.checked = false;
-            
-            document.querySelectorAll('input[name="category"]').forEach(checkbox => {
-                checkbox.checked = false;
-            });
-            
-            // Reset sort to latest
-            currentSort = 'latest';
-            document.getElementById('sort_latest').checked = true;
-            sortToggle.textContent = 'Sort: Latest';
-            
-            // Close any open panels
-            filterPanel.classList.remove('active');
+            sortToggle.textContent = sortLabels[currentSort];
             sortPanel.classList.remove('active');
-            
-            // Render all items with default sort
-            renderItems(allItems);
+            renderItems(); // Sorts whatever is in currentItems!
+        });
+    });
+
+    // Apply Filter Endpoint Connection
+    applyFilter.addEventListener('click', () => {
+        const statuses = [];
+        const categories = [];
+
+        if (statusAll.checked) {
+            statuses.push('all');
+        } else {
+            if (statusFound.checked) statuses.push('found');
+            if (statusLost.checked) statuses.push('lost');
+        }
+
+        document.querySelectorAll('input[name="category"]:checked').forEach(checkbox => {
+            categories.push(checkbox.value);
         });
 
-        searchInput.addEventListener('input', (e) => {
-            handleSearch(e.target.value);
-        });
+        const params = new URLSearchParams();
+        if (statuses.length > 0) params.append('status', statuses.join(','));
+        if (categories.length > 0) params.append('category', categories.join(','));
 
-        // Initial render
-        renderItems(allItems);
-    </script>
+        fetch(`/api/filter?${params.toString()}`)
+            .then(response => response.json())
+            .then(data => {
+                currentItems = data; // Set filtered matches as current tracking state
+                renderItems();
+                filterPanel.classList.remove('active');
+            })
+            .catch(error => {
+                console.error('Filter error:', error);
+            });
+    });
+
+    // Clear Filter Layout Action
+    clearFilter.addEventListener('click', () => {
+        statusAll.checked = true;
+        statusFound.checked = false;
+        statusLost.checked = false;
+        document.querySelectorAll('input[name="category"]').forEach(checkbox => checkbox.checked = false);
+
+        currentItems = [...window.allItems];
+        renderItems();
+        filterPanel.classList.remove('active');
+    });
+
+    // Total Reset
+    resetButton.addEventListener('click', () => {
+        searchInput.value = '';
+        statusAll.checked = true;
+        statusFound.checked = false;
+        statusLost.checked = false;
+        document.querySelectorAll('input[name="category"]').forEach(checkbox => checkbox.checked = false);
+        
+        currentSort = 'latest';
+        document.getElementById('sort_latest').checked = true;
+        sortToggle.textContent = 'Sort: Latest';
+        
+        filterPanel.classList.remove('active');
+        sortPanel.classList.remove('active');
+        
+        currentItems = [...window.allItems];
+        renderItems();
+    });
+
+    searchInput.addEventListener('input', (e) => handleSearch(e.target.value));
+
+    // Initial Execution Run
+    renderItems();
+</script>
  <?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
 <?php if (isset($__attributesOriginal23a33f287873b564aaf305a1526eada4)): ?>

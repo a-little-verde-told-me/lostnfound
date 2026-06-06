@@ -86,7 +86,9 @@ class ItemApiController extends Controller
                 'lost_location' => 'nullable|string|max:255',  
                 'surrender_location' => 'nullable|string|max:255',
                 'description' => 'required|string|max:1000',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'date_found' => 'nullable|date',
+                'date_lost' => 'nullable|date',
             ]);
 
             $validated['user_id'] = Auth::id();
@@ -141,7 +143,9 @@ class ItemApiController extends Controller
                 'surrender_location' => 'nullable|string|max:255',
                 'description' => 'sometimes|string|max:1000',
                 'status' => 'sometimes|in:active,claimed,returned',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'date_found' => 'nullable|date',
+                'date_lost' => 'nullable|date'
             ]);
 
             // Handle Cloudinary Update
