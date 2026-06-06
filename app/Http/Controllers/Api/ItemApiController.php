@@ -150,7 +150,7 @@ class ItemApiController extends Controller
                 if ($item->image) {
                     try {
                         $publicId = 'items/' . pathinfo($item->image, PATHINFO_FILENAME);
-                        Cloudinary::destroy($publicId);
+                        Cloudinary::uploadApi()->destroy($publicId);
                     } catch (\Exception $cloudinaryEx) {
                         // Keep going if deletion fails so the update loop doesn't break
                     }
@@ -200,7 +200,7 @@ class ItemApiController extends Controller
             if ($item->image) {
                 try {
                     $publicId = 'items/' . pathinfo($item->image, PATHINFO_FILENAME);
-                    Cloudinary::destroy($publicId);
+                    Cloudinary::uploadApi()->destroy($publicId);
                 } catch (\Exception $cloudinaryEx) {
                     // Fail silently so item data gets deleted regardless
                 }
