@@ -81,49 +81,55 @@ class ClaimApiController extends Controller
                 'item_id' => 'required|exists:item,id',
                 'proof_description' => 'required|string|max:1000',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'contact_email' => 'required|email',
+                'phone_number' => 'required|string|max:20'
             ]);
 
             // Check if item exists and is found
             $item = Item::findOrFail($validated['item_id']);
-            if ($item->type !== 'found') {
+            if (trim(strtolower($item->type)) !== 'found') {
                 return response()->json([
                     'success' => false,
                     'message' => 'Can only claim found items'
                 ], 422);
             }
 
-            $validated['user_id'] = Auth::id();
-            $validated['status'] = 'pending';
-            $validated['date_claimed'] = now();
+            $claimData = [
+            'user_id' => Auth::id(),
+            'item_id' => $validated['item_id'],
+            'proof_description' => $validated['proof_description'],
+            'contact_email' => $validated['contact_email'], // Ensure this matches DB column name
+            'contact_number' => $validated['phone_number'],   // Ensure this matches DB column name
+            'status' => 'pending',
+            'date_claimed' => now()
+        ];
 
-            // Handle image upload to Cloudinary
-            if ($request->hasFile('image')) {
-                try {
-                    $uploadedFile = Cloudinary::uploadApi()->upload($request->file('image')->getRealPath(), [
-                        'folder' => 'lost_found_claims',
-                        'resource_type' => 'auto'
-                    ]);
-                    $validated['image'] = $uploadedFile['secure_url'];
-                } catch (\Exception $e) {
-                    \Log::error('Cloudinary upload error: ' . $e->getMessage());
-                }
-            }
-
-            $claim = Claim::create($validated);
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Claim created successfully',
-                'data' => $claim
-            ], 201);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to create claim',
-                'errors' => $e->getMessage()
-            ], 422);
+        // 4. Handle Image
+        if ($request->hasFile('image')) {
+            $uploadedFile = Cloudinary::uploadApi()->upload($request->file('image')->getRealPath(), [
+                'folder' => 'lost_found_claims',
+                'resource_type' => 'auto'
+            ]);
+            $claimData['image'] = $uploadedFile['secure_url'];
         }
+
+        // 5. Create the claim
+        $claim = Claim::create($claimData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Claim created successfully',
+            'data' => $claim
+        ], 201);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Failed to create claim',
+            'errors' => $e->getMessage()
+        ], 422);
     }
+}
 
     /**
      * Update a claim
