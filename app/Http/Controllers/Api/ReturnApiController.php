@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Storage;
 
 class ReturnApiController extends Controller
 {
@@ -90,9 +91,12 @@ class ReturnApiController extends Controller
                         'folder' => 'lost_found_returns',
                         'resource_type' => 'auto'
                     ]);
-                    $validated['image'] = $uploadedFile['secure_url'];
+                    $validated['image'] = $uploadedFile['secure_url'] ?? null;
                 } catch (\Exception $e) {
-                    \Log::error('Cloudinary upload error: ' . $e->getMessage());
+                    \Log::error('Cloudinary upload error (return): ' . $e->getMessage());
+                    // Fallback to local storage so admin can view
+                    $path = $request->file('image')->store('returns', 'public');
+                    $validated['image'] = url(Storage::url($path));
                 }
             }
 

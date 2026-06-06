@@ -8,6 +8,7 @@ use App\Models\Item;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use Illuminate\Support\Facades\Storage;
 
 class ClaimApiController extends Controller
 {
@@ -106,11 +107,18 @@ class ClaimApiController extends Controller
 
         // 4. Handle Image
         if ($request->hasFile('image')) {
-            $uploadedFile = Cloudinary::uploadApi()->upload($request->file('image')->getRealPath(), [
-                'folder' => 'lost_found_claims',
-                'resource_type' => 'auto'
-            ]);
-            $claimData['image'] = $uploadedFile['secure_url'];
+            try {
+                $uploadedFile = Cloudinary::uploadApi()->upload($request->file('image')->getRealPath(), [
+                    'folder' => 'lost_found_claims',
+                    'resource_type' => 'auto'
+                ]);
+                $claimData['image'] = $uploadedFile['secure_url'] ?? null;
+            } catch (\Exception $e) {
+                // Fallback: store locally in public disk so admin can still view
+                \Log::error('Cloudinary upload failed for claim: ' . $e->getMessage());
+                $path = $request->file('image')->store('claims', 'public');
+                $claimData['image'] = url(Storage::url($path));
+            }
         }
 
         // 5. Create the claim
