@@ -493,9 +493,15 @@
         @if (!$reports->isEmpty())
             <!-- Filter Section -->
             <div class="filter-section">
-                <button class="filter-button active" onclick="filterReports('all')">All ({{ $reports->count() }})</button>
-                <button class="filter-button" onclick="filterReports('Found')">Found ({{ $reports->where('type', 'Found')->count() }})</button>
-                <button class="filter-button" onclick="filterReports('Lost')">Lost ({{ $reports->where('type', 'Lost')->count() }})</button>
+                <button class="filter-button active" onclick="filterReports('all')">
+                    All ({{ $reports->count() }})
+                </button>
+                <button class="filter-button" onclick="filterReports('found')">
+                    Found ({{ $reports->where('type', 'found')->count() }})
+                </button>
+                <button class="filter-button" onclick="filterReports('lost')">
+                    Lost ({{ $reports->where('type', 'lost')->count() }})
+                </button>
             </div>
         @endif
 
@@ -913,20 +919,19 @@ function openReportDetailModal(reportId) {
             }
         }
 
-        function filterReports(type) {
-            // Update active button
+        function filterReports(type, element) {
             const buttons = document.querySelectorAll('.filter-button');
             buttons.forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            // Filter reports
+            if (element) {
+                element.classList.add('active');
+            }
             const cards = document.querySelectorAll('.report-card');
             cards.forEach(card => {
                 if (type === 'all') {
                     card.style.display = 'block';
                 } else {
                     const reportType = card.getAttribute('data-report-type');
-                    card.style.display = reportType.toLowerCase() === type.toLowerCase() ? 'block' : 'none';
+                    card.style.display = (reportType && reportType.toLowerCase() === type.toLowerCase()) ? 'block' : 'none';
                 }
             });
         }
