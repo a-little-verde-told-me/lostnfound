@@ -25,7 +25,7 @@ class ReportController extends Controller
      */
     public function storeFoundItem(Request $request)
     {
-        // Validate the form data (photo is optional, no validation for it)
+        // Validate the form data
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
             'category_id' => 'required|exists:category,id',
@@ -60,13 +60,13 @@ class ReportController extends Controller
                 }
             }
 
-            // Create the item record
+            // Create the item record - lowercased string applied cleanly
             $item = Item::create([
                 'category_id' => $validated['category_id'],
                 'name' => $validated['item_name'],
                 'description' => $validated['description'],
                 'image' => $imagePath,
-                'type' => 'Found',
+                'type' => 'found', //  Fixed to lowercase
                 'status' => 'active',
                 'found_location' => $validated['location_found'],
                 'surrender_location' => $validated['location_current'],
@@ -94,7 +94,7 @@ class ReportController extends Controller
      */
     public function storeLostItem(Request $request)
     {
-        // Validate the form data (photo is optional, no validation for it)
+        // Validate the form data
         $validated = $request->validate([
             'item_name' => 'required|string|max:255',
             'category_id' => 'required|exists:category,id',
@@ -127,13 +127,13 @@ class ReportController extends Controller
                 }
             }
 
-            // Create the item record
+            // Create the item record - lowercased string applied cleanly
             $item = Item::create([
                 'category_id' => $validated['category_id'],
                 'name' => $validated['item_name'],
                 'description' => $validated['description'],
                 'image' => $imagePath,
-                'type' => 'Lost',
+                'type' => 'lost', //  Fixed to lowercase
                 'status' => 'active',
                 'lost_location' => $validated['location_lost'],
                 'date_lost' => $validated['date_lost'],
@@ -158,14 +158,24 @@ class ReportController extends Controller
             return redirect()->route('reports.index')->with('error', 'Unauthorized action.');
         }
 
-        $validated = $request->validate([
+        // Dynamically validate matching schema parameters based on type
+        $rules = [
             'name' => 'required|string|max:255',
             'category_id' => 'required|exists:category,id',
-            'location' => 'required|string|max:255',
-            'surrender_location' => 'nullable|string|max:255',
             'description' => 'required|string|max:1000',
             'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
-        ]);
+        ];
+
+        if ($report->type === 'found') {
+            $rules['found_location'] = 'required|string|max:255';
+            $rules['surrender_location'] = 'nullable|string|max:255';
+            $rules['date_found'] = 'required|date';
+        } else {
+            $rules['lost_location'] = 'required|string|max:255';
+            $rules['date_lost'] = 'required|date';
+        }
+
+        $validated = $request->validate($rules);
 
         try {
             // Handle image upload to Cloudinary if provided
@@ -196,15 +206,12 @@ class ReportController extends Controller
     {
         $report = Item::findOrFail($id);
 
-        // Authorize - only the owner can delete
         if ($report->user_id !== Auth::id()) {
             return redirect()->route('reports.index')->with('error', 'Unauthorized action.');
         }
 
         try {
-            // Cloudinary handles file cleanup automatically
             $report->delete();
-
             return redirect()->route('reports.index')->with('success', 'Report deleted successfully!');
         } catch (\Exception $e) {
             return back()->with('error', 'Error while deleting the report. Please try again.');

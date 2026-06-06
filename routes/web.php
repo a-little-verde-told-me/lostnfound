@@ -160,7 +160,8 @@ Route::get('/api/search', function (Illuminate\Http\Request $request) {
     $items = \App\Models\Item::where('status', 'active')
         ->where(function($q) use ($query) {
             $q->where('name', 'LIKE', "%{$query}%")
-              ->orWhere('location', 'LIKE', "%{$query}%")
+              ->orWhere('found_location', 'LIKE', "%{$query}%") //  Fixed
+              ->orWhere('lost_location', 'LIKE', "%{$query}%")  //  Fixed
               ->orWhereHas('category', function ($subQ) use ($query) {
                   $subQ->where('name', 'LIKE', "%{$query}%");
               });
@@ -195,10 +196,17 @@ Route::get('/api/filter', function (Illuminate\Http\Request $request) {
     }
     
     // Filter by location
+    // Filter by location
     $location = $request->input('location', '');
     if ($location) {
         $locations = explode(',', $location);
-        $query->whereIn('location', array_map('trim', $locations));
+        $cleanLocations = array_map('trim', $locations);
+        
+        //  Fixed: Check both columns simultaneously
+        $query->where(function($q) use ($cleanLocations) {
+            $q->whereIn('found_location', $cleanLocations)
+              ->orWhereIn('lost_location', $cleanLocations);
+        });
     }
     
     $items = $query->latest('created_at')->limit(50)->get();
@@ -250,28 +258,3 @@ Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/api/reports/users-stats', [AdminController::class, 'getUsersStats'])->name('api.reports.users-stats');
     Route::get('/api/reports/{reportType}/export', [AdminController::class, 'exportReport'])->name('api.reports.export');
 });
-
-// REST API Routes for Items (CRUD)
-// Route::middleware('auth')->group(function () {
-//     Route::post('/api/items', [ItemController::class, 'store'])->name('api.items.store');
-//     Route::get('/api/items', [ItemController::class, 'index'])->name('api.items.index');
-//     Route::get('/api/items/{item}', [ItemController::class, 'show'])->name('api.items.show');
-//     Route::put('/api/items/{item}', [ItemController::class, 'update'])->name('api.items.update');
-//     Route::delete('/api/items/{item}', [ItemController::class, 'destroy'])->name('api.items.destroy');
-// });
-
-// // REST API Routes for Claims (CRUD)
-// Route::middleware('auth')->group(function () {
-//     Route::post('/api/claims', [ClaimController::class, 'store'])->name('api.claims.store');
-//     Route::get('/api/claims', [ClaimController::class, 'index'])->name('api.claims.index');
-//     Route::put('/api/claims/{claim}', [ClaimController::class, 'update'])->name('api.claims.update');
-//     Route::delete('/api/claims/{claim}', [ClaimController::class, 'destroy'])->name('api.claims.destroy');
-// });
-
-// // REST API Routes for Returns (CRUD)
-// Route::middleware('auth')->group(function () {
-//     Route::post('/api/returns', [ReturnItemController::class, 'store'])->name('api.returns.store');
-//     Route::get('/api/returns', [ReturnItemController::class, 'index'])->name('api.returns.index');
-//     Route::put('/api/returns/{return}', [ReturnItemController::class, 'update'])->name('api.returns.update');
-//     Route::delete('/api/returns/{return}', [ReturnItemController::class, 'destroy'])->name('api.returns.destroy');
-// });
